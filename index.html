@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct HR - Admin Dashboard</title>
+
+    <!-- PrimeIcons -->
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- PrimeVue v4 -->
+    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+
+    <!-- PrimeVue Theme - Aura -->
+    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+
+    <!-- Static Data -->
+    <script src="js/data/static-data.js"></script>
+
+    <!-- Components -->
+    <script src="js/components/placeholder-page.js"></script>
+    <script src="js/components/company-settings.js"></script>
+
+    <div id="app">
+        <div class="app-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div><img class="logo-icon" src="img/direct.webp" alt="Direct HR Logo"></div>
+                    <div class="logo-text">Direct<span>HR</span></div>
+                </div>
+
+                <nav class="sidebar-menu">
+                    <div class="menu-section">
+                        <div class="menu-section-title">Main</div>
+                    </div>
+                    <div class="menu-item" @click="navigateTo('dashboard')">
+                        <i class="pi pi-home"></i>
+                        <span>Dashboard</span>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title">Settings</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'company-settings' }"
+                        @click="navigateTo('company-settings')">
+                        <i class="pi pi-building"></i>
+                        <span>Company Settings</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'employee-settings' }"
+                        @click="navigateTo('employee-settings')">
+                        <i class="pi pi-users"></i>
+                        <span>Employee Settings</span>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title">HR Management</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'attendance' }"
+                        @click="navigateTo('attendance')">
+                        <i class="pi pi-clock"></i>
+                        <span>Shift & Attendance</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'workflow' }"
+                        @click="navigateTo('workflow')">
+                        <i class="pi pi-sitemap"></i>
+                        <span>Workflows</span>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title">Reports</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'reports' }"
+                        @click="navigateTo('reports')">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>Reports</span>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Header -->
+                <header class="header">
+                    <div class="header-left">
+                        <div>
+                            <div class="page-title">{{ pageTitle }}</div>
+                            <div class="breadcrumb">
+                                <a href="#">Home</a>
+                                <i class="pi pi-angle-right"></i>
+                                <span>{{ pageTitle }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <button class="header-icon-btn">
+                            <i class="pi pi-search"></i>
+                        </button>
+                        <button class="header-icon-btn">
+                            <i class="pi pi-bell"></i>
+                            <span class="notification-badge"></span>
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">A</div>
+                            <div class="user-info">
+                                <div class="user-name">Admin User</div>
+                                <div class="user-role">Super Admin</div>
+                            </div>
+                            <i class="pi pi-chevron-down"
+                                style="color: var(--text-color-secondary); font-size: 0.75rem;"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Page Content -->
+                <div class="page-content">
+                    <!-- Company Settings Page -->
+                    <company-settings v-if="currentPage === 'company-settings'"></company-settings>
+
+                    <!-- Other Pages (Placeholder) -->
+                    <placeholder-page v-else :title="pageTitle"></placeholder-page>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
