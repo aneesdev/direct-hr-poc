@@ -221,6 +221,8 @@ img {
     flex: 1;
     margin-left: var(--sidebar-width);
     min-height: 100vh;
+    overflow-x: hidden;
+    max-width: calc(100vw - var(--sidebar-width));
 }
 
 /* ==========================================================================
@@ -350,6 +352,8 @@ img {
    ========================================================================== */
 .page-content {
     padding: 2rem;
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 /* ==========================================================================
@@ -558,6 +562,36 @@ img {
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
+    max-width: 100%;
+}
+
+.settings-tabs .p-tabs {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.settings-tabs .p-tablist-content {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.settings-tabs .p-tablist-content::-webkit-scrollbar {
+    height: 4px;
+}
+
+.settings-tabs .p-tablist-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settings-tabs .p-tablist-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.settings-tabs .p-tablist-content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 /* ==========================================================================
@@ -641,11 +675,35 @@ img {
     background: var(--surface-ground);
     border-radius: var(--radius-md) var(--radius-md) 0 0;
     padding: 0.5rem 1rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.p-tablist::-webkit-scrollbar {
+    height: 4px;
+}
+
+.p-tablist::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.p-tablist::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.p-tablist::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 .p-tab {
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .p-tab.p-tab-active {
@@ -747,6 +805,213 @@ img {
 
 .p-radiobutton.p-radiobutton-checked .p-radiobutton-icon {
     background: #ff6e05 !important;
+}
+
+/* ==========================================================================
+   Document Stat Badges
+   ========================================================================== */
+.stat-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: var(--surface-ground);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+/* ==========================================================================
+   Filter Chips
+   ========================================================================== */
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    background: #1e293b;
+    color: #ffffff;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.filter-chip i {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.filter-chip i:hover {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   Wizard Styles
+   ========================================================================== */
+.wizard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.wizard-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.wizard-title h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.wizard-title p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+}
+
+.wizard-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+}
+
+.wizard-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.wizard-step:hover {
+    background: var(--surface-ground);
+}
+
+.wizard-step.active {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.wizard-step.completed {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface-ground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.wizard-step.active .step-number {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.wizard-step.completed .step-number {
+    background: #22c55e;
+    color: #fff;
+}
+
+.step-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.wizard-content {
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 2rem;
+    min-height: 400px;
+}
+
+.step-panel {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.step-title i {
+    color: var(--primary-color);
+}
+
+.step-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.form-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-section-title:first-of-type {
+    margin-top: 0;
+}
+
+.wizard-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Status tag warning variant */
+.status-tag.warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
 }
 
 /* ==========================================================================

@@ -9,7 +9,9 @@ const { createApp, ref, computed } = Vue;
 const app = createApp({
     components: {
         'company-settings': CompanySettingsComponent,
-        'placeholder-page': PlaceholderPageComponent
+        'placeholder-page': PlaceholderPageComponent,
+        'employees-list': EmployeesComponent,
+        'add-employee': AddEmployeeComponent
     },
 
     setup() {
@@ -61,7 +63,13 @@ const primeVueComponents = {
     'p-select': PrimeVue.Select,
     'p-datepicker': PrimeVue.DatePicker,
     'p-toggleswitch': PrimeVue.ToggleSwitch,
-    'p-tag': PrimeVue.Tag
+    'p-tag': PrimeVue.Tag,
+    'p-checkbox': PrimeVue.Checkbox,
+    'p-radiobutton': PrimeVue.RadioButton,
+    'p-inputnumber': PrimeVue.InputNumber,
+    'p-textarea': PrimeVue.Textarea,
+    'p-fileupload': PrimeVue.FileUpload,
+    'p-multiselect': PrimeVue.MultiSelect
 };
 
 // Register all PrimeVue components

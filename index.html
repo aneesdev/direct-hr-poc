@@ -35,6 +35,8 @@
     <!-- Components -->
     <script src="js/components/placeholder-page.js"></script>
     <script src="js/components/company-settings.js"></script>
+    <script src="js/components/employees.js"></script>
+    <script src="js/components/add-employee.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -70,6 +72,12 @@
 
                     <div class="menu-section">
                         <div class="menu-section-title">HR Management</div>
+                    </div>
+                    <div class="menu-item"
+                        :class="{ active: currentPage === 'employees' || currentPage === 'add-employee' }"
+                        @click="navigateTo('employees')">
+                        <i class="pi pi-users"></i>
+                        <span>Employees</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'attendance' }"
                         @click="navigateTo('attendance')">
@@ -131,6 +139,14 @@
                 <div class="page-content">
                     <!-- Company Settings Page -->
                     <company-settings v-if="currentPage === 'company-settings'"></company-settings>
+
+                    <!-- Employees Page -->
+                    <employees-list v-else-if="currentPage === 'employees'"
+                        @add-employee="navigateTo('add-employee')"></employees-list>
+
+                    <!-- Add Employee Page -->
+                    <add-employee v-else-if="currentPage === 'add-employee'" @back="navigateTo('employees')"
+                        @submitted="navigateTo('employees')"></add-employee>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>
