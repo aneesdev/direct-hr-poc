@@ -1052,3 +1052,302 @@ img {
         display: none;
     }
 }
+
+/* ==========================================================================
+   Shift & Attendance Styles
+   ========================================================================== */
+
+/* Shift Cards Grid */
+.shift-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.shift-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.shift-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.shift-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.shift-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.shift-type-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.shift-type-badge.fixed {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.shift-type-badge.variable {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+}
+
+.shift-card-body {
+    margin-bottom: 0.75rem;
+}
+
+.shift-time,
+.shift-duration {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.shift-time i,
+.shift-duration i {
+    font-size: 0.8rem;
+    width: 16px;
+}
+
+.shift-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.shift-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* Weekly Schedule Grid */
+.schedule-container {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.schedule-grid {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.schedule-grid th,
+.schedule-grid td {
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    text-align: center;
+    vertical-align: top;
+}
+
+.schedule-grid th {
+    background: var(--surface-ground);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.schedule-grid .employee-col {
+    width: 200px;
+    text-align: left;
+    background: var(--surface-ground);
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+
+.schedule-grid .day-col {
+    min-width: 100px;
+}
+
+.schedule-grid .day-col.today {
+    background: rgba(255, 110, 5, 0.08);
+}
+
+.schedule-grid .day-col.weekend {
+    background: rgba(100, 116, 139, 0.05);
+}
+
+.day-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.day-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.day-date {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.employee-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.employee-avatar-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.employee-name-sm {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.schedule-type-sm {
+    font-size: 0.7rem;
+    color: var(--text-color-secondary);
+}
+
+.shift-cell {
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.shift-cell:hover {
+    background: rgba(255, 110, 5, 0.1);
+}
+
+.shift-pill {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shift-time-sm {
+    font-size: 0.65rem;
+    color: var(--text-color-secondary);
+}
+
+.day-off-pill {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+/* Week Navigation */
+.week-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    min-width: 180px;
+    text-align: center;
+}
+
+/* Schedule Legend */
+.schedule-legend {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+}
+
+.legend-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.legend-items {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+}
+
+/* Color Picker Row */
+.color-picker-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border-color: var(--text-color);
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--text-color);
+}
+
+/* Attendance Check-in Status */
+.late-checkin {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.on-time-checkin {
+    color: #22c55e;
+    font-weight: 600;
+}

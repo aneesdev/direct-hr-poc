@@ -37,6 +37,7 @@
     <script src="js/components/company-settings.js"></script>
     <script src="js/components/employees.js"></script>
     <script src="js/components/add-employee.js"></script>
+    <script src="js/components/shift-attendance.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -147,6 +148,9 @@
                     <!-- Add Employee Page -->
                     <add-employee v-else-if="currentPage === 'add-employee'" @back="navigateTo('employees')"
                         @submitted="navigateTo('employees')"></add-employee>
+
+                    <!-- Shift & Attendance Page -->
+                    <shift-attendance v-else-if="currentPage === 'attendance'"></shift-attendance>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>

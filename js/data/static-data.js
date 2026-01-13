@@ -300,7 +300,277 @@ const StaticData = {
     ],
 
     // Draft employees (incomplete submissions)
-    employeeDrafts: []
+    employeeDrafts: [],
+
+    // ========== SHIFT & ATTENDANCE DATA ==========
+
+    // Shift Templates
+    shiftTemplates: [
+        {
+            id: 1,
+            name: 'Morning Shift',
+            nameAr: 'الوردية الصباحية',
+            type: 'Fixed',
+            startTime: '08:00',
+            endTime: '16:00',
+            breakDuration: 60, // minutes
+            color: '#22c55e',
+            workingHours: 8,
+            active: true
+        },
+        {
+            id: 2,
+            name: 'Evening Shift',
+            nameAr: 'الوردية المسائية',
+            type: 'Fixed',
+            startTime: '16:00',
+            endTime: '00:00',
+            breakDuration: 60,
+            color: '#3b82f6',
+            workingHours: 8,
+            active: true
+        },
+        {
+            id: 3,
+            name: 'Night Shift',
+            nameAr: 'الوردية الليلية',
+            type: 'Fixed',
+            startTime: '00:00',
+            endTime: '08:00',
+            breakDuration: 60,
+            color: '#8b5cf6',
+            workingHours: 8,
+            active: true
+        },
+        {
+            id: 4,
+            name: '12-Hour Day Shift',
+            nameAr: 'وردية 12 ساعة نهارية',
+            type: 'Fixed',
+            startTime: '06:00',
+            endTime: '18:00',
+            breakDuration: 60,
+            color: '#f59e0b',
+            workingHours: 12,
+            active: true
+        },
+        {
+            id: 5,
+            name: '12-Hour Night Shift',
+            nameAr: 'وردية 12 ساعة ليلية',
+            type: 'Fixed',
+            startTime: '18:00',
+            endTime: '06:00',
+            breakDuration: 60,
+            color: '#ec4899',
+            workingHours: 12,
+            active: true
+        },
+        {
+            id: 6,
+            name: 'Flexible Hours',
+            nameAr: 'ساعات مرنة',
+            type: 'Variable',
+            startTime: null,
+            endTime: null,
+            breakDuration: 60,
+            color: '#06b6d4',
+            workingHours: 8,
+            active: true
+        }
+    ],
+
+    // Employee Schedule Assignments (weekly pattern)
+    employeeSchedules: [
+        {
+            id: 1,
+            employeeId: 1,
+            employeeName: 'Ahmed Hassan',
+            scheduleType: 'Fixed',
+            defaultShiftId: 1,
+            weekSchedule: {
+                Sunday: { shiftId: 1, isWorking: true },
+                Monday: { shiftId: 1, isWorking: true },
+                Tuesday: { shiftId: 1, isWorking: true },
+                Wednesday: { shiftId: 1, isWorking: true },
+                Thursday: { shiftId: 1, isWorking: true },
+                Friday: { shiftId: null, isWorking: false, dayType: 'weekend' },
+                Saturday: { shiftId: null, isWorking: false, dayType: 'weekend' }
+            }
+        },
+        {
+            id: 2,
+            employeeId: 2,
+            employeeName: 'Sara Omar',
+            scheduleType: 'Fixed',
+            defaultShiftId: 1,
+            weekSchedule: {
+                Sunday: { shiftId: 1, isWorking: true },
+                Monday: { shiftId: 1, isWorking: true },
+                Tuesday: { shiftId: 1, isWorking: true },
+                Wednesday: { shiftId: 1, isWorking: true },
+                Thursday: { shiftId: 1, isWorking: true },
+                Friday: { shiftId: null, isWorking: false, dayType: 'weekend' },
+                Saturday: { shiftId: null, isWorking: false, dayType: 'weekend' }
+            }
+        },
+        {
+            id: 3,
+            employeeId: 3,
+            employeeName: 'Mohammed Al-Rashid',
+            scheduleType: 'Variable',
+            defaultShiftId: 6,
+            weekSchedule: {
+                Sunday: { shiftId: 6, isWorking: true },
+                Monday: { shiftId: 6, isWorking: true },
+                Tuesday: { shiftId: 6, isWorking: true },
+                Wednesday: { shiftId: 6, isWorking: true },
+                Thursday: { shiftId: 6, isWorking: true },
+                Friday: { shiftId: null, isWorking: false, dayType: 'weekend' },
+                Saturday: { shiftId: null, isWorking: false, dayType: 'weekend' }
+            }
+        },
+        {
+            id: 4,
+            employeeId: 4,
+            employeeName: 'Fatima Ibrahim',
+            scheduleType: 'Fixed',
+            defaultShiftId: 4,
+            weekSchedule: {
+                Sunday: { shiftId: 4, isWorking: true },
+                Monday: { shiftId: null, isWorking: false, dayType: 'weekend' },
+                Tuesday: { shiftId: 4, isWorking: true },
+                Wednesday: { shiftId: null, isWorking: false, dayType: 'weekend' },
+                Thursday: { shiftId: 4, isWorking: true },
+                Friday: { shiftId: null, isWorking: false, dayType: 'weekend' },
+                Saturday: { shiftId: 4, isWorking: true }
+            }
+        },
+        {
+            id: 5,
+            employeeId: 5,
+            employeeName: 'Yusuf Ahmed',
+            scheduleType: 'Fixed',
+            defaultShiftId: 2,
+            weekSchedule: {
+                Sunday: { shiftId: 2, isWorking: true },
+                Monday: { shiftId: 2, isWorking: true },
+                Tuesday: { shiftId: 2, isWorking: true },
+                Wednesday: { shiftId: 2, isWorking: true },
+                Thursday: { shiftId: 2, isWorking: true },
+                Friday: { shiftId: null, isWorking: false, dayType: 'weekend' },
+                Saturday: { shiftId: null, isWorking: false, dayType: 'weekend' }
+            }
+        }
+    ],
+
+    // Attendance Records (sample data for current week)
+    attendanceRecords: [
+        {
+            id: 1,
+            employeeId: 1,
+            date: '2026-01-11',
+            shiftId: 1,
+            scheduledStart: '08:00',
+            scheduledEnd: '16:00',
+            actualCheckIn: '07:55',
+            actualCheckOut: '16:05',
+            status: 'Present',
+            workingHours: 8.17,
+            overtime: 0,
+            notes: ''
+        },
+        {
+            id: 2,
+            employeeId: 1,
+            date: '2026-01-12',
+            shiftId: 1,
+            scheduledStart: '08:00',
+            scheduledEnd: '16:00',
+            actualCheckIn: '08:15',
+            actualCheckOut: '16:00',
+            status: 'Late',
+            workingHours: 7.75,
+            overtime: 0,
+            notes: 'Traffic delay'
+        },
+        {
+            id: 3,
+            employeeId: 2,
+            date: '2026-01-11',
+            shiftId: 1,
+            scheduledStart: '08:00',
+            scheduledEnd: '16:00',
+            actualCheckIn: '08:00',
+            actualCheckOut: '16:30',
+            status: 'Present',
+            workingHours: 8.5,
+            overtime: 0.5,
+            notes: ''
+        },
+        {
+            id: 4,
+            employeeId: 3,
+            date: '2026-01-11',
+            shiftId: 6,
+            scheduledStart: null,
+            scheduledEnd: null,
+            actualCheckIn: '09:30',
+            actualCheckOut: '18:00',
+            status: 'Present',
+            workingHours: 8.5,
+            overtime: 0,
+            notes: 'Flexible schedule'
+        },
+        {
+            id: 5,
+            employeeId: 4,
+            date: '2026-01-11',
+            shiftId: 4,
+            scheduledStart: '06:00',
+            scheduledEnd: '18:00',
+            actualCheckIn: null,
+            actualCheckOut: null,
+            status: 'Absent',
+            workingHours: 0,
+            overtime: 0,
+            notes: 'On Leave'
+        },
+        {
+            id: 6,
+            employeeId: 5,
+            date: '2026-01-11',
+            shiftId: 2,
+            scheduledStart: '16:00',
+            scheduledEnd: '00:00',
+            actualCheckIn: '16:00',
+            actualCheckOut: '00:00',
+            status: 'Present',
+            workingHours: 8,
+            overtime: 0,
+            notes: ''
+        },
+        {
+            id: 7,
+            employeeId: 1,
+            date: '2026-01-13',
+            shiftId: 1,
+            scheduledStart: '08:00',
+            scheduledEnd: '16:00',
+            actualCheckIn: '07:58',
+            actualCheckOut: null,
+            status: 'Checked In',
+            workingHours: 0,
+            overtime: 0,
+            notes: 'Currently working'
+        }
+    ],
+
+    // Attendance Status Options
+    attendanceStatuses: ['Present', 'Absent', 'Late', 'Early Leave', 'Checked In', 'Day Off', 'Public Holiday', 'Work From Home', 'Business Trip'],
+
+    // Day Types
+    dayTypes: ['Working', 'Weekend', 'Public Holiday', 'Day Off', 'Leave']
 };
 
 // Make it available globally

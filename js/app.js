@@ -11,7 +11,8 @@ const app = createApp({
         'company-settings': CompanySettingsComponent,
         'placeholder-page': PlaceholderPageComponent,
         'employees-list': EmployeesComponent,
-        'add-employee': AddEmployeeComponent
+        'add-employee': AddEmployeeComponent,
+        'shift-attendance': ShiftAttendanceComponent
     },
 
     setup() {
