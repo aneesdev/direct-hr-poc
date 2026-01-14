@@ -485,7 +485,7 @@ const ShiftAttendanceComponent = {
         const absentToday = computed(() => todayRecords.value.filter(r => r.status === 'Absent').length);
 
         // Attendance filters
-        const selectedDate = ref(new Date());
+        const selectedDate = ref(new Date('2026-01-13'));
         const searchAttendance = ref('');
         const filterAttendanceStatus = ref(null);
         const filterShift = ref(null);
