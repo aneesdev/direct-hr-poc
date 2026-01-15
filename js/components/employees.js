@@ -1,6 +1,7 @@
 /**
  * Employees Component
  * Handles employee listing and management
+ * Updated: Added step filters, progress bars, and SLA tracking
  */
 
 const EmployeesComponent = {
@@ -22,8 +23,8 @@ const EmployeesComponent = {
                         <i class="pi pi-check-circle"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ activeEmployees }}</div>
-                        <div class="stat-label">Active</div>
+                        <div class="stat-value">{{ completedCount }}</div>
+                        <div class="stat-label">Completed</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -31,17 +32,17 @@ const EmployeesComponent = {
                         <i class="pi pi-clock"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ onLeaveEmployees }}</div>
-                        <div class="stat-label">On Leave</div>
+                        <div class="stat-value">{{ pendingCount }}</div>
+                        <div class="stat-label">Pending</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon purple">
-                        <i class="pi pi-file-edit"></i>
+                        <i class="pi pi-exclamation-triangle"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ draftsCount }}</div>
-                        <div class="stat-label">Drafts</div>
+                        <div class="stat-value">{{ overdueCount }}</div>
+                        <div class="stat-label">Overdue SLA</div>
                     </div>
                 </div>
             </div>
@@ -62,6 +63,26 @@ const EmployeesComponent = {
                     </div>
                 </div>
 
+                <!-- Step Filters -->
+                <div class="step-filter-tabs">
+                    <div class="step-filter-tab" :class="{ active: stepFilter === null }" @click="stepFilter = null">
+                        All
+                        <span class="step-filter-count">{{ employees.length }}</span>
+                    </div>
+                    <div v-for="step in 6" :key="step" 
+                         class="step-filter-tab" 
+                         :class="{ active: stepFilter === step }"
+                         @click="stepFilter = step">
+                        Step {{ step }}
+                        <span class="step-filter-count">{{ getStepCount(step) }}</span>
+                    </div>
+                    <div class="step-filter-tab" :class="{ active: slaFilter === 'overdue' }" @click="toggleSlaFilter('overdue')">
+                        <i class="pi pi-exclamation-triangle" style="color: #ef4444;"></i>
+                        Overdue
+                        <span class="step-filter-count">{{ overdueCount }}</span>
+                    </div>
+                </div>
+
                 <!-- Search and Filters -->
                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
                     <span class="p-input-icon-left" style="flex: 1;">
@@ -69,12 +90,12 @@ const EmployeesComponent = {
                         <p-inputtext v-model="searchQuery" placeholder="Search employees..." style="width: 100%;"></p-inputtext>
                     </span>
                     <p-select v-model="filterDepartment" :options="departmentOptions" placeholder="All Departments" showClear style="width: 200px;"></p-select>
+                    <p-select v-model="filterEntity" :options="entityOptions" placeholder="All Entities" showClear style="width: 150px;"></p-select>
                     <p-select v-model="filterStatus" :options="statusOptions" placeholder="All Status" showClear style="width: 150px;"></p-select>
                 </div>
 
                 <!-- Employee Table -->
                 <p-datatable :value="filteredEmployees" striped-rows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
-                    <p-column selectionMode="multiple" style="width: 3rem"></p-column>
                     <p-column header="Employee" sortable>
                         <template #body="slotProps">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -86,12 +107,31 @@ const EmployeesComponent = {
                             </div>
                         </template>
                     </p-column>
-                    <p-column field="email" header="Email" sortable></p-column>
+                    <p-column field="entity" header="Entity" sortable></p-column>
                     <p-column field="department" header="Department" sortable></p-column>
                     <p-column field="jobTitle" header="Job Title" sortable></p-column>
-                    <p-column field="contractType" header="Contract" sortable>
+                    <p-column header="Progress" style="width: 180px;">
                         <template #body="slotProps">
-                            <p-tag :value="slotProps.data.contractType" :severity="getContractSeverity(slotProps.data.contractType)"></p-tag>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.75rem; color: var(--text-color-secondary);">
+                                        Step {{ slotProps.data.completedSteps }}/{{ slotProps.data.totalSteps }}
+                                    </span>
+                                    <span style="font-size: 0.75rem; font-weight: 600;">{{ slotProps.data.progress }}%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" 
+                                         :class="slotProps.data.slaStatus"
+                                         :style="{ width: slotProps.data.progress + '%' }"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </p-column>
+                    <p-column header="SLA" sortable style="width: 100px;">
+                        <template #body="slotProps">
+                            <span class="sla-tag" :class="slotProps.data.slaStatus">
+                                {{ formatSlaStatus(slotProps.data.slaStatus) }}
+                            </span>
                         </template>
                     </p-column>
                     <p-column header="Status" sortable>
@@ -124,16 +164,35 @@ const EmployeesComponent = {
         const employees = ref([...StaticData.employees]);
         const searchQuery = ref('');
         const filterDepartment = ref(null);
+        const filterEntity = ref(null);
         const filterStatus = ref(null);
+        const stepFilter = ref(null);
+        const slaFilter = ref(null);
 
         // Options
-        const departmentOptions = computed(() => StaticData.departments.map(d => d.nameEn));
+        const departmentOptions = computed(() => StaticData.departments.map(d => d.name));
+        const entityOptions = computed(() => StaticData.entities.map(e => e.name));
         const statusOptions = ref(['Active', 'On Leave', 'Inactive', 'Terminated']);
 
-        // Computed
-        const activeEmployees = computed(() => employees.value.filter(e => e.status === 'Active').length);
-        const onLeaveEmployees = computed(() => employees.value.filter(e => e.status === 'On Leave').length);
-        const draftsCount = computed(() => StaticData.employeeDrafts.length);
+        // Computed counts
+        const completedCount = computed(() => employees.value.filter(e => e.slaStatus === 'completed').length);
+        const pendingCount = computed(() => employees.value.filter(e => e.slaStatus === 'pending').length);
+        const overdueCount = computed(() => employees.value.filter(e => e.slaStatus === 'overdue').length);
+
+        // Get count per step
+        const getStepCount = (step) => {
+            return employees.value.filter(e => e.completedSteps === step).length;
+        };
+
+        // Toggle SLA filter
+        const toggleSlaFilter = (status) => {
+            if (slaFilter.value === status) {
+                slaFilter.value = null;
+            } else {
+                slaFilter.value = status;
+                stepFilter.value = null;
+            }
+        };
 
         const filteredEmployees = computed(() => {
             let result = employees.value;
@@ -152,8 +211,20 @@ const EmployeesComponent = {
                 result = result.filter(e => e.department === filterDepartment.value);
             }
 
+            if (filterEntity.value) {
+                result = result.filter(e => e.entity === filterEntity.value);
+            }
+
             if (filterStatus.value) {
                 result = result.filter(e => e.status === filterStatus.value);
+            }
+
+            if (stepFilter.value !== null) {
+                result = result.filter(e => e.completedSteps === stepFilter.value);
+            }
+
+            if (slaFilter.value) {
+                result = result.filter(e => e.slaStatus === slaFilter.value);
             }
 
             return result;
@@ -170,34 +241,36 @@ const EmployeesComponent = {
             return classes[status] || '';
         };
 
-        const getContractSeverity = (type) => {
-            const severities = {
-                'Full-time': 'success',
-                'Part-time': 'info',
-                'Full-time Remote': 'success',
-                'Part-time Remote': 'info',
-                'Intern': 'warn'
+        const formatSlaStatus = (status) => {
+            const labels = {
+                'completed': 'Done',
+                'pending': 'Pending',
+                'overdue': 'Overdue'
             };
-            return severities[type] || 'secondary';
+            return labels[status] || status;
         };
 
         return {
             employees,
             searchQuery,
             filterDepartment,
+            filterEntity,
             filterStatus,
+            stepFilter,
+            slaFilter,
             departmentOptions,
+            entityOptions,
             statusOptions,
-            activeEmployees,
-            onLeaveEmployees,
-            draftsCount,
+            completedCount,
+            pendingCount,
+            overdueCount,
+            getStepCount,
+            toggleSlaFilter,
             filteredEmployees,
             getStatusClass,
-            getContractSeverity
+            formatSlaStatus
         };
     }
 };
 
-// Make it available globally
 window.EmployeesComponent = EmployeesComponent;
-

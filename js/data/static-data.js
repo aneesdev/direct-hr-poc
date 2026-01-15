@@ -4,32 +4,61 @@
  */
 
 const StaticData = {
-    // Countries data
-    countries: [
-        {
-            id: 1,
-            nameEn: 'Egypt',
-            nameAr: 'مصر',
-            timezone: 'Africa/Cairo (GMT+2)',
-            logo: 'https://flagcdn.com/w40/eg.png',
-            active: true
-        },
-        {
-            id: 2,
-            nameEn: 'Saudi Arabia',
-            nameAr: 'المملكة العربية السعودية',
-            timezone: 'Asia/Riyadh (GMT+3)',
-            logo: 'https://flagcdn.com/w40/sa.png',
-            active: true
-        },
-        {
-            id: 3,
-            nameEn: 'United Arab Emirates',
-            nameAr: 'الإمارات العربية المتحدة',
-            timezone: 'Asia/Dubai (GMT+4)',
-            logo: 'https://flagcdn.com/w40/ae.png',
-            active: true
-        },
+    // Countries of Work (company operates in these countries)
+    countriesOfWork: [
+        { id: 1, name: 'Egypt', code: 'eg', timezone: 'Africa/Cairo (GMT+2)', logo: 'https://flagcdn.com/w40/eg.png', active: true },
+        { id: 2, name: 'Saudi Arabia', code: 'sa', timezone: 'Asia/Riyadh (GMT+3)', logo: 'https://flagcdn.com/w40/sa.png', active: true },
+        { id: 3, name: 'United Arab Emirates', code: 'ae', timezone: 'Asia/Dubai (GMT+4)', logo: 'https://flagcdn.com/w40/ae.png', active: true },
+    ],
+
+    // All nationalities (for employee nationality dropdown)
+    nationalities: [
+        { code: 'eg', name: 'Egyptian', flag: 'https://flagcdn.com/w40/eg.png' },
+        { code: 'sa', name: 'Saudi', flag: 'https://flagcdn.com/w40/sa.png' },
+        { code: 'ae', name: 'Emirati', flag: 'https://flagcdn.com/w40/ae.png' },
+        { code: 'jo', name: 'Jordanian', flag: 'https://flagcdn.com/w40/jo.png' },
+        { code: 'lb', name: 'Lebanese', flag: 'https://flagcdn.com/w40/lb.png' },
+        { code: 'sy', name: 'Syrian', flag: 'https://flagcdn.com/w40/sy.png' },
+        { code: 'iq', name: 'Iraqi', flag: 'https://flagcdn.com/w40/iq.png' },
+        { code: 'kw', name: 'Kuwaiti', flag: 'https://flagcdn.com/w40/kw.png' },
+        { code: 'bh', name: 'Bahraini', flag: 'https://flagcdn.com/w40/bh.png' },
+        { code: 'qa', name: 'Qatari', flag: 'https://flagcdn.com/w40/qa.png' },
+        { code: 'om', name: 'Omani', flag: 'https://flagcdn.com/w40/om.png' },
+        { code: 'ye', name: 'Yemeni', flag: 'https://flagcdn.com/w40/ye.png' },
+        { code: 'ps', name: 'Palestinian', flag: 'https://flagcdn.com/w40/ps.png' },
+        { code: 'ma', name: 'Moroccan', flag: 'https://flagcdn.com/w40/ma.png' },
+        { code: 'tn', name: 'Tunisian', flag: 'https://flagcdn.com/w40/tn.png' },
+        { code: 'dz', name: 'Algerian', flag: 'https://flagcdn.com/w40/dz.png' },
+        { code: 'sd', name: 'Sudanese', flag: 'https://flagcdn.com/w40/sd.png' },
+        { code: 'in', name: 'Indian', flag: 'https://flagcdn.com/w40/in.png' },
+        { code: 'pk', name: 'Pakistani', flag: 'https://flagcdn.com/w40/pk.png' },
+        { code: 'bd', name: 'Bangladeshi', flag: 'https://flagcdn.com/w40/bd.png' },
+        { code: 'ph', name: 'Filipino', flag: 'https://flagcdn.com/w40/ph.png' },
+        { code: 'id', name: 'Indonesian', flag: 'https://flagcdn.com/w40/id.png' },
+        { code: 'gb', name: 'British', flag: 'https://flagcdn.com/w40/gb.png' },
+        { code: 'us', name: 'American', flag: 'https://flagcdn.com/w40/us.png' },
+        { code: 'ca', name: 'Canadian', flag: 'https://flagcdn.com/w40/ca.png' },
+        { code: 'de', name: 'German', flag: 'https://flagcdn.com/w40/de.png' },
+        { code: 'fr', name: 'French', flag: 'https://flagcdn.com/w40/fr.png' },
+    ],
+
+    // Entities (company entities)
+    entities: [
+        { id: 1, name: 'Direct', active: true },
+        { id: 2, name: 'Techtic', active: true },
+    ],
+
+    // All countries for dropdowns (residence, etc.)
+    allCountries: [
+        { code: 'eg', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
+        { code: 'sa', name: 'Saudi Arabia', flag: 'https://flagcdn.com/w40/sa.png' },
+        { code: 'ae', name: 'United Arab Emirates', flag: 'https://flagcdn.com/w40/ae.png' },
+        { code: 'jo', name: 'Jordan', flag: 'https://flagcdn.com/w40/jo.png' },
+        { code: 'lb', name: 'Lebanon', flag: 'https://flagcdn.com/w40/lb.png' },
+        { code: 'kw', name: 'Kuwait', flag: 'https://flagcdn.com/w40/kw.png' },
+        { code: 'bh', name: 'Bahrain', flag: 'https://flagcdn.com/w40/bh.png' },
+        { code: 'qa', name: 'Qatar', flag: 'https://flagcdn.com/w40/qa.png' },
+        { code: 'om', name: 'Oman', flag: 'https://flagcdn.com/w40/om.png' },
     ],
 
     // Available timezones
@@ -41,146 +70,211 @@ const StaticData = {
         'America/New_York (GMT-5)'
     ],
 
-    // Public holidays data
+    // Public holidays data (with date range support)
     holidays: [
-        { id: 1, country: 'Egypt', name: 'Revolution Day', date: '25/01/2026', year: 2026 },
-        { id: 2, country: 'Egypt', name: 'Sinai Liberation Day', date: '25/04/2026', year: 2026 },
-        { id: 3, country: 'Saudi Arabia', name: 'Founding Day', date: '22/02/2026', year: 2026 },
-        { id: 4, country: 'Saudi Arabia', name: 'National Day', date: '23/09/2026', year: 2026 },
-        { id: 5, country: 'United Arab Emirates', name: 'National Day', date: '02/12/2026', year: 2026 },
+        { id: 1, country: 'Egypt', name: 'Revolution Day', startDate: '25/01/2026', endDate: '25/01/2026', year: 2026 },
+        { id: 2, country: 'Egypt', name: 'Sinai Liberation Day', startDate: '25/04/2026', endDate: '25/04/2026', year: 2026 },
+        { id: 3, country: 'Saudi Arabia', name: 'Founding Day', startDate: '22/02/2026', endDate: '22/02/2026', year: 2026 },
+        { id: 4, country: 'Saudi Arabia', name: 'National Day', startDate: '23/09/2026', endDate: '24/09/2026', year: 2026 },
+        { id: 5, country: 'United Arab Emirates', name: 'National Day', startDate: '02/12/2026', endDate: '03/12/2026', year: 2026 },
+        { id: 6, country: 'Egypt', name: 'Eid Al-Fitr', startDate: '30/03/2026', endDate: '02/04/2026', year: 2026 },
+        { id: 7, country: 'Saudi Arabia', name: 'Eid Al-Fitr', startDate: '30/03/2026', endDate: '03/04/2026', year: 2026 },
     ],
 
-    // Organization structure - Departments
+    // Organization structure - Departments (with employee count)
     departments: [
-        { id: 1, nameEn: 'Engineering', nameAr: 'الهندسة' },
-        { id: 2, nameEn: 'Human Resources', nameAr: 'الموارد البشرية' },
-        { id: 3, nameEn: 'Finance', nameAr: 'المالية' },
-        { id: 4, nameEn: 'Operations', nameAr: 'العمليات' },
+        { id: 1, name: 'Engineering', employeeCount: 3 },
+        { id: 2, name: 'Human Resources', employeeCount: 1 },
+        { id: 3, name: 'Finance', employeeCount: 1 },
+        { id: 4, name: 'Operations', employeeCount: 0 },
     ],
 
-    // Organization structure - Sections (depends on Department)
+    // Organization structure - Sections (with employee count)
     sections: [
-        { id: 1, nameEn: 'Software Development', nameAr: 'تطوير البرمجيات', departmentId: 1, sequence: 'Engineering -- Software Development' },
-        { id: 2, nameEn: 'Quality Assurance', nameAr: 'ضمان الجودة', departmentId: 1, sequence: 'Engineering -- Quality Assurance' },
-        { id: 3, nameEn: 'Recruitment', nameAr: 'التوظيف', departmentId: 2, sequence: 'Human Resources -- Recruitment' },
-        { id: 4, nameEn: 'Payroll', nameAr: 'الرواتب', departmentId: 3, sequence: 'Finance -- Payroll' },
+        { id: 1, name: 'Software Development', departmentId: 1, employeeCount: 2 },
+        { id: 2, name: 'Quality Assurance', departmentId: 1, employeeCount: 1 },
+        { id: 3, name: 'Recruitment', departmentId: 2, employeeCount: 1 },
+        { id: 4, name: 'Payroll', departmentId: 3, employeeCount: 1 },
     ],
 
-    // Organization structure - Units (depends on Department -> Section)
+    // Organization structure - Units (with employee count)
     units: [
-        { id: 1, nameEn: 'Frontend Team', nameAr: 'فريق الواجهة الأمامية', sectionId: 1, sequence: 'Engineering -- Software Development -- Frontend Team' },
-        { id: 2, nameEn: 'Backend Team', nameAr: 'فريق الخلفية', sectionId: 1, sequence: 'Engineering -- Software Development -- Backend Team' },
-        { id: 3, nameEn: 'Mobile Team', nameAr: 'فريق الموبايل', sectionId: 1, sequence: 'Engineering -- Software Development -- Mobile Team' },
-        { id: 4, nameEn: 'Testing Unit', nameAr: 'وحدة الاختبار', sectionId: 2, sequence: 'Engineering -- Quality Assurance -- Testing Unit' },
+        { id: 1, name: 'Frontend Team', sectionId: 1, employeeCount: 1 },
+        { id: 2, name: 'Backend Team', sectionId: 1, employeeCount: 1 },
+        { id: 3, name: 'Mobile Team', sectionId: 1, employeeCount: 0 },
+        { id: 4, name: 'Testing Unit', sectionId: 2, employeeCount: 1 },
     ],
 
-    // Organization structure - Teams (depends on Department -> Section -> Unit)
+    // Organization structure - Teams (with employee count)
     teams: [
-        { id: 1, nameEn: 'React Developers', nameAr: 'مطورو ريأكت', unitId: 1, sequence: 'Engineering -- Software Development -- Frontend Team -- React Developers' },
-        { id: 2, nameEn: 'Vue Developers', nameAr: 'مطورو فيو', unitId: 1, sequence: 'Engineering -- Software Development -- Frontend Team -- Vue Developers' },
-        { id: 3, nameEn: 'Node.js Team', nameAr: 'فريق نود', unitId: 2, sequence: 'Engineering -- Software Development -- Backend Team -- Node.js Team' },
-        { id: 4, nameEn: 'Python Team', nameAr: 'فريق بايثون', unitId: 2, sequence: 'Engineering -- Software Development -- Backend Team -- Python Team' },
+        { id: 1, name: 'React Developers', unitId: 1, employeeCount: 1 },
+        { id: 2, name: 'Vue Developers', unitId: 1, employeeCount: 0 },
+        { id: 3, name: 'Node.js Team', unitId: 2, employeeCount: 1 },
+        { id: 4, name: 'Python Team', unitId: 2, employeeCount: 0 },
     ],
 
-    // Cost Centers
+    // Main Grades
+    mainGrades: [
+        { id: 1, name: 'Professional', description: 'Individual contributors and specialists' },
+        { id: 2, name: 'Supervisor', description: 'Team leads and supervisors' },
+        { id: 3, name: 'Management', description: 'Department and division managers' },
+        { id: 4, name: 'Executives', description: 'C-level and senior leadership' },
+    ],
+
+    // Sub Grades (depends on Main Grade)
+    subGrades: [
+        { id: 1, name: 'Junior', mainGradeId: 1 },
+        { id: 2, name: 'Mid-Level', mainGradeId: 1 },
+        { id: 3, name: 'Senior', mainGradeId: 1 },
+        { id: 4, name: 'Lead', mainGradeId: 1 },
+        { id: 5, name: 'Team Lead', mainGradeId: 2 },
+        { id: 6, name: 'Senior Team Lead', mainGradeId: 2 },
+        { id: 7, name: 'Manager', mainGradeId: 3 },
+        { id: 8, name: 'Senior Manager', mainGradeId: 3 },
+        { id: 9, name: 'Director', mainGradeId: 3 },
+        { id: 10, name: 'VP', mainGradeId: 4 },
+        { id: 11, name: 'SVP', mainGradeId: 4 },
+        { id: 12, name: 'C-Level', mainGradeId: 4 },
+    ],
+
+    // Job Titles (child of Main Grade, sibling of Sub Grade)
+    jobTitles: [
+        { id: 1, name: 'Software Engineer', mainGradeId: 1, description: 'Software developer role' },
+        { id: 2, name: 'QA Engineer', mainGradeId: 1, description: 'Quality assurance engineer' },
+        { id: 3, name: 'Data Analyst', mainGradeId: 1, description: 'Data analysis specialist' },
+        { id: 4, name: 'HR Specialist', mainGradeId: 1, description: 'Human resources specialist' },
+        { id: 5, name: 'Accountant', mainGradeId: 1, description: 'Finance and accounting role' },
+        { id: 6, name: 'Marketing Specialist', mainGradeId: 1, description: 'Marketing professional' },
+        { id: 7, name: 'Team Lead', mainGradeId: 2, description: 'Team leadership role' },
+        { id: 8, name: 'Technical Lead', mainGradeId: 2, description: 'Technical team supervisor' },
+        { id: 9, name: 'Project Supervisor', mainGradeId: 2, description: 'Project oversight role' },
+        { id: 10, name: 'Department Manager', mainGradeId: 3, description: 'Department head role' },
+        { id: 11, name: 'Operations Manager', mainGradeId: 3, description: 'Operations management' },
+        { id: 12, name: 'HR Manager', mainGradeId: 3, description: 'HR department manager' },
+        { id: 13, name: 'Finance Manager', mainGradeId: 3, description: 'Finance department manager' },
+        { id: 14, name: 'Director', mainGradeId: 4, description: 'Senior director role' },
+        { id: 15, name: 'Vice President', mainGradeId: 4, description: 'VP level executive' },
+        { id: 16, name: 'CTO', mainGradeId: 4, description: 'Chief Technology Officer' },
+        { id: 17, name: 'CFO', mainGradeId: 4, description: 'Chief Financial Officer' },
+        { id: 18, name: 'CEO', mainGradeId: 4, description: 'Chief Executive Officer' },
+    ],
+
+    // Cost Centers (with head count)
     costCenters: [
-        { id: 1, code: 'CC-001', nameEn: 'Engineering Operations', nameAr: 'عمليات الهندسة', active: true },
-        { id: 2, code: 'CC-002', nameEn: 'HR Administration', nameAr: 'إدارة الموارد البشرية', active: true },
-        { id: 3, code: 'CC-003', nameEn: 'Finance & Accounting', nameAr: 'المالية والمحاسبة', active: true },
-        { id: 4, code: 'CC-004', nameEn: 'Marketing & Sales', nameAr: 'التسويق والمبيعات', active: false },
-        { id: 5, code: 'CC-005', nameEn: 'IT Infrastructure', nameAr: 'البنية التحتية لتقنية المعلومات', active: true },
+        { id: 1, code: 'CC-001', name: 'Engineering Operations', headCount: 3, active: true },
+        { id: 2, code: 'CC-002', name: 'HR Administration', headCount: 1, active: true },
+        { id: 3, code: 'CC-003', name: 'Finance & Accounting', headCount: 1, active: true },
+        { id: 4, code: 'CC-004', name: 'Marketing & Sales', headCount: 0, active: false },
+        { id: 5, code: 'CC-005', name: 'IT Infrastructure', headCount: 0, active: true },
     ],
 
     // Document Types
     documentTypes: [
-        { id: 1, nameEn: 'National ID Card', nameAr: 'بطاقة الهوية الوطنية', mandatory: true, hasExpiry: true, sendReminders: true, reminderMonths: 1 },
-        { id: 2, nameEn: 'Iqama', nameAr: 'إقامة', mandatory: true, hasExpiry: true, sendReminders: true, reminderMonths: 2 },
-        { id: 3, nameEn: 'CPR', nameAr: 'البطاقة الشخصية', mandatory: false, hasExpiry: true, sendReminders: true, reminderMonths: 1 },
-        { id: 4, nameEn: 'Passport', nameAr: 'جواز السفر', mandatory: true, hasExpiry: true, sendReminders: true, reminderMonths: 3 },
-        { id: 5, nameEn: 'Work Permit', nameAr: 'تصريح العمل', mandatory: false, hasExpiry: true, sendReminders: false, reminderMonths: 1 },
+        { id: 1, name: 'National ID Card', mandatory: true, hasExpiry: true, sendReminders: true, reminderMonths: 1 },
+        { id: 2, name: 'Iqama', mandatory: true, hasExpiry: true, sendReminders: true, reminderMonths: 2 },
+        { id: 3, name: 'CPR', mandatory: false, hasExpiry: true, sendReminders: true, reminderMonths: 1 },
+        { id: 4, name: 'Passport', mandatory: true, hasExpiry: true, sendReminders: true, reminderMonths: 3 },
+        { id: 5, name: 'Work Permit', mandatory: false, hasExpiry: true, sendReminders: false, reminderMonths: 1 },
+        { id: 6, name: 'CV', mandatory: true, hasExpiry: false, sendReminders: false, reminderMonths: 0 },
+        { id: 7, name: 'Graduation Certificate', mandatory: false, hasExpiry: false, sendReminders: false, reminderMonths: 0 },
+        { id: 8, name: 'IBAN Document', mandatory: false, hasExpiry: false, sendReminders: false, reminderMonths: 0 },
     ],
 
     // Employee Documents
     documents: [
-        { id: 1, ownerId: 1, ownerName: 'عبدالله المطيري', ownerAvatar: 'https://i.pravatar.cc/40?img=1', documentType: 'National ID Card', isPrimary: true, expiryDate: '05/04/2028', expiresIn: 'In 2 years', status: 'valid', lastUpdated: '12/09/2022' },
-        { id: 2, ownerId: 2, ownerName: 'أحمد محمد', ownerAvatar: 'https://i.pravatar.cc/40?img=2', documentType: 'National ID Card', isPrimary: true, expiryDate: '02/11/2028', expiresIn: 'In 2 years', status: 'valid', lastUpdated: '12/09/2022' },
-        { id: 3, ownerId: 3, ownerName: 'Ivy Andrade', ownerAvatar: 'https://i.pravatar.cc/40?img=3', documentType: 'CPR', isPrimary: false, expiryDate: '01/04/2029', expiresIn: 'In 3 years', status: 'valid', lastUpdated: '06/10/2025' },
-        { id: 4, ownerId: 4, ownerName: 'سمية خالد', ownerAvatar: 'https://i.pravatar.cc/40?img=4', documentType: 'National ID Card', isPrimary: true, expiryDate: '05/06/2025', expiresIn: 'Expired', status: 'expired', lastUpdated: '12/09/2022' },
-        { id: 5, ownerId: 5, ownerName: 'أحمد المطيري', ownerAvatar: 'https://i.pravatar.cc/40?img=5', documentType: 'National ID Card', isPrimary: true, expiryDate: '03/09/2024', expiresIn: 'Expired', status: 'expired', lastUpdated: '12/09/2022' },
-        { id: 6, ownerId: 6, ownerName: 'سليمان آل مخاريق', ownerAvatar: 'https://i.pravatar.cc/40?img=6', documentType: 'Iqama', isPrimary: true, expiryDate: '03/11/2022', expiresIn: 'Expired', status: 'expired', lastUpdated: '12/09/2022' },
+        { id: 1, employeeId: 1, employeeName: 'Ahmed Hassan', employeeAvatar: 'https://i.pravatar.cc/40?img=11', documentType: 'National ID Card', isPrimary: true, expiryDate: '05/04/2028', expiresIn: 'In 2 years', status: 'valid', lastUpdated: '12/09/2022' },
+        { id: 2, employeeId: 2, employeeName: 'Sara Omar', employeeAvatar: 'https://i.pravatar.cc/40?img=5', documentType: 'National ID Card', isPrimary: true, expiryDate: '02/11/2028', expiresIn: 'In 2 years', status: 'valid', lastUpdated: '12/09/2022' },
+        { id: 3, employeeId: 3, employeeName: 'Mohammed Al-Rashid', employeeAvatar: 'https://i.pravatar.cc/40?img=12', documentType: 'CPR', isPrimary: false, expiryDate: '01/04/2029', expiresIn: 'In 3 years', status: 'valid', lastUpdated: '06/10/2025' },
+        { id: 4, employeeId: 4, employeeName: 'Fatima Ibrahim', employeeAvatar: 'https://i.pravatar.cc/40?img=9', documentType: 'National ID Card', isPrimary: true, expiryDate: '05/06/2025', expiresIn: 'Expired', status: 'expired', lastUpdated: '12/09/2022' },
+        { id: 5, employeeId: 5, employeeName: 'Yusuf Ahmed', employeeAvatar: 'https://i.pravatar.cc/40?img=15', documentType: 'National ID Card', isPrimary: true, expiryDate: '03/09/2024', expiresIn: 'Expired', status: 'expired', lastUpdated: '12/09/2022' },
     ],
 
-    // Office locations
+    // Office locations (simplified - removed coordinates/radius, added Google Maps link)
     offices: [
-        {
-            id: 1,
-            name: 'Cairo HQ',
-            location: 'Cairo, Egypt',
-            coordinates: '30.0444, 31.2357',
-            radius: 200,
+        { id: 1, name: 'Cairo HQ', country: 'Egypt', googleMapsLink: 'https://maps.google.com/?q=Cairo,Egypt', active: true },
+        { id: 2, name: 'Riyadh Office', country: 'Saudi Arabia', googleMapsLink: 'https://maps.google.com/?q=Riyadh,SaudiArabia', active: true },
+        { id: 3, name: 'Dubai Office', country: 'United Arab Emirates', googleMapsLink: 'https://maps.google.com/?q=Dubai,UAE', active: true },
+    ],
+
+    // Work Weeks (CRUD like Bayzat)
+    workWeeks: [
+        { 
+            id: 1, 
+            name: 'Standard Week (Sun-Thu)', 
+            days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: false, Saturday: false },
+            totalDays: 5,
             active: true
         },
-        {
-            id: 2,
-            name: 'Riyadh Office',
-            location: 'Riyadh, Saudi Arabia',
-            coordinates: '24.7136, 46.6753',
-            radius: 150,
+        { 
+            id: 2, 
+            name: 'Standard Week (Mon-Fri)', 
+            days: { Sunday: false, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true, Saturday: false },
+            totalDays: 5,
             active: true
         },
-        {
-            id: 3,
-            name: 'Dubai Office',
-            location: 'Dubai, UAE',
-            coordinates: '25.2048, 55.2708',
-            radius: 100,
+        { 
+            id: 3, 
+            name: '6-Day Week (Sun-Fri)', 
+            days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true, Saturday: false },
+            totalDays: 6,
             active: true
         },
+        { 
+            id: 4, 
+            name: '4-Day Week', 
+            days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: false, Friday: false, Saturday: false },
+            totalDays: 4,
+            active: true
+        },
+    ],
+
+    // Emergency contact relationship options
+    emergencyContactRelationships: ['Spouse', 'Parent', 'Sibling', 'Child', 'Friend', 'Other Relative'],
+
+    // Iqama occupation options
+    iqamaOccupations: [
+        'Software Engineer',
+        'Project Manager',
+        'Business Analyst',
+        'Quality Assurance Engineer',
+        'HR Specialist',
+        'Accountant',
+        'Financial Analyst',
+        'Marketing Specialist',
+        'Sales Representative',
+        'Administrative Assistant',
+        'Operations Manager',
+        'IT Support Specialist',
+        'Data Analyst',
+        'Graphic Designer',
+        'Content Writer',
     ],
 
     // Biometric devices
     biometricDevices: [
-        {
-            id: 1,
-            name: 'Main Entrance',
-            model: 'ZKTeco K40',
-            serialNumber: 'ZK-2024-001',
-            office: 'Cairo HQ',
-            createdAt: '01/01/2026'
-        },
-        {
-            id: 2,
-            name: 'Floor 2 Entry',
-            model: 'ZKTeco K40',
-            serialNumber: 'ZK-2024-002',
-            office: 'Cairo HQ',
-            createdAt: '01/01/2026'
-        },
-        {
-            id: 3,
-            name: 'Reception',
-            model: 'Hikvision DS-K1T',
-            serialNumber: 'HK-2024-001',
-            office: 'Riyadh Office',
-            createdAt: '15/01/2026'
-        },
+        { id: 1, name: 'Main Entrance', model: 'ZKTeco K40', serialNumber: 'ZK-2024-001', office: 'Cairo HQ', createdAt: '01/01/2026' },
+        { id: 2, name: 'Floor 2 Entry', model: 'ZKTeco K40', serialNumber: 'ZK-2024-002', office: 'Cairo HQ', createdAt: '01/01/2026' },
+        { id: 3, name: 'Reception', model: 'Hikvision DS-K1T', serialNumber: 'HK-2024-001', office: 'Riyadh Office', createdAt: '15/01/2026' },
     ],
 
-    // Work week configuration
-    workWeekDays: [
-        { name: 'Sunday', isWorking: true },
-        { name: 'Monday', isWorking: true },
-        { name: 'Tuesday', isWorking: true },
-        { name: 'Wednesday', isWorking: true },
-        { name: 'Thursday', isWorking: true },
-        { name: 'Friday', isWorking: false },
-        { name: 'Saturday', isWorking: false },
-    ],
-
-    // Attendance settings
+    // Attendance settings (removed autoMarkAbsent)
     attendanceSettings: {
-        allowMultipleOffices: true,
-        autoMarkAbsent: true
+        allowMultipleOffices: true
+    },
+
+    // Professional picture guidelines
+    pictureGuidelines: {
+        width: 400,
+        height: 400,
+        maxSize: '2MB',
+        formats: ['JPG', 'PNG'],
+        tips: [
+            'Use a plain white or light background',
+            'Face the camera directly',
+            'Ensure good lighting on your face',
+            'Dress professionally',
+            'Image should be recent (within 6 months)'
+        ]
     },
 
     // Page titles mapping
@@ -205,12 +299,11 @@ const StaticData = {
     contractTypes: ['Full-time', 'Part-time', 'Full-time Remote', 'Part-time Remote', 'Intern'],
     probationPeriods: ['90 Days', '180 Days'],
     annualLeaveDays: ['21 Days', '25 Days', '30 Days'],
-    currencies: ['EGP', 'SAR', 'AED', 'USD'],
     salaryTransferMethods: ['Cash', 'Bank Transfer'],
     scheduleTypes: ['Fixed Schedule', 'Variable Schedule'],
     weekDays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 
-    // Sample employees data
+    // Sample employees data (with progress tracking and SLA)
     employees: [
         {
             id: 1,
@@ -221,13 +314,23 @@ const StaticData = {
             avatar: 'https://i.pravatar.cc/40?img=11',
             email: 'ahmed.hassan@company.com',
             mobile: '+20 100 123 4567',
-            nationality: 'Egypt',
+            nationality: 'Egyptian',
+            nationalityCode: 'eg',
+            entity: 'Direct',
+            countryOfWork: 'Egypt',
             department: 'Engineering',
             section: 'Software Development',
-            jobTitle: 'Senior Developer',
+            mainGrade: 'Professional',
+            subGrade: 'Senior',
+            jobTitle: 'Senior Software Engineer',
             status: 'Active',
             dateOfHiring: '15/01/2023',
-            contractType: 'Full-time'
+            contractType: 'Full-time',
+            completedSteps: 6,
+            totalSteps: 6,
+            progress: 100,
+            slaStatus: 'completed',
+            createdAt: '10/01/2023'
         },
         {
             id: 2,
@@ -238,13 +341,23 @@ const StaticData = {
             avatar: 'https://i.pravatar.cc/40?img=5',
             email: 'sara.omar@company.com',
             mobile: '+966 50 987 6543',
-            nationality: 'Saudi Arabia',
+            nationality: 'Saudi',
+            nationalityCode: 'sa',
+            entity: 'Direct',
+            countryOfWork: 'Saudi Arabia',
             department: 'Human Resources',
             section: 'Recruitment',
+            mainGrade: 'Management',
+            subGrade: 'Manager',
             jobTitle: 'HR Manager',
             status: 'Active',
             dateOfHiring: '01/03/2022',
-            contractType: 'Full-time'
+            contractType: 'Full-time',
+            completedSteps: 6,
+            totalSteps: 6,
+            progress: 100,
+            slaStatus: 'completed',
+            createdAt: '25/02/2022'
         },
         {
             id: 3,
@@ -255,13 +368,23 @@ const StaticData = {
             avatar: 'https://i.pravatar.cc/40?img=12',
             email: 'mohammed.rashid@company.com',
             mobile: '+971 50 111 2222',
-            nationality: 'United Arab Emirates',
+            nationality: 'Emirati',
+            nationalityCode: 'ae',
+            entity: 'Techtic',
+            countryOfWork: 'United Arab Emirates',
             department: 'Finance',
             section: 'Payroll',
+            mainGrade: 'Professional',
+            subGrade: 'Mid-Level',
             jobTitle: 'Financial Analyst',
             status: 'Active',
             dateOfHiring: '10/06/2023',
-            contractType: 'Full-time'
+            contractType: 'Full-time',
+            completedSteps: 6,
+            totalSteps: 6,
+            progress: 100,
+            slaStatus: 'completed',
+            createdAt: '01/06/2023'
         },
         {
             id: 4,
@@ -272,13 +395,23 @@ const StaticData = {
             avatar: 'https://i.pravatar.cc/40?img=9',
             email: 'fatima.ibrahim@company.com',
             mobile: '+20 101 555 7890',
-            nationality: 'Egypt',
+            nationality: 'Egyptian',
+            nationalityCode: 'eg',
+            entity: 'Direct',
+            countryOfWork: 'Egypt',
             department: 'Engineering',
             section: 'Quality Assurance',
+            mainGrade: 'Professional',
+            subGrade: 'Mid-Level',
             jobTitle: 'QA Engineer',
             status: 'On Leave',
             dateOfHiring: '20/09/2023',
-            contractType: 'Full-time'
+            contractType: 'Full-time',
+            completedSteps: 5,
+            totalSteps: 6,
+            progress: 83,
+            slaStatus: 'pending',
+            createdAt: '15/09/2023'
         },
         {
             id: 5,
@@ -289,13 +422,23 @@ const StaticData = {
             avatar: 'https://i.pravatar.cc/40?img=15',
             email: 'yusuf.ahmed@company.com',
             mobile: '+966 55 333 4444',
-            nationality: 'Saudi Arabia',
+            nationality: 'Saudi',
+            nationalityCode: 'sa',
+            entity: 'Techtic',
+            countryOfWork: 'Saudi Arabia',
             department: 'Operations',
-            section: 'Logistics',
+            section: null,
+            mainGrade: 'Professional',
+            subGrade: 'Junior',
             jobTitle: 'Operations Intern',
             status: 'Active',
             dateOfHiring: '01/11/2025',
-            contractType: 'Intern'
+            contractType: 'Intern',
+            completedSteps: 4,
+            totalSteps: 6,
+            progress: 67,
+            slaStatus: 'overdue',
+            createdAt: '25/10/2025'
         },
     ],
 
