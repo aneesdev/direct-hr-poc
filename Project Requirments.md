@@ -1,6 +1,6 @@
 # Direct HR Project Requirements
 
-## Project Overvieww
+## Project Overview
 
 Direct HR is a an HR management system that allows us at Direct to manage our HR processes and workflows.
 
