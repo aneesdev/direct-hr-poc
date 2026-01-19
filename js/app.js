@@ -12,7 +12,8 @@ const app = createApp({
         'placeholder-page': PlaceholderPageComponent,
         'employees-list': EmployeesComponent,
         'add-employee': AddEmployeeComponent,
-        'shift-attendance': ShiftAttendanceComponent
+        'shift-attendance': ShiftAttendanceComponent,
+        'payroll-module': PayrollComponent
     },
 
     setup() {

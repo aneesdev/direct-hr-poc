@@ -198,22 +198,22 @@ const StaticData = {
 
     // Work Weeks (CRUD like Bayzat)
     workWeeks: [
-        { 
-            id: 1, 
+        {
+            id: 1,
             name: 'Standard Week (Sun-Thu)', 
             days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: false, Saturday: false },
             totalDays: 5,
             active: true
         },
-        { 
-            id: 2, 
+        {
+            id: 2,
             name: 'Standard Week (Mon-Fri)', 
             days: { Sunday: false, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true, Saturday: false },
             totalDays: 5,
             active: true
         },
-        { 
-            id: 3, 
+        {
+            id: 3,
             name: '6-Day Week (Sun-Fri)', 
             days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true, Saturday: false },
             totalDays: 6,
@@ -285,6 +285,8 @@ const StaticData = {
         'employees': 'Employees',
         'add-employee': 'Add Employee',
         'attendance': 'Shift & Attendance',
+        'payroll': 'Payroll',
+        'payroll-cycle': 'Payroll Cycle',
         'workflow': 'Workflows',
         'reports': 'Reports'
     },
@@ -713,7 +715,313 @@ const StaticData = {
     attendanceStatuses: ['Present', 'Absent', 'Late', 'Early Leave', 'Checked In', 'Day Off', 'Public Holiday', 'Work From Home', 'Business Trip'],
 
     // Day Types
-    dayTypes: ['Working', 'Weekend', 'Public Holiday', 'Day Off', 'Leave']
+    dayTypes: ['Working', 'Weekend', 'Public Holiday', 'Day Off', 'Leave'],
+
+    // ========== PAYROLL DATA ==========
+
+    // Payroll Regions/Entities
+    payrollRegions: [
+        { id: 1, name: 'Saudi Arabia', code: 'sa', currency: 'SAR', flag: 'https://flagcdn.com/w40/sa.png' },
+        { id: 2, name: 'Pakistan', code: 'pk', currency: 'SAR', flag: 'https://flagcdn.com/w40/pk.png' },
+        { id: 3, name: 'Indonesia', code: 'id', currency: 'SAR', flag: 'https://flagcdn.com/w40/id.png' },
+        { id: 4, name: 'Egypt', code: 'eg', currency: 'SAR', flag: 'https://flagcdn.com/w40/eg.png' }
+    ],
+
+    // Payroll Cost Centers (for grouping)
+    payrollCostCenters: [
+        { id: 1, name: 'Engineering', color: '#8b5cf6' },
+        { id: 2, name: 'Sales', color: '#3b82f6' },
+        { id: 3, name: 'Operations', color: '#22c55e' },
+        { id: 4, name: 'Marketing', color: '#ec4899' },
+        { id: 5, name: 'Finance', color: '#f59e0b' },
+        { id: 6, name: 'HR', color: '#06b6d4' }
+    ],
+
+    // Payroll Cycles
+    payrollCycles: [
+        {
+            id: 1,
+            month: 'January',
+            year: 2026,
+            status: 'in_progress',
+            currentStep: 2,
+            entities: 4,
+            headcount: 870,
+            subCycles: 4,
+            totalNetValue: 2880000.00,
+            totalGross: 3200000.00,
+            totalCommissions: 85000.00,
+            totalArrearsAdd: 12000.00,
+            totalArrearsDed: 5000.00,
+            totalGosi: 45000.00,
+            createdAt: '2026-01-01',
+            createdBy: 'John Doe'
+        },
+        {
+            id: 2,
+            month: 'February',
+            year: 2026,
+            status: 'new',
+            currentStep: 1,
+            entities: 4,
+            headcount: 265,
+            subCycles: 0,
+            totalNetValue: 0,
+            totalGross: 0,
+            totalCommissions: 0,
+            totalArrearsAdd: 0,
+            totalArrearsDed: 0,
+            totalGosi: 0,
+            createdAt: '2026-02-01',
+            createdBy: 'System'
+        },
+        {
+            id: 3,
+            month: 'May',
+            year: 2025,
+            status: 'closed',
+            currentStep: 7,
+            entities: 4,
+            headcount: 390,
+            subCycles: 4,
+            totalNetValue: 2230000.00,
+            totalGross: 2490000.00,
+            totalCommissions: 63000.00,
+            totalArrearsAdd: 5000.00,
+            totalArrearsDed: 15500.00,
+            totalGosi: 7500.00,
+            totalArrearsAddAmount: 15500.00,
+            closedAt: '2025-05-31',
+            closedBy: 'Sarah Finance',
+            createdAt: '2025-05-01',
+            createdBy: 'John Doe'
+        },
+        {
+            id: 4,
+            month: 'January',
+            year: 2025,
+            status: 'closed',
+            currentStep: 7,
+            entities: 4,
+            headcount: 365,
+            subCycles: 4,
+            totalNetValue: 2915000.00,
+            totalGross: 3225000.00,
+            totalCommissions: 90000.00,
+            totalArrearsAdd: 20000.00,
+            totalArrearsDed: 8500.00,
+            totalGosi: 27500.00,
+            closedAt: '2025-01-31',
+            closedBy: 'John Doe',
+            createdAt: '2025-01-01',
+            createdBy: 'System'
+        }
+    ],
+
+    // Payroll Sub-Cycles (Regional breakdown)
+    payrollSubCycles: [
+        // January 2026 - In Progress
+        { id: 1, cycleId: 1, regionId: 1, costCenterId: 1, requestId: 'ARQ-001', headcount: 330, netSalary: 1500000.00, currentStage: 'variables' },
+        { id: 2, cycleId: 1, regionId: 2, costCenterId: 2, requestId: 'ARQ-002', headcount: 150, netSalary: 280000.00, currentStage: 'variables' },
+        { id: 3, cycleId: 1, regionId: 3, costCenterId: 3, requestId: 'ARQ-003', headcount: 200, netSalary: 650000.00, currentStage: 'variables' },
+        { id: 4, cycleId: 1, regionId: 4, costCenterId: 1, requestId: 'ARQ-004', headcount: 200, netSalary: 450000.00, currentStage: 'variables' },
+        
+        // February 2026 - New
+        { id: 5, cycleId: 2, regionId: 1, costCenterId: 2, requestId: 'ARQ-005', headcount: 120, netSalary: 0, currentStage: 'initialization' },
+        { id: 6, cycleId: 2, regionId: 2, costCenterId: 1, requestId: 'ARQ-006', headcount: 95, netSalary: 0, currentStage: 'initialization' },
+        { id: 7, cycleId: 2, regionId: 3, costCenterId: 4, requestId: 'ARQ-007', headcount: 45, netSalary: 0, currentStage: 'initialization' },
+        { id: 8, cycleId: 2, regionId: 4, costCenterId: 5, requestId: 'ARQ-008', headcount: 5, netSalary: 0, currentStage: 'initialization' },
+        
+        // May 2025 - Closed
+        { id: 9, cycleId: 3, regionId: 1, costCenterId: 1, requestId: 'ARQ-009', headcount: 290, netSalary: 1795000.00, grossSalary: 1985000.00, commissions: 45000.00, arrearsAdd: 2500.00, arrearsDed: 7500.00, gosi: 3750.00, currentStage: 'archived' },
+        { id: 10, cycleId: 3, regionId: 2, costCenterId: 2, requestId: 'ARQ-010', headcount: 60, netSalary: 269000.00, grossSalary: 305000.00, commissions: 12000.00, arrearsAdd: 1500.00, arrearsDed: 4000.00, gosi: 1850.00, currentStage: 'archived' },
+        { id: 11, cycleId: 3, regionId: 3, costCenterId: 4, requestId: 'ARQ-011', headcount: 20, netSalary: 86000.00, grossSalary: 98000.00, commissions: 3500.00, arrearsAdd: 500.00, arrearsDed: 2000.00, gosi: 980.00, currentStage: 'archived' },
+        { id: 12, cycleId: 3, regionId: 4, costCenterId: 2, requestId: 'ARQ-012', headcount: 20, netSalary: 80000.00, grossSalary: 102000.00, commissions: 2500.00, arrearsAdd: 500.00, arrearsDed: 2000.00, gosi: 920.00, currentStage: 'archived' },
+        
+        // January 2025 - Closed
+        { id: 13, cycleId: 4, regionId: 1, costCenterId: 3, requestId: 'ARQ-013', headcount: 210, netSalary: 1775000.00, grossSalary: 1920000.00, commissions: 52000.00, arrearsAdd: 9000.00, arrearsDed: 5500.00, gosi: 18000.00, currentStage: 'archived' },
+        { id: 14, cycleId: 4, regionId: 2, costCenterId: 2, requestId: 'ARQ-014', headcount: 90, netSalary: 615000.00, grossSalary: 698000.00, commissions: 18000.00, arrearsAdd: 5000.00, arrearsDed: 1000.00, gosi: 5200.00, currentStage: 'archived' },
+        { id: 15, cycleId: 4, regionId: 3, costCenterId: 1, requestId: 'ARQ-015', headcount: 65, netSalary: 345000.00, grossSalary: 395000.00, commissions: 15000.00, arrearsAdd: 4000.00, arrearsDed: 1500.00, gosi: 2800.00, currentStage: 'archived' },
+        { id: 16, cycleId: 4, regionId: 4, costCenterId: 2, requestId: 'ARQ-016', headcount: 0, netSalary: 180000.00, grossSalary: 212000.00, commissions: 5000.00, arrearsAdd: 2000.00, arrearsDed: 500.00, gosi: 1500.00, currentStage: 'archived' }
+    ],
+
+    // Payroll Employees (for variable pay management)
+    payrollEmployees: [
+        {
+            id: 1,
+            employeeId: 'E001',
+            name: 'Ahmed Al-Saud',
+            department: 'Engineering',
+            costCenterId: 1,
+            status: 'Active',
+            basicSalary: 15000.00,
+            accommodationAllowance: 4000.00,
+            transportationAllowance: 1000.00,
+            commission: 0,
+            grossPay: 20000.00,
+            arrearsAddition: 0,
+            arrearsDeduction: 0,
+            gosiEmployee: 1950.00,
+            gosiCompany: 2350.00,
+            netAdditions: 0,
+            netDeductions: 0,
+            netPay: 18100.00,
+            previousNetPay: 20000.00,
+            isExempt: false,
+            isHeld: false,
+            isStopped: false
+        },
+        {
+            id: 2,
+            employeeId: 'E002',
+            name: 'Sara Mohamed',
+            department: 'Sales',
+            costCenterId: 2,
+            status: 'On Leave',
+            basicSalary: 12000.00,
+            accommodationAllowance: 3000.00,
+            transportationAllowance: 800.00,
+            commission: 0,
+            grossPay: 15800.00,
+            arrearsAddition: 0,
+            arrearsDeduction: 0,
+            gosiEmployee: 1540.00,
+            gosiCompany: 1857.00,
+            netAdditions: 0,
+            netDeductions: 0,
+            netPay: 14300.00,
+            previousNetPay: 15000.00,
+            isExempt: false,
+            isHeld: false,
+            isStopped: false
+        },
+        {
+            id: 3,
+            employeeId: 'E003',
+            name: 'John Doe',
+            department: 'Sales',
+            costCenterId: 2,
+            status: 'Probation',
+            basicSalary: 11000.00,
+            accommodationAllowance: 0,
+            transportationAllowance: 0,
+            commission: 0,
+            grossPay: 11000.00,
+            arrearsAddition: 0,
+            arrearsDeduction: 0,
+            gosiEmployee: 0,
+            gosiCompany: 0,
+            netAdditions: 0,
+            netDeductions: 0,
+            netPay: 11000.00,
+            previousNetPay: 11000.00,
+            isExempt: true,
+            isHeld: false,
+            isStopped: false
+        },
+        {
+            id: 4,
+            employeeId: 'E401',
+            name: 'Khalid Ibrahim',
+            department: 'Operations',
+            costCenterId: 3,
+            status: 'Active',
+            basicSalary: 13000.00,
+            accommodationAllowance: 3500.00,
+            transportationAllowance: 900.00,
+            commission: 0,
+            grossPay: 17400.00,
+            arrearsAddition: 0,
+            arrearsDeduction: 0,
+            gosiEmployee: 1696.50,
+            gosiCompany: 2044.50,
+            netAdditions: 0,
+            netDeductions: 0,
+            netPay: 15750.00,
+            previousNetPay: 15000.00,
+            isExempt: false,
+            isHeld: false,
+            isStopped: false
+        },
+        {
+            id: 5,
+            employeeId: 'E402',
+            name: 'Mona Zein',
+            department: 'Finance',
+            costCenterId: 5,
+            status: 'Active',
+            basicSalary: 14000.00,
+            accommodationAllowance: 3800.00,
+            transportationAllowance: 950.00,
+            commission: 0,
+            grossPay: 18750.00,
+            arrearsAddition: 0,
+            arrearsDeduction: 0,
+            gosiEmployee: 1827.00,
+            gosiCompany: 2202.00,
+            netAdditions: 0,
+            netDeductions: 0,
+            netPay: 16970.00,
+            previousNetPay: 15000.00,
+            isExempt: false,
+            isHeld: false,
+            isStopped: false
+        }
+    ],
+
+    // Payroll Action Log
+    payrollActionLog: [
+        { id: 1, cycleId: 3, action: 'Payroll Cycle Initialized', user: 'John Doe', timestamp: '2025-02-24 08:15' },
+        { id: 2, cycleId: 3, action: 'Variable Pay Overrides Uploaded', user: 'John Doe', timestamp: '2025-02-24 11:30' },
+        { id: 3, cycleId: 3, action: 'Payroll Batch Approved', user: 'Sarah Finance', timestamp: '2025-02-25 14:20' },
+        { id: 4, cycleId: 3, action: 'Bank WPS File Generated', user: 'System', timestamp: '2025-02-25 16:00' },
+        { id: 5, cycleId: 3, action: 'Cycle Locked & Archived', user: 'John Doe', timestamp: '2025-02-25 16:45' }
+    ],
+
+    // Payroll Wizard Steps
+    payrollWizardSteps: [
+        { id: 1, name: 'Initialization', icon: 'pi-bolt' },
+        { id: 2, name: 'Variables', icon: 'pi-clock' },
+        { id: 3, name: 'Review', icon: 'pi-file' },
+        { id: 4, name: 'Approve', icon: 'pi-check-circle' },
+        { id: 5, name: 'Pay', icon: 'pi-dollar' },
+        { id: 6, name: 'Closing', icon: 'pi-folder' },
+        { id: 7, name: 'Archived', icon: 'pi-lock' }
+    ],
+
+    // Strategic Comparison Stats (for dashboard)
+    payrollStats: {
+        jan2025: {
+            totalNetDisbursement: 2915000.00,
+            totalGrossLiability: 3230000.00,
+            globalHeadcount: 595,
+            totalCommissions: 90000.00
+        },
+        may2025: {
+            totalNetDisbursement: 2230000.00,
+            totalGrossLiability: 2450000.00,
+            globalHeadcount: 390,
+            totalCommissions: 63000.00
+        }
+    },
+
+    // Department allocation data for chart
+    departmentAllocation: [
+        { name: 'Engineering', value: 45 },
+        { name: 'Marketing', value: 20 },
+        { name: 'Sales', value: 15 },
+        { name: 'Finance', value: 8 },
+        { name: 'Operations', value: 7 },
+        { name: 'HR', value: 5 }
+    ],
+
+    // Regional split data
+    regionalSplit: [
+        { name: 'Saudi Arabia', value: 55, color: '#06b6d4' },
+        { name: 'Egypt', value: 20, color: '#ef4444' },
+        { name: 'Indonesia', value: 15, color: '#3b82f6' },
+        { name: 'Pakistan', value: 10, color: '#22c55e' }
+    ]
 };
 
 // Make it available globally

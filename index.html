@@ -38,6 +38,7 @@
     <script src="js/components/employees.js"></script>
     <script src="js/components/add-employee.js"></script>
     <script src="js/components/shift-attendance.js"></script>
+    <script src="js/components/payroll.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -84,6 +85,11 @@
                         @click="navigateTo('attendance')">
                         <i class="pi pi-clock"></i>
                         <span>Shift & Attendance</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'payroll' }"
+                        @click="navigateTo('payroll')">
+                        <i class="pi pi-wallet"></i>
+                        <span>Payroll</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'workflow' }"
                         @click="navigateTo('workflow')">
@@ -151,6 +157,9 @@
 
                     <!-- Shift & Attendance Page -->
                     <shift-attendance v-else-if="currentPage === 'attendance'"></shift-attendance>
+
+                    <!-- Payroll Page -->
+                    <payroll-module v-else-if="currentPage === 'payroll'"></payroll-module>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>
