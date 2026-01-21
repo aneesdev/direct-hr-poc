@@ -39,6 +39,9 @@
     <script src="js/components/add-employee.js"></script>
     <script src="js/components/shift-attendance.js"></script>
     <script src="js/components/payroll.js"></script>
+    <script src="js/components/orders-settings.js"></script>
+    <script src="js/components/new-request.js"></script>
+    <script src="js/components/my-requests.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -57,19 +60,15 @@
                         <i class="pi pi-home"></i>
                         <span>Dashboard</span>
                     </div>
-
-                    <div class="menu-section">
-                        <div class="menu-section-title">Settings</div>
+                    <div class="menu-item" :class="{ active: currentPage === 'new-request' }"
+                        @click="navigateTo('new-request')">
+                        <i class="pi pi-plus-circle"></i>
+                        <span>New Request</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'company-settings' }"
-                        @click="navigateTo('company-settings')">
-                        <i class="pi pi-building"></i>
-                        <span>Company Settings</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'employee-settings' }"
-                        @click="navigateTo('employee-settings')">
-                        <i class="pi pi-users"></i>
-                        <span>Employee Settings</span>
+                    <div class="menu-item" :class="{ active: currentPage === 'my-requests' }"
+                        @click="navigateTo('my-requests')">
+                        <i class="pi pi-inbox"></i>
+                        <span>Requests</span>
                     </div>
 
                     <div class="menu-section">
@@ -91,19 +90,29 @@
                         <i class="pi pi-wallet"></i>
                         <span>Payroll</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'workflow' }"
-                        @click="navigateTo('workflow')">
-                        <i class="pi pi-sitemap"></i>
-                        <span>Workflows</span>
+                    <div class="menu-item" :class="{ active: currentPage === 'orders-settings' }"
+                        @click="navigateTo('orders-settings')">
+                        <i class="pi pi-file-edit"></i>
+                        <span>Orders & Requests</span>
                     </div>
 
                     <div class="menu-section">
                         <div class="menu-section-title">Reports</div>
                     </div>
+
                     <div class="menu-item" :class="{ active: currentPage === 'reports' }"
                         @click="navigateTo('reports')">
                         <i class="pi pi-chart-bar"></i>
                         <span>Reports</span>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title">Settings</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'company-settings' }"
+                        @click="navigateTo('company-settings')">
+                        <i class="pi pi-building"></i>
+                        <span>Company Settings</span>
                     </div>
                 </nav>
             </aside>
@@ -160,6 +169,17 @@
 
                     <!-- Payroll Page -->
                     <payroll-module v-else-if="currentPage === 'payroll'"></payroll-module>
+
+                    <!-- Orders & Requests Settings Page -->
+                    <orders-settings v-else-if="currentPage === 'orders-settings'"></orders-settings>
+
+                    <!-- New Request Page -->
+                    <new-request v-else-if="currentPage === 'new-request'"
+                        @view-requests="navigateTo('my-requests')"></new-request>
+
+                    <!-- My Requests Page -->
+                    <my-requests v-else-if="currentPage === 'my-requests'"
+                        @new-request="navigateTo('new-request')"></my-requests>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>

@@ -288,7 +288,10 @@ const StaticData = {
         'payroll': 'Payroll',
         'payroll-cycle': 'Payroll Cycle',
         'workflow': 'Workflows',
-        'reports': 'Reports'
+        'reports': 'Reports',
+        'orders-settings': 'Orders & Requests Settings',
+        'new-request': 'New Request',
+        'my-requests': 'Requests'
     },
 
     // Employee dropdown options
@@ -1021,6 +1024,410 @@ const StaticData = {
         { name: 'Egypt', value: 20, color: '#ef4444' },
         { name: 'Indonesia', value: 15, color: '#3b82f6' },
         { name: 'Pakistan', value: 10, color: '#22c55e' }
+    ],
+
+    // ========== ORDERS/REQUESTS MODULE DATA ==========
+
+    // Request Categories
+    requestCategories: [
+        { id: 1, name: 'Leaves', description: 'All leave-related requests', icon: 'pi-calendar', color: '#22c55e', active: true },
+        { id: 2, name: 'Business Trip', description: 'Business travel requests', icon: 'pi-briefcase', color: '#3b82f6', active: true },
+        { id: 3, name: 'Attendance & Time Adjustment', description: 'WFH, permissions, punch corrections', icon: 'pi-clock', color: '#8b5cf6', active: true },
+        { id: 4, name: 'Letters', description: 'Experience letters, salary letters', icon: 'pi-file', color: '#f59e0b', active: true },
+        { id: 5, name: 'Others', description: 'General requests, resignation, feedback', icon: 'pi-inbox', color: '#64748b', active: true }
+    ],
+
+    // Form Field Types (for dynamic form builder)
+    formFieldTypes: [
+        { id: 'text', name: 'Text Field', icon: 'pi-pencil' },
+        { id: 'textarea', name: 'Text Area', icon: 'pi-align-left' },
+        { id: 'number', name: 'Number', icon: 'pi-sort-numeric-up' },
+        { id: 'date', name: 'Date Picker', icon: 'pi-calendar' },
+        { id: 'daterange', name: 'Date Range (From - To)', icon: 'pi-calendar-plus' },
+        { id: 'time', name: 'Time Picker', icon: 'pi-clock' },
+        { id: 'dropdown', name: 'Dropdown Select', icon: 'pi-chevron-down' },
+        { id: 'file', name: 'File Upload', icon: 'pi-upload' },
+        { id: 'checkbox', name: 'Checkbox', icon: 'pi-check-square' }
+    ],
+
+    // Repetition/Calculation Options
+    repetitionOptions: [
+        { id: 'yearly', name: 'Yearly' },
+        { id: 'monthly', name: 'Monthly' },
+        { id: 'one_time', name: 'One Time' },
+        { id: 'unlimited', name: 'Unlimited' }
+    ],
+
+    // Balance Calculation Methods
+    balanceMethodOptions: [
+        { id: 'calendar_days', name: 'Calendar Days' },
+        { id: 'working_days', name: 'Working Days' }
+    ],
+
+    // Line Manager Levels
+    lineManagerLevels: [
+        { id: 1, name: 'Level 1' },
+        { id: 2, name: 'Level 2' },
+        { id: 3, name: 'Level 3' },
+        { id: 4, name: 'All Line Managers' }
+    ],
+
+    // Request Types
+    requestTypes: [
+        {
+            id: 1,
+            categoryId: 1,
+            name: 'Annual Leave',
+            description: 'Standard annual leave request',
+            repetition: 'yearly',
+            balanceSource: 'system', // 'system' = from employee settings, 'fixed' = fixed days
+            balanceDays: null,
+            balanceMethod: 'working_days',
+            formFields: [
+                { id: 'f1', type: 'daterange', label: 'Leave Period', required: true, order: 1 }
+            ],
+            approvalFlow: {
+                lineManagerLevel: 1,
+                requireHrAdmin: true,
+                conditionEnabled: true,
+                conditionDays: 5,
+                conditionLineManagerLevel: 2,
+                conditionRequireHrAdmin: true
+            },
+            active: true
+        },
+        {
+            id: 2,
+            categoryId: 1,
+            name: 'Sick Leave',
+            description: 'Medical sick leave with attachment',
+            repetition: 'yearly',
+            balanceSource: 'fixed',
+            balanceDays: 120,
+            balanceMethod: 'calendar_days',
+            formFields: [
+                { id: 'f1', type: 'daterange', label: 'Leave Period', required: true, order: 1 },
+                { id: 'f2', type: 'file', label: 'Medical Report', required: true, order: 2 }
+            ],
+            approvalFlow: {
+                lineManagerLevel: 2,
+                requireHrAdmin: false,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false
+            },
+            active: true
+        },
+        {
+            id: 3,
+            categoryId: 1,
+            name: 'Marriage Leave',
+            description: 'One-time marriage leave',
+            repetition: 'one_time',
+            balanceSource: 'fixed',
+            balanceDays: 5,
+            balanceMethod: 'working_days',
+            formFields: [
+                { id: 'f1', type: 'daterange', label: 'Leave Period', required: true, order: 1 },
+                { id: 'f2', type: 'file', label: 'Marriage Certificate', required: true, order: 2 }
+            ],
+            approvalFlow: {
+                lineManagerLevel: 2,
+                requireHrAdmin: false,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false
+            },
+            active: true
+        },
+        {
+            id: 4,
+            categoryId: 2,
+            name: 'Business Trip',
+            description: 'Business travel request',
+            repetition: 'yearly',
+            balanceSource: 'fixed',
+            balanceDays: 30,
+            balanceMethod: 'working_days',
+            formFields: [
+                { id: 'f1', type: 'daterange', label: 'Trip Period', required: true, order: 1 },
+                { id: 'f2', type: 'text', label: 'Destination', required: true, order: 2 },
+                { id: 'f3', type: 'textarea', label: 'Purpose', required: true, order: 3 }
+            ],
+            approvalFlow: {
+                lineManagerLevel: 2,
+                requireHrAdmin: false,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false
+            },
+            active: true
+        },
+        {
+            id: 5,
+            categoryId: 3,
+            name: 'Work From Home',
+            description: 'Remote work request',
+            repetition: 'yearly',
+            balanceSource: 'system',
+            balanceDays: null,
+            balanceMethod: 'working_days',
+            formFields: [
+                { id: 'f1', type: 'daterange', label: 'WFH Period', required: true, order: 1 },
+                { id: 'f2', type: 'textarea', label: 'Reason', required: false, order: 2 }
+            ],
+            approvalFlow: {
+                lineManagerLevel: 2,
+                requireHrAdmin: false,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false
+            },
+            active: true
+        },
+        {
+            id: 6,
+            categoryId: 3,
+            name: 'Permission Request',
+            description: 'Early out, late check-in, or during work permission',
+            repetition: 'monthly',
+            balanceSource: 'fixed',
+            balanceDays: null,
+            balanceHours: 8,
+            balanceMethod: 'working_days',
+            formFields: [
+                { id: 'f1', type: 'date', label: 'Date', required: true, order: 1 },
+                { id: 'f2', type: 'dropdown', label: 'Permission Type', required: true, order: 2, options: ['Early Out', 'Late Check-in', 'During Work'] },
+                { id: 'f3', type: 'dropdown', label: 'Hours', required: true, order: 3, options: ['1', '2', '3', '4'] }
+            ],
+            approvalFlow: {
+                lineManagerLevel: 2,
+                requireHrAdmin: false,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false
+            },
+            active: true
+        },
+        {
+            id: 7,
+            categoryId: 4,
+            name: 'Experience Letter',
+            description: 'Request for experience certificate',
+            repetition: 'unlimited',
+            balanceSource: null,
+            balanceDays: null,
+            balanceMethod: null,
+            formFields: [
+                { id: 'f1', type: 'text', label: 'Addressed To', required: true, order: 1 }
+            ],
+            approvalFlow: {
+                lineManagerLevel: null,
+                requireHrAdmin: true,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false
+            },
+            active: true
+        },
+        {
+            id: 8,
+            categoryId: 5,
+            name: 'Resignation',
+            description: 'Resignation submission',
+            repetition: 'unlimited',
+            balanceSource: null,
+            balanceDays: null,
+            balanceMethod: null,
+            formFields: [
+                { id: 'f1', type: 'textarea', label: 'Reason', required: true, order: 1 },
+                { id: 'f2', type: 'date', label: 'Last Working Day', required: true, order: 2 }
+            ],
+            approvalFlow: {
+                lineManagerLevel: 2,
+                requireHrAdmin: true,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false
+            },
+            active: true
+        }
+    ],
+
+    // Page title for orders
+    ordersPageTitle: 'Orders & Requests Settings',
+
+    // ========== SUBMITTED REQUESTS DATA ==========
+
+    // Request Statuses
+    requestStatuses: [
+        { id: 'pending', name: 'Pending', color: '#f59e0b', icon: 'pi-clock' },
+        { id: 'in_review', name: 'In Review', color: '#3b82f6', icon: 'pi-eye' },
+        { id: 'approved', name: 'Approved', color: '#22c55e', icon: 'pi-check-circle' },
+        { id: 'rejected', name: 'Rejected', color: '#ef4444', icon: 'pi-times-circle' },
+        { id: 'cancelled', name: 'Cancelled', color: '#64748b', icon: 'pi-ban' }
+    ],
+
+    // Sample Submitted Requests
+    submittedRequests: [
+        {
+            id: 'REQ-001',
+            categoryId: 1,
+            typeId: 1,
+            typeName: 'Annual Leave',
+            employeeId: 1,
+            employeeName: 'Ahmed Hassan',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=11',
+            department: 'Engineering',
+            status: 'pending',
+            submittedAt: '2026-01-20T09:00:00',
+            formData: {
+                'Leave Period': { from: '2026-02-01', to: '2026-02-05' },
+                'Duration': '5 working days'
+            },
+            currentApprover: 'Line Manager',
+            approvalFlow: [
+                { role: 'Line Manager', level: 1, status: 'pending', assignee: 'Fahad Al-Rashid' },
+                { role: 'HR Administrator', level: 2, status: 'waiting', assignee: 'Sara Omar' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Ahmed Hassan', timestamp: '2026-01-20T09:00:00', comment: null }
+            ]
+        },
+        {
+            id: 'REQ-002',
+            categoryId: 1,
+            typeId: 2,
+            typeName: 'Sick Leave',
+            employeeId: 2,
+            employeeName: 'Sara Omar',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=5',
+            department: 'Human Resources',
+            status: 'approved',
+            submittedAt: '2026-01-18T10:30:00',
+            formData: {
+                'Leave Period': { from: '2026-01-19', to: '2026-01-20' },
+                'Duration': '2 calendar days',
+                'Medical Report': 'medical_report.pdf'
+            },
+            currentApprover: null,
+            approvalFlow: [
+                { role: 'Line Manager', level: 1, status: 'approved', assignee: 'Mohammed Al-Rashid', actionAt: '2026-01-18T11:00:00' },
+                { role: 'HR Administrator', level: 2, status: 'approved', assignee: 'Admin User', actionAt: '2026-01-18T14:00:00' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Sara Omar', timestamp: '2026-01-18T10:30:00', comment: null },
+                { action: 'Approved', user: 'Mohammed Al-Rashid', timestamp: '2026-01-18T11:00:00', comment: 'Approved. Get well soon!' },
+                { action: 'Approved', user: 'Admin User', timestamp: '2026-01-18T14:00:00', comment: 'Final approval granted.' }
+            ]
+        },
+        {
+            id: 'REQ-003',
+            categoryId: 1,
+            typeId: 1,
+            typeName: 'Annual Leave',
+            employeeId: 3,
+            employeeName: 'Mohammed Al-Rashid',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=12',
+            department: 'Finance',
+            status: 'rejected',
+            submittedAt: '2026-01-15T08:00:00',
+            formData: {
+                'Leave Period': { from: '2026-01-25', to: '2026-02-10' },
+                'Duration': '12 working days'
+            },
+            currentApprover: null,
+            approvalFlow: [
+                { role: 'Line Manager', level: 1, status: 'approved', assignee: 'Khalid Ibrahim', actionAt: '2026-01-15T10:00:00' },
+                { role: 'HR Administrator', level: 2, status: 'rejected', assignee: 'Sara Omar', actionAt: '2026-01-15T15:00:00' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Mohammed Al-Rashid', timestamp: '2026-01-15T08:00:00', comment: null },
+                { action: 'Approved', user: 'Khalid Ibrahim', timestamp: '2026-01-15T10:00:00', comment: 'Approved from my side.' },
+                { action: 'Rejected', user: 'Sara Omar', timestamp: '2026-01-15T15:00:00', comment: 'Request exceeds available balance. Please adjust dates.' }
+            ]
+        },
+        {
+            id: 'REQ-004',
+            categoryId: 2,
+            typeId: 4,
+            typeName: 'Business Trip',
+            employeeId: 1,
+            employeeName: 'Ahmed Hassan',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=11',
+            department: 'Engineering',
+            status: 'in_review',
+            submittedAt: '2026-01-19T14:00:00',
+            formData: {
+                'Trip Period': { from: '2026-02-10', to: '2026-02-12' },
+                'Duration': '3 working days',
+                'Destination': 'Dubai, UAE',
+                'Purpose': 'Client meeting and project kickoff'
+            },
+            currentApprover: 'HR Administrator',
+            approvalFlow: [
+                { role: 'Line Manager', level: 1, status: 'approved', assignee: 'Fahad Al-Rashid', actionAt: '2026-01-19T16:00:00' },
+                { role: 'HR Administrator', level: 2, status: 'pending', assignee: 'Sara Omar' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Ahmed Hassan', timestamp: '2026-01-19T14:00:00', comment: null },
+                { action: 'Approved', user: 'Fahad Al-Rashid', timestamp: '2026-01-19T16:00:00', comment: 'Business need confirmed. Please proceed.' }
+            ]
+        },
+        {
+            id: 'REQ-005',
+            categoryId: 3,
+            typeId: 5,
+            typeName: 'Work From Home',
+            employeeId: 4,
+            employeeName: 'Fatima Ibrahim',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=9',
+            department: 'Engineering',
+            status: 'pending',
+            submittedAt: '2026-01-20T11:00:00',
+            formData: {
+                'WFH Period': { from: '2026-01-22', to: '2026-01-24' },
+                'Duration': '3 working days',
+                'Reason': 'Home renovation requires supervision'
+            },
+            currentApprover: 'Line Manager',
+            approvalFlow: [
+                { role: 'Line Manager', level: 1, status: 'pending', assignee: 'Ahmed Hassan' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Fatima Ibrahim', timestamp: '2026-01-20T11:00:00', comment: null }
+            ]
+        },
+        {
+            id: 'REQ-006',
+            categoryId: 4,
+            typeId: 7,
+            typeName: 'Experience Letter',
+            employeeId: 5,
+            employeeName: 'Yusuf Ahmed',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=15',
+            department: 'Operations',
+            status: 'approved',
+            submittedAt: '2026-01-17T09:00:00',
+            formData: {
+                'Addressed To': 'To Whom It May Concern'
+            },
+            currentApprover: null,
+            approvalFlow: [
+                { role: 'HR Administrator', level: 1, status: 'approved', assignee: 'Sara Omar', actionAt: '2026-01-17T11:00:00' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Yusuf Ahmed', timestamp: '2026-01-17T09:00:00', comment: null },
+                { action: 'Approved', user: 'Sara Omar', timestamp: '2026-01-17T11:00:00', comment: 'Letter will be ready for pickup tomorrow.' }
+            ]
+        }
     ]
 };
 

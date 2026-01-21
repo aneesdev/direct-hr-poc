@@ -13,7 +13,10 @@ const app = createApp({
         'employees-list': EmployeesComponent,
         'add-employee': AddEmployeeComponent,
         'shift-attendance': ShiftAttendanceComponent,
-        'payroll-module': PayrollComponent
+        'payroll-module': PayrollComponent,
+        'orders-settings': OrdersSettingsComponent,
+        'new-request': NewRequestComponent,
+        'my-requests': MyRequestsComponent
     },
 
     setup() {
