@@ -301,15 +301,12 @@ const NewRequestComponent = {
                         </div>
                         
                         <!-- Policy Note -->
-                        <div class="info-card policy-card">
+                        <div class="info-card policy-card" v-if="selectedType.policyNote">
                             <div class="info-card-header">
                                 <i class="pi pi-bookmark"></i>
                                 <span>Policy Note</span>
                             </div>
-                            <p class="policy-text">
-                                Please ensure all required documents are attached. Requests are processed within 48 hours. 
-                                For urgent requests, please contact HR directly.
-                            </p>
+                            <p class="policy-text">{{ selectedType.policyNote }}</p>
                         </div>
                     </div>
                 </div>

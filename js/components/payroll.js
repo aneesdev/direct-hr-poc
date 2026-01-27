@@ -328,12 +328,14 @@ const PayrollComponent = {
                                                 <span class="stage-tag" :class="sub.currentStage">{{ sub.currentStage.toUpperCase() }}</span>
                                             </td>
                                             <td>
-                                                <button class="action-btn" @click="openCycle(cycle)" v-if="cycle.status !== 'closed'">
-                                                    <i class="pi pi-arrow-right"></i>
-                                                </button>
-                                                <button class="action-btn" @click="openCycle(cycle)" v-else>
-                                                    <i class="pi pi-eye"></i>
-                                                </button>
+                                                <div class="action-buttons-row">
+                                                    <button class="action-btn" @click="viewSubCycleActivityLog(sub)" title="View Activity Log">
+                                                        <i class="pi pi-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn primary" @click="openCycle(cycle)" title="Open Cycle">
+                                                        <i class="pi pi-arrow-right"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -343,6 +345,28 @@ const PayrollComponent = {
                     </div>
                 </div>
             </div>
+
+            <!-- Activity Log Dialog -->
+            <p-dialog v-model:visible="showActivityLogDialog" header="" modal :style="{ width: '700px', maxWidth: '95vw' }">
+                <template #header>
+                    <div class="audit-dialog-header">
+                        <h2>PAYROLL ACTIVITY LOG</h2>
+                        <p>RECENT ACTIONS ACROSS ALL CYCLES</p>
+                    </div>
+                </template>
+                <div class="activity-log-dialog-content">
+                    <div class="log-timeline">
+                        <div class="log-item" v-for="log in actionLog" :key="log.id">
+                            <div class="log-dot"></div>
+                            <div class="log-content">
+                                <div class="log-time">{{ log.timestamp }}</div>
+                                <div class="log-action">{{ log.action }}</div>
+                                <div class="log-user">User: {{ log.user }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p-dialog>
 
             <!-- Payroll Cycle Wizard -->
             <div v-if="selectedCycle" class="payroll-wizard">
@@ -416,7 +440,6 @@ const PayrollComponent = {
                             </div>
                             <div class="step-actions">
                                 <p-inputtext v-model="employeeSearch" placeholder="Search employee..." style="width: 200px;"></p-inputtext>
-                                <p-select v-model="selectedCostCenter" :options="costCenterOptions" optionLabel="name" optionValue="id" placeholder="All Cost Centers" style="width: 180px;"></p-select>
                             </div>
                         </div>
 
@@ -426,19 +449,21 @@ const PayrollComponent = {
                                     <tr>
                                         <th class="sticky-col">EMPLOYEE DETAILS</th>
                                         <th>BASIC SALARY</th>
-                                        <th>ACCOMMODATION ALLOWANCE</th>
-                                        <th>TRANSPORTATION ALLOWANCE</th>
-                                        <th class="editable-col">COMMISSION</th>
-                                        <th>GROSS PAY</th>
-                                        <th class="editable-col">ARREARS ADDITION</th>
-                                        <th class="editable-col">ARREARS DEDUCTION</th>
-                                        <th class="gosi-col">EMPLOYEE GOSI AMOUNT</th>
-                                        <th class="gosi-col">EMPLOYEE GOSI PERCENTAGE</th>
-                                        <th>NET ADDITIONS</th>
-                                        <th>NET DEDUCTIONS</th>
+                                        <th>ACCOMMODATION</th>
+                                        <th>TRANSPORTATION</th>
+                                        <th>OTHER ALLOWANCE</th>
+                                        <th class="addition-col">COMMISSION</th>
+                                        <th class="addition-col">OVERTIME</th>
+                                        <th class="addition-col">OTHERS ADDITION</th>
+                                        <th class="gross-col">GROSS PAY</th>
+                                        <th class="deduction-col">ATTENDANCE & PUNCH DED.</th>
+                                        <th class="deduction-col">LOAN REPAYMENT</th>
+                                        <th class="deduction-col">ABSENT W/O LEAVE</th>
+                                        <th class="deduction-col">OTHERS DEDUCTION</th>
+                                        <th class="deduction-col">GOSI AMOUNT</th>
+                                        <th class="deduction-col">NET DEDUCTIONS</th>
                                         <th class="total-col">TOTAL NET PAY</th>
-                                        <th>COMPANY COVERY GOSI AMOUNT</th>
-                                        <th>COMPANY COVERY PERCENTAGE</th>
+                                        <th>COMPANY GOSI</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -464,36 +489,40 @@ const PayrollComponent = {
                                         <td>{{ formatNumber(emp.basicSalary) }}</td>
                                         <td>{{ formatNumber(emp.accommodationAllowance) }}</td>
                                         <td>{{ formatNumber(emp.transportationAllowance) }}</td>
-                                        <td class="editable-cell">
-                                            <input type="number" v-model.number="emp.commission" class="inline-input" step="0.01" :disabled="emp.isStopped" />
+                                        <td>{{ formatNumber(emp.otherAllowance || 0) }}</td>
+                                        <td class="addition-cell">
+                                            <input type="text" v-model.number="emp.commission" class="inline-input addition-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'commission')" />
+                                        </td>
+                                        <td class="addition-cell">
+                                            <input type="text" v-model.number="emp.overtime" class="inline-input addition-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'overtime')" />
+                                        </td>
+                                        <td class="addition-cell">
+                                            <input type="text" v-model.number="emp.othersAddition" class="inline-input addition-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'othersAddition')" />
                                         </td>
                                         <td class="gross-cell">{{ formatNumber(calculateGross(emp)) }}</td>
-                                        <td class="editable-cell">
-                                            <input type="number" v-model.number="emp.arrearsAddition" class="inline-input" step="0.01" :disabled="emp.isStopped" />
+                                        <td class="deduction-cell">
+                                            <input type="text" v-model.number="emp.attendancePunchDed" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'attendancePunchDed')" />
                                         </td>
-                                        <td class="editable-cell">
-                                            <input type="number" v-model.number="emp.arrearsDeduction" class="inline-input" step="0.01" :disabled="emp.isStopped" />
+                                        <td class="deduction-cell">
+                                            <input type="text" v-model.number="emp.loanRepayment" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'loanRepayment')" />
                                         </td>
-                                        <td class="gosi-amount" :class="{ muted: emp.isExempt || emp.isStopped }">
+                                        <td class="deduction-cell">
+                                            <input type="text" v-model.number="emp.absentWithoutLeave" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'absentWithoutLeave')" />
+                                        </td>
+                                        <td class="deduction-cell">
+                                            <input type="text" v-model.number="emp.othersDeduction" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'othersDeduction')" />
+                                        </td>
+                                        <td class="gosi-cell" :class="{ muted: emp.isExempt || emp.isStopped }">
                                             {{ emp.isExempt ? '0.00' : formatNumber(emp.gosiEmployee) }}
-                                        </td>
-                                        <td class="gosi-percent" :class="{ muted: emp.isExempt || emp.isStopped }">
-                                            {{ emp.isExempt ? '0%' : '10%' }}
-                                        </td>
-                                        <td class="net-additions-cell">
-                                            {{ formatNumber(calculateNetAdditions(emp)) }}
                                         </td>
                                         <td class="net-deductions-cell">
                                             {{ formatNumber(calculateNetDeductions(emp)) }}
                                         </td>
                                         <td class="total-net-cell" :class="{ 'zero-pay': emp.isStopped }">
-                                            {{ emp.isStopped ? '0.00' : formatNumber(emp.netPay) }}
+                                            {{ emp.isStopped ? '0.00' : formatNumber(calculateNetPay(emp)) }}
                                         </td>
                                         <td class="company-gosi" :class="{ muted: emp.isExempt || emp.isStopped }">
                                             {{ emp.isExempt ? '0.00' : formatNumber(emp.gosiCompany) }}
-                                        </td>
-                                        <td class="company-percent" :class="{ muted: emp.isExempt || emp.isStopped }">
-                                            {{ emp.isExempt ? '0%' : '11%' }}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -549,7 +578,6 @@ const PayrollComponent = {
                                         <th>PREVIOUS MONTH</th>
                                         <th>DELTA CHANGE</th>
                                         <th>VARIANCE %</th>
-                                        <th>AUDIT</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -560,19 +588,16 @@ const PayrollComponent = {
                                                 <div class="emp-meta">{{ emp.employeeId }} • {{ emp.department }}</div>
                                             </div>
                                         </td>
-                                        <td class="current-net">{{ formatNumber(emp.netPay) }}</td>
+                                        <td class="current-net">{{ formatNumber(calculateNetPay(emp)) }}</td>
                                         <td>{{ formatNumber(emp.previousNetPay) }}</td>
                                         <td :class="getDeltaClass(emp)">
                                             {{ getDeltaValue(emp) }}
                                         </td>
                                         <td>
                                             <span class="variance-badge" :class="getVarianceClass(emp)">
-                                                <i :class="emp.netPay >= emp.previousNetPay ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
+                                                <i :class="calculateNetPay(emp) >= emp.previousNetPay ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
                                                 {{ getVariancePercent(emp) }}%
                                             </span>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="drill-down-link">DRILL-DOWN</a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -621,46 +646,69 @@ const PayrollComponent = {
                                 </div>
                             </div>
 
-                            <!-- Breakdown Cards -->
-                            <div class="breakdown-cards">
-                                <div class="breakdown-card">
-                                    <div class="breakdown-value">{{ formatCurrency(totalBasicPay) }}</div>
-                                    <div class="breakdown-label">TOTAL BASIC PAY</div>
-                                    <div class="breakdown-sublabel">BASE COMPONENT</div>
+                            <!-- Addition Cards -->
+                            <div class="addition-breakdown-cards">
+                                <div class="section-title additions">
+                                    <i class="pi pi-plus-circle"></i> ADDITIONS
                                 </div>
-                                <div class="breakdown-card">
-                                    <div class="breakdown-value">{{ formatCurrency(totalCommissions) }}</div>
-                                    <div class="breakdown-label">TOTAL COMMISSIONS</div>
-                                    <div class="breakdown-sublabel">VARIABLE SALES</div>
-                                </div>
-                                <div class="breakdown-card">
-                                    <div class="breakdown-value">{{ formatCurrency(totalArrearsAdd) }}</div>
-                                    <div class="breakdown-label">ARREARS ADDITIONS</div>
-                                    <div class="breakdown-sublabel">MANUAL ADJUSTMENTS</div>
-                                </div>
-                                <div class="breakdown-card">
-                                    <div class="breakdown-value">{{ formatCurrency(totalAllowances) }}</div>
-                                    <div class="breakdown-label">FIXED ALLOWANCES</div>
-                                    <div class="breakdown-sublabel">HOUSING & TRANSPORT</div>
+                                <div class="breakdown-cards">
+                                    <div class="breakdown-card addition">
+                                        <div class="breakdown-value">{{ formatCurrency(totalBasicPay) }}</div>
+                                        <div class="breakdown-label">TOTAL BASIC PAY</div>
+                                    </div>
+                                    <div class="breakdown-card addition">
+                                        <div class="breakdown-value">{{ formatCurrency(totalAllowances) }}</div>
+                                        <div class="breakdown-label">FIXED ALLOWANCES</div>
+                                    </div>
+                                    <div class="breakdown-card addition">
+                                        <div class="breakdown-value">{{ formatCurrency(totalOtherAllowance) }}</div>
+                                        <div class="breakdown-label">OTHER ALLOWANCE</div>
+                                    </div>
+                                    <div class="breakdown-card addition">
+                                        <div class="breakdown-value">{{ formatCurrency(totalCommissions) }}</div>
+                                        <div class="breakdown-label">COMMISSIONS</div>
+                                    </div>
+                                    <div class="breakdown-card addition">
+                                        <div class="breakdown-value">{{ formatCurrency(totalOvertime) }}</div>
+                                        <div class="breakdown-label">OVERTIME</div>
+                                    </div>
+                                    <div class="breakdown-card addition">
+                                        <div class="breakdown-value">{{ formatCurrency(totalOthersAddition) }}</div>
+                                        <div class="breakdown-label">OTHERS ADDITION</div>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Deduction Cards -->
-                            <div class="deduction-cards">
-                                <div class="deduction-card">
-                                    <div class="deduction-value negative">{{ formatCurrency(totalGosiEmployee) }}</div>
-                                    <div class="deduction-label">GOSI DEDUCTIONS</div>
-                                    <div class="deduction-sublabel">SOCIAL SECURITY (EMP)</div>
+                            <div class="deduction-breakdown-cards">
+                                <div class="section-title deductions">
+                                    <i class="pi pi-minus-circle"></i> DEDUCTIONS
                                 </div>
-                                <div class="deduction-card">
-                                    <div class="deduction-value negative">{{ formatCurrency(totalArrearsDed) }}</div>
-                                    <div class="deduction-label">ARREARS DEDUCTIONS</div>
-                                    <div class="deduction-sublabel">MANUAL DEDUCTIONS</div>
-                                </div>
-                                <div class="deduction-card muted">
-                                    <div class="deduction-value">{{ formatCurrency(totalGosiCompany) }}</div>
-                                    <div class="deduction-label">COMPANY GOSI COST</div>
-                                    <div class="deduction-sublabel">NON-SALARY LIABILITY</div>
+                                <div class="deduction-cards">
+                                    <div class="deduction-card">
+                                        <div class="deduction-value negative">{{ formatCurrency(totalAttendancePunchDed) }}</div>
+                                        <div class="deduction-label">ATTENDANCE & PUNCH</div>
+                                    </div>
+                                    <div class="deduction-card">
+                                        <div class="deduction-value negative">{{ formatCurrency(totalLoanRepayment) }}</div>
+                                        <div class="deduction-label">LOAN REPAYMENT</div>
+                                    </div>
+                                    <div class="deduction-card">
+                                        <div class="deduction-value negative">{{ formatCurrency(totalAbsentWithoutLeave) }}</div>
+                                        <div class="deduction-label">ABSENT W/O LEAVE</div>
+                                    </div>
+                                    <div class="deduction-card">
+                                        <div class="deduction-value negative">{{ formatCurrency(totalOthersDeduction) }}</div>
+                                        <div class="deduction-label">OTHERS DEDUCTION</div>
+                                    </div>
+                                    <div class="deduction-card">
+                                        <div class="deduction-value negative">{{ formatCurrency(totalGosiEmployee) }}</div>
+                                        <div class="deduction-label">GOSI (EMPLOYEE)</div>
+                                    </div>
+                                    <div class="deduction-card muted">
+                                        <div class="deduction-value">{{ formatCurrency(totalGosiCompany) }}</div>
+                                        <div class="deduction-label">COMPANY GOSI</div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -732,11 +780,6 @@ const PayrollComponent = {
                                     <i class="pi pi-file"></i>
                                     <div class="file-name">Download Bank File</div>
                                     <div class="file-desc">SIF-WPS</div>
-                                </div>
-                                <div class="file-card">
-                                    <i class="pi pi-file-pdf"></i>
-                                    <div class="file-name">Distribute Payslips</div>
-                                    <div class="file-desc">PDF TO MAIL</div>
                                 </div>
                                 <div class="file-card active">
                                     <i class="pi pi-table"></i>
@@ -902,7 +945,7 @@ const PayrollComponent = {
                                     <p>REVIEW ALL WIZARD STAGES BEFORE LOCKING</p>
                                 </div>
                                 <div class="total-liability">
-                                    <span class="liability-label">TOTAL LIABILITY</span>
+                                    <span class="liability-label">TOTAL NET PAY</span>
                                     <span class="liability-value">{{ formatCurrency(totalNetPay) }}</span>
                                 </div>
                             </div>
@@ -1228,6 +1271,7 @@ const PayrollComponent = {
         const showVarianceReportAudit = ref(false);
         const showApprovalLogAudit = ref(false);
         const showPaymentSummaryAudit = ref(false);
+        const showActivityLogDialog = ref(false);
 
         // Data
         const cycles = ref(StaticData.payrollCycles);
@@ -1243,10 +1287,8 @@ const PayrollComponent = {
 
         // Initialization checklist
         const initChecklist = ref([
-            { label: 'All employee records verified', checked: false },
-            { label: 'Bank details confirmed for all employees', checked: false },
-            { label: 'Previous cycle closed and archived', checked: false },
-            { label: 'Attendance data imported', checked: false }
+            { label: 'Attendance data imported', checked: false },
+            { label: 'Previous cycle closed and archived', checked: false }
         ]);
 
         // Closing checks
@@ -1278,27 +1320,25 @@ const PayrollComponent = {
                 const query = employeeSearch.value.toLowerCase();
                 result = result.filter(e => e.name.toLowerCase().includes(query) || e.employeeId.toLowerCase().includes(query));
             }
-            if (selectedCostCenter.value) {
-                result = result.filter(e => e.costCenterId === selectedCostCenter.value);
-            }
             return result;
-        });
-
-        const costCenterOptions = computed(() => {
-            return [{ id: null, name: 'All Cost Centers' }, ...costCenters.value];
         });
 
         const allInitChecked = computed(() => initChecklist.value.every(i => i.checked));
         const allClosingChecked = computed(() => closingChecks.value.every(c => c.checked));
 
-        const totalBatchValue = computed(() => payrollEmployees.value.reduce((sum, e) => sum + e.netPay, 0));
-        const totalNetPay = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + e.netPay, 0));
+        const totalBatchValue = computed(() => payrollEmployees.value.reduce((sum, e) => sum + calculateNetPay(e), 0));
+        const totalNetPay = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + calculateNetPay(e), 0));
         const totalGrossPay = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + calculateGross(e), 0));
         const totalBasicPay = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + e.basicSalary, 0));
         const totalCommissions = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.commission || 0), 0));
-        const totalArrearsAdd = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.arrearsAddition || 0), 0));
-        const totalArrearsDed = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.arrearsDeduction || 0), 0));
+        const totalOvertime = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.overtime || 0), 0));
+        const totalOthersAddition = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.othersAddition || 0), 0));
+        const totalOtherAllowance = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.otherAllowance || 0), 0));
         const totalAllowances = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + e.accommodationAllowance + e.transportationAllowance, 0));
+        const totalAttendancePunchDed = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.attendancePunchDed || 0), 0));
+        const totalLoanRepayment = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.loanRepayment || 0), 0));
+        const totalAbsentWithoutLeave = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.absentWithoutLeave || 0), 0));
+        const totalOthersDeduction = computed(() => payrollEmployees.value.filter(e => !e.isHeld).reduce((sum, e) => sum + (e.othersDeduction || 0), 0));
         const totalGosiEmployee = computed(() => payrollEmployees.value.filter(e => !e.isHeld && !e.isExempt).reduce((sum, e) => sum + e.gosiEmployee, 0));
         const totalGosiCompany = computed(() => payrollEmployees.value.filter(e => !e.isHeld && !e.isExempt).reduce((sum, e) => sum + e.gosiCompany, 0));
         const activeEmployeeCount = computed(() => payrollEmployees.value.filter(e => !e.isHeld).length);
@@ -1330,20 +1370,30 @@ const PayrollComponent = {
         };
 
         const calculateGross = (emp) => {
-            return emp.basicSalary + emp.accommodationAllowance + emp.transportationAllowance + (emp.commission || 0);
+            return emp.basicSalary + emp.accommodationAllowance + emp.transportationAllowance + 
+                   (emp.otherAllowance || 0) + (emp.commission || 0) + (emp.overtime || 0) + (emp.othersAddition || 0);
         };
 
         const calculateNetAdditions = (emp) => {
-            // Net additions = Commission + Arrears Addition
-            return (emp.commission || 0) + (emp.arrearsAddition || 0);
+            // Net additions = Commission + Overtime + Others Addition
+            return (emp.commission || 0) + (emp.overtime || 0) + (emp.othersAddition || 0);
         };
 
         const calculateNetDeductions = (emp) => {
-            // Net deductions = GOSI Employee + Arrears Deduction
-            if (emp.isExempt) {
-                return emp.arrearsDeduction || 0;
-            }
-            return (emp.gosiEmployee || 0) + (emp.arrearsDeduction || 0);
+            // Net deductions = All deductions + GOSI
+            const gosiAmount = emp.isExempt ? 0 : (emp.gosiEmployee || 0);
+            return (emp.attendancePunchDed || 0) + (emp.loanRepayment || 0) + 
+                   (emp.absentWithoutLeave || 0) + (emp.othersDeduction || 0) + gosiAmount;
+        };
+
+        const calculateNetPay = (emp) => {
+            return calculateGross(emp) - calculateNetDeductions(emp);
+        };
+
+        const sanitizeNumber = (event, emp, field) => {
+            // Only allow positive numbers
+            let value = event.target.value.replace(/[^0-9.]/g, '');
+            emp[field] = parseFloat(value) || 0;
         };
 
         const getCycleIcon = (status) => {
@@ -1451,6 +1501,10 @@ const PayrollComponent = {
             alert('Viewing attendance record for ' + emp.name);
         };
 
+        const viewSubCycleActivityLog = (subCycle) => {
+            showActivityLogDialog.value = true;
+        };
+
         // Proof file input reference
         const proofFileInput = ref(null);
 
@@ -1500,7 +1554,6 @@ const PayrollComponent = {
             expandedCycles,
             searchQuery,
             employeeSearch,
-            selectedCostCenter,
             archivedView,
             paymentAuthorized,
             showVariableAuditDialog,
@@ -1512,6 +1565,7 @@ const PayrollComponent = {
             showVarianceReportAudit,
             showApprovalLogAudit,
             showPaymentSummaryAudit,
+            showActivityLogDialog,
             cycles,
             subCycles,
             regions,
@@ -1527,7 +1581,6 @@ const PayrollComponent = {
             uploadedProofs,
             filteredCycles,
             filteredPayrollEmployees,
-            costCenterOptions,
             allInitChecked,
             allClosingChecked,
             totalBatchValue,
@@ -1535,9 +1588,14 @@ const PayrollComponent = {
             totalGrossPay,
             totalBasicPay,
             totalCommissions,
-            totalArrearsAdd,
-            totalArrearsDed,
+            totalOvertime,
+            totalOthersAddition,
+            totalOtherAllowance,
             totalAllowances,
+            totalAttendancePunchDed,
+            totalLoanRepayment,
+            totalAbsentWithoutLeave,
+            totalOthersDeduction,
             totalGosiEmployee,
             totalGosiCompany,
             activeEmployeeCount,
@@ -1548,6 +1606,8 @@ const PayrollComponent = {
             calculateGross,
             calculateNetAdditions,
             calculateNetDeductions,
+            calculateNetPay,
+            sanitizeNumber,
             getCycleIcon,
             getStatusLabel,
             getSubCycles,
@@ -1566,6 +1626,7 @@ const PayrollComponent = {
             toggleEmployeeMenu,
             toggleEmployeeSalary,
             viewAttendanceRecord,
+            viewSubCycleActivityLog,
             getActiveEmployee,
             dropdownMenuStyle,
             triggerProofUpload,

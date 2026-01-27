@@ -226,6 +226,10 @@ const OrdersSettingsComponent = {
                         <label class="form-label">Description</label>
                         <p-inputtext v-model="typeForm.description" placeholder="Brief description" style="width: 100%;"></p-inputtext>
                     </div>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label class="form-label">Policy Note</label>
+                        <p-textarea v-model="typeForm.policyNote" placeholder="Enter policy note that will be displayed to employees..." rows="3" style="width: 100%;"></p-textarea>
+                    </div>
 
                     <!-- Balance Settings Section -->
                     <div class="form-section-title">Balance Settings</div>
@@ -241,8 +245,8 @@ const OrdersSettingsComponent = {
                                       placeholder="Select source" style="width: 100%;"></p-select>
                         </div>
                     </div>
-                    <div class="form-grid" style="margin-top: 1rem;" v-if="typeForm.balanceSource === 'fixed'">
-                        <div class="form-group">
+                    <div class="form-grid" style="margin-top: 1rem;">
+                        <div class="form-group" v-if="typeForm.balanceSource === 'fixed'">
                             <label class="form-label">Balance Days</label>
                             <p-inputnumber v-model="typeForm.balanceDays" placeholder="e.g. 21" style="width: 100%;"></p-inputnumber>
                         </div>
@@ -317,9 +321,15 @@ const OrdersSettingsComponent = {
                                               optionLabel="name" optionValue="id" placeholder="Select level" showClear style="width: 100%;"></p-select>
                                 </div>
                                 <div class="form-group">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1.75rem;">
-                                        <p-checkbox v-model="typeForm.approvalFlow.requireHrAdmin" :binary="true"></p-checkbox>
-                                        <label class="form-label" style="margin: 0;">Requires HR Administrator</label>
+                                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.75rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <p-checkbox v-model="typeForm.approvalFlow.requireHrAdmin" :binary="true"></p-checkbox>
+                                            <label class="form-label" style="margin: 0;">Requires HR Administrator</label>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <p-checkbox v-model="typeForm.approvalFlow.requireHrManager" :binary="true"></p-checkbox>
+                                            <label class="form-label" style="margin: 0;">Requires HR Manager</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -344,9 +354,15 @@ const OrdersSettingsComponent = {
                                                   optionLabel="name" optionValue="id" placeholder="Select level" showClear style="width: 100%;"></p-select>
                                     </div>
                                     <div class="form-group">
-                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1.75rem;">
-                                            <p-checkbox v-model="typeForm.approvalFlow.conditionRequireHrAdmin" :binary="true"></p-checkbox>
-                                            <label class="form-label" style="margin: 0;">Requires HR Administrator</label>
+                                        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.75rem;">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <p-checkbox v-model="typeForm.approvalFlow.conditionRequireHrAdmin" :binary="true"></p-checkbox>
+                                                <label class="form-label" style="margin: 0;">Requires HR Administrator</label>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <p-checkbox v-model="typeForm.approvalFlow.conditionRequireHrManager" :binary="true"></p-checkbox>
+                                                <label class="form-label" style="margin: 0;">Requires HR Manager</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -440,6 +456,7 @@ const OrdersSettingsComponent = {
             categoryId: null,
             name: '',
             description: '',
+            policyNote: '',
             repetition: 'yearly',
             balanceSource: null,
             balanceDays: null,
@@ -448,10 +465,12 @@ const OrdersSettingsComponent = {
             approvalFlow: {
                 lineManagerLevel: 1,
                 requireHrAdmin: false,
+                requireHrManager: false,
                 conditionEnabled: false,
                 conditionDays: 5,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         });
@@ -506,6 +525,7 @@ const OrdersSettingsComponent = {
                 categoryId: null,
                 name: '',
                 description: '',
+                policyNote: '',
                 repetition: 'yearly',
                 balanceSource: null,
                 balanceDays: null,
@@ -514,10 +534,12 @@ const OrdersSettingsComponent = {
                 approvalFlow: {
                     lineManagerLevel: 1,
                     requireHrAdmin: false,
+                    requireHrManager: false,
                     conditionEnabled: false,
                     conditionDays: 5,
                     conditionLineManagerLevel: null,
-                    conditionRequireHrAdmin: false
+                    conditionRequireHrAdmin: false,
+                    conditionRequireHrManager: false
                 },
                 active: true
             };

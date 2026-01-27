@@ -1079,6 +1079,7 @@ const StaticData = {
             categoryId: 1,
             name: 'Annual Leave',
             description: 'Standard annual leave request',
+            policyNote: 'Annual leave must be requested at least 7 days in advance. Requests are subject to manager approval based on team availability. Unused leave days may be carried forward according to company policy.',
             repetition: 'yearly',
             balanceSource: 'system', // 'system' = from employee settings, 'fixed' = fixed days
             balanceDays: null,
@@ -1089,10 +1090,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: 1,
                 requireHrAdmin: true,
+                requireHrManager: false,
                 conditionEnabled: true,
                 conditionDays: 5,
                 conditionLineManagerLevel: 2,
-                conditionRequireHrAdmin: true
+                conditionRequireHrAdmin: true,
+                conditionRequireHrManager: false
             },
             active: true
         },
@@ -1101,6 +1104,7 @@ const StaticData = {
             categoryId: 1,
             name: 'Sick Leave',
             description: 'Medical sick leave with attachment',
+            policyNote: 'A medical certificate is required for sick leave exceeding 2 consecutive days. Please submit the medical report within 48 hours of returning to work.',
             repetition: 'yearly',
             balanceSource: 'fixed',
             balanceDays: 120,
@@ -1112,10 +1116,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: 2,
                 requireHrAdmin: false,
+                requireHrManager: false,
                 conditionEnabled: false,
                 conditionDays: null,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         },
@@ -1124,6 +1130,7 @@ const StaticData = {
             categoryId: 1,
             name: 'Marriage Leave',
             description: 'One-time marriage leave',
+            policyNote: 'Marriage leave is a one-time benefit. Please submit the marriage certificate within 30 days of the marriage date.',
             repetition: 'one_time',
             balanceSource: 'fixed',
             balanceDays: 5,
@@ -1135,10 +1142,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: 2,
                 requireHrAdmin: false,
+                requireHrManager: false,
                 conditionEnabled: false,
                 conditionDays: null,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         },
@@ -1147,6 +1156,7 @@ const StaticData = {
             categoryId: 2,
             name: 'Business Trip',
             description: 'Business travel request',
+            policyNote: 'Business trip requests must be submitted at least 5 working days in advance. All expenses must be documented and submitted within 7 days of return.',
             repetition: 'yearly',
             balanceSource: 'fixed',
             balanceDays: 30,
@@ -1159,10 +1169,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: 2,
                 requireHrAdmin: false,
+                requireHrManager: false,
                 conditionEnabled: false,
                 conditionDays: null,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         },
@@ -1171,6 +1183,7 @@ const StaticData = {
             categoryId: 3,
             name: 'Work From Home',
             description: 'Remote work request',
+            policyNote: 'Work from home requests require manager approval. Ensure you have a stable internet connection and are available during core working hours.',
             repetition: 'yearly',
             balanceSource: 'system',
             balanceDays: null,
@@ -1182,10 +1195,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: 2,
                 requireHrAdmin: false,
+                requireHrManager: false,
                 conditionEnabled: false,
                 conditionDays: null,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         },
@@ -1194,6 +1209,7 @@ const StaticData = {
             categoryId: 3,
             name: 'Permission Request',
             description: 'Early out, late check-in, or during work permission',
+            policyNote: 'Permission requests are limited to 8 hours per month. Exceeding this limit may require HR approval.',
             repetition: 'monthly',
             balanceSource: 'fixed',
             balanceDays: null,
@@ -1207,10 +1223,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: 2,
                 requireHrAdmin: false,
+                requireHrManager: false,
                 conditionEnabled: false,
                 conditionDays: null,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         },
@@ -1219,6 +1237,7 @@ const StaticData = {
             categoryId: 4,
             name: 'Experience Letter',
             description: 'Request for experience certificate',
+            policyNote: 'Experience letters are typically processed within 3-5 working days. Please collect from HR department.',
             repetition: 'unlimited',
             balanceSource: null,
             balanceDays: null,
@@ -1229,10 +1248,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: null,
                 requireHrAdmin: true,
+                requireHrManager: false,
                 conditionEnabled: false,
                 conditionDays: null,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         },
@@ -1241,6 +1262,7 @@ const StaticData = {
             categoryId: 5,
             name: 'Resignation',
             description: 'Resignation submission',
+            policyNote: 'A 30-day notice period is required as per company policy. Please ensure proper handover of responsibilities.',
             repetition: 'unlimited',
             balanceSource: null,
             balanceDays: null,
@@ -1252,10 +1274,12 @@ const StaticData = {
             approvalFlow: {
                 lineManagerLevel: 2,
                 requireHrAdmin: true,
+                requireHrManager: true,
                 conditionEnabled: false,
                 conditionDays: null,
                 conditionLineManagerLevel: null,
-                conditionRequireHrAdmin: false
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false
             },
             active: true
         }
