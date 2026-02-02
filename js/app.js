@@ -64,6 +64,7 @@ const primeVueComponents = {
     'p-tabpanels': PrimeVue.TabPanels,
     'p-tabpanel': PrimeVue.TabPanel,
     'p-dialog': PrimeVue.Dialog,
+    'p-drawer': PrimeVue.Drawer,
     'p-inputtext': PrimeVue.InputText,
     'p-select': PrimeVue.Select,
     'p-datepicker': PrimeVue.DatePicker,

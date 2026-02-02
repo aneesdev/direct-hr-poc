@@ -71,7 +71,7 @@ const ShiftAttendanceComponent = {
                                             <h3>{{ shift.name }}</h3>
                                             <div class="preset-meta">
                                                 <span class="preset-type">{{ getShiftTypeLabel(shift.shiftType) }}</span>
-                                                <span class="preset-periods">{{ shift.periods ? shift.periods.length : 1 }} Period{{ (shift.periods?.length || 1) > 1 ? 's' : '' }}</span>
+                                                <span class="preset-periods">{{ (shift.periods && shift.periods.length > 0) ? shift.periods.length : 1 }} Period{{ ((shift.periods?.length || 1) > 1) ? 's' : '' }}</span>
                                             </div>
                                         </div>
                                         <div class="preset-actions">
@@ -119,7 +119,7 @@ const ShiftAttendanceComponent = {
                                     </template>
 
                                     <template v-else>
-                                        <div v-for="(period, pIndex) in (shift.periods || [{ startTime: shift.startTime, endTime: shift.endTime, clockIn: shift.clockIn, clockOut: shift.clockOut }])" 
+                                        <div v-for="(period, pIndex) in ((shift.periods && shift.periods.length > 0) ? shift.periods : [{ startTime: shift.startTime, endTime: shift.endTime, clockIn: shift.clockIn, clockOut: shift.clockOut }])" 
                                              :key="pIndex" class="preset-period">
                                             <div class="preset-time-info">
                                                 <div class="time-display">
@@ -202,17 +202,47 @@ const ShiftAttendanceComponent = {
                                     </div>
                                 </div>
                                 <div class="scheduler-actions">
-                                    <button class="scheduler-action-btn" @click="draftAndReview">
-                                        <i class="pi pi-file-edit"></i>
-                                        Draft & Review
+                                    <div class="dropdown-btn-wrapper">
+                                        <button class="scheduler-action-btn" @click="showCopyWeekMenu = !showCopyWeekMenu; showCustomWeekPicker = false">
+                                            <i class="pi pi-copy"></i>
+                                            Copy Week
+                                            <i class="pi pi-chevron-down dropdown-arrow"></i>
+                                        </button>
+                                        <div v-if="showCopyWeekMenu" class="dropdown-menu">
+                                            <div class="dropdown-item" @click="copyLastWeek">
+                                                <i class="pi pi-history"></i>
+                                                Last Week
+                                            </div>
+                                            <div class="dropdown-item has-submenu" @click.stop="showCustomWeekPicker = !showCustomWeekPicker">
+                                                <i class="pi pi-calendar"></i>
+                                                Custom Week
+                                                <i class="pi pi-chevron-right submenu-arrow"></i>
+                                            </div>
+                                            <!-- Custom Week Picker Submenu -->
+                                            <div v-if="showCustomWeekPicker" class="week-picker-submenu">
+                                                <div class="week-picker-header">Select Week</div>
+                                                <div class="week-picker-list">
+                                                    <div v-for="week in availableWeeks" :key="week.id" 
+                                                         class="week-picker-item" 
+                                                         @click="selectCustomWeek(week)">
+                                                        <span class="week-range">{{ week.range }}</span>
+                                                        <span class="week-label">{{ week.label }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="scheduler-action-btn" @click="showHistoryDrawer = true">
+                                        <i class="pi pi-history"></i>
+                                        History
                                     </button>
-                                    <button class="scheduler-action-btn" @click="publishLater">
-                                        <i class="pi pi-clock"></i>
-                                        Publish Later
+                                    <button class="scheduler-action-btn outlined" :disabled="Object.keys(scheduleAssignments).length === 0">
+                                        <i class="pi pi-save"></i>
+                                        Save as Draft
                                     </button>
-                                    <button class="scheduler-action-btn primary" :class="{ highlighted: pendingChanges.length > 0 }" @click="publishAndLaunch">
+                                    <button class="scheduler-action-btn primary" :disabled="Object.keys(scheduleAssignments).length === 0">
                                         <i class="pi pi-send"></i>
-                                        Publish & Launch
+                                        Publish Schedule
                                     </button>
                                 </div>
                                 <div class="scheduler-date-nav">
@@ -220,10 +250,6 @@ const ShiftAttendanceComponent = {
                                     <span class="date-range">{{ weekLabelFormatted }}</span>
                                     <button class="nav-arrow" @click="nextWeek"><i class="pi pi-chevron-right"></i></button>
                                 </div>
-                                <button class="add-staff-btn">
-                                    <i class="pi pi-users"></i>
-                                    Add Staff
-                                </button>
                             </div>
 
                             <!-- Search and Filter Bar -->
@@ -254,13 +280,14 @@ const ShiftAttendanceComponent = {
                                 <table class="scheduler-grid">
                                     <thead>
                                         <tr>
-                                            <th class="staff-col">STAFF MEMBERS</th>
+                                            <th class="staff-col">TEAM MEMBER</th>
                                             <th v-for="day in weekDays" :key="day.date" class="day-col-new">
                                                 <div class="day-header-new">
                                                     <span class="day-abbr">{{ day.dayName.substring(0, 3).toUpperCase() }}</span>
                                                     <span class="day-num">{{ day.dateLabel }}</span>
                                                 </div>
                                             </th>
+                                            <th class="total-col">TOTAL<br>Hrs</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -278,17 +305,22 @@ const ShiftAttendanceComponent = {
                                                 <div class="schedule-cell" :class="{ 'has-assignment': hasAssignment(schedule, day.dayName) }">
                                                     <!-- Assigned Shift -->
                                                     <template v-if="getAssignment(schedule, day.dayName)">
-                                                        <div v-if="getAssignment(schedule, day.dayName).type === 'shift'" 
-                                                             class="assigned-shift-card"
-                                                             @click="removeAssignment(schedule, day.dayName)">
-                                                            <div class="shift-indicator"></div>
-                                                            <div class="shift-name-assigned">{{ getAssignment(schedule, day.dayName).shiftName }}</div>
-                                                            <div class="shift-start-time">{{ getAssignment(schedule, day.dayName).startTime }}</div>
-                                                            <div class="shift-end-time">Ends {{ getAssignment(schedule, day.dayName).endTime }}</div>
+                                                        <div v-if="getAssignment(schedule, day.dayName).type === 'shift'" class="assigned-shift-card">
+                                                            <button class="remove-assignment-btn" @click.stop="removeAssignment(schedule, day.dayName)" title="Remove">
+                                                                <i class="pi pi-times"></i>
+                                                            </button>
+                                                            <div class="shift-card-header">
+                                                                <span class="shift-indicator" :style="{ background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></span>
+                                                                <span class="shift-name-assigned">{{ getAssignment(schedule, day.dayName).shiftName }}</span>
+                                                            </div>
+                                                            <div class="shift-time-display">{{ getAssignment(schedule, day.dayName).startTime?.replace(' AM', '').replace(' PM', '') || '08:00' }}</div>
                                                         </div>
-                                                        <div v-else class="time-off-card" @click="removeAssignment(schedule, day.dayName)">
+                                                        <div v-else class="time-off-card">
+                                                            <button class="remove-assignment-btn" @click.stop="removeAssignment(schedule, day.dayName)" title="Remove">
+                                                                <i class="pi pi-times"></i>
+                                                            </button>
                                                             <i class="pi pi-sun"></i>
-                                                            <span>TIME OFF</span>
+                                                            <span>DAY OFF</span>
                                                         </div>
                                                     </template>
                                                     <!-- Add Shift Button -->
@@ -303,10 +335,45 @@ const ShiftAttendanceComponent = {
                                                     </template>
                                                 </div>
                                             </td>
+                                            <td class="total-col">{{ getEmployeeWeeklyHours(schedule) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
+
+                            <!-- Scheduler Footer Stats -->
+                            <div class="scheduler-footer-stats">
+                                <div class="footer-stat">
+                                    <div class="footer-stat-icon orange">
+                                        <i class="pi pi-clock"></i>
+                                    </div>
+                                    <div class="footer-stat-content">
+                                        <span class="footer-stat-label">WEEKLY HOURS</span>
+                                        <span class="footer-stat-value">{{ schedulerStats.weeklyHours }} <small>HRS</small></span>
+                                    </div>
+                                </div>
+                                <div class="footer-stat">
+                                    <div class="footer-stat-icon blue">
+                                        <i class="pi pi-calendar"></i>
+                                    </div>
+                                    <div class="footer-stat-content">
+                                        <span class="footer-stat-label">TOTAL SHIFTS</span>
+                                        <span class="footer-stat-value">{{ schedulerStats.totalShifts }} <small>SLOTS</small></span>
+                                    </div>
+                                </div>
+                                <div class="footer-stat">
+                                    <div class="footer-stat-icon gray">
+                                        <i class="pi pi-calendar-times"></i>
+                                    </div>
+                                    <div class="footer-stat-content">
+                                        <span class="footer-stat-label">UNASSIGNED</span>
+                                        <span class="footer-stat-value">{{ schedulerStats.unassigned }} <small>EMPTY</small></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Popup Backdrop -->
+                            <div v-if="showShiftMenu || showTemplateSelector" class="popup-backdrop" @click="closeAllMenus"></div>
 
                             <!-- Shift Menu Popup -->
                             <div v-if="showShiftMenu" class="shift-menu-popup" :style="shiftMenuPosition">
@@ -351,8 +418,52 @@ const ShiftAttendanceComponent = {
                                                     {{ getShiftDuration(shift) }} hrs
                                                 </span>
                                                 <span class="show-rules" @click.stop="toggleShiftRules(shift.id)">
-                                                    Show shift rules <i class="pi pi-chevron-right"></i>
+                                                    {{ expandedShiftRules === shift.id ? 'Hide shift rules' : 'Show shift rules' }} 
+                                                    <i :class="expandedShiftRules === shift.id ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                                                 </span>
+                                            </div>
+                                            <!-- Shift Rules Tooltip -->
+                                            <div v-if="expandedShiftRules === shift.id" class="shift-rules-tooltip">
+                                                <div class="rules-section clock-in">
+                                                    <div class="rules-section-header">
+                                                        <i class="pi pi-sign-in"></i>
+                                                        <span>Clock-In Rules</span>
+                                                    </div>
+                                                    <div class="rules-grid">
+                                                        <div class="rule-item">
+                                                            <span class="rule-label">Window Opens</span>
+                                                            <span class="rule-value">{{ shift.clockIn?.noEarlierThan || 30 }} mins before</span>
+                                                        </div>
+                                                        <div class="rule-item">
+                                                            <span class="rule-label">Allowed Delay</span>
+                                                            <span class="rule-value">{{ shift.clockIn?.allowedDelay || 15 }} mins</span>
+                                                        </div>
+                                                        <div class="rule-item">
+                                                            <span class="rule-label">Late Threshold</span>
+                                                            <span class="rule-value">{{ shift.clockIn?.noLaterThan || 60 }} mins after</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="rules-section clock-out">
+                                                    <div class="rules-section-header">
+                                                        <i class="pi pi-sign-out"></i>
+                                                        <span>Clock-Out Rules</span>
+                                                    </div>
+                                                    <div class="rules-grid">
+                                                        <div class="rule-item">
+                                                            <span class="rule-label">Early Exit</span>
+                                                            <span class="rule-value">{{ shift.clockOut?.noEarlierThan || 30 }} mins before</span>
+                                                        </div>
+                                                        <div class="rule-item">
+                                                            <span class="rule-label">Allowed Shortage</span>
+                                                            <span class="rule-value">{{ shift.clockOut?.allowedShortage || 15 }} mins</span>
+                                                        </div>
+                                                        <div class="rule-item">
+                                                            <span class="rule-label">Window Closes</span>
+                                                            <span class="rule-value">{{ shift.clockOut?.noLaterThan || 120 }} mins after</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1099,6 +1210,65 @@ const ShiftAttendanceComponent = {
                     <p-button label="Save" icon="pi pi-check" @click="saveAssignment"></p-button>
                 </template>
             </p-dialog>
+
+            <!-- History Drawer -->
+            <p-drawer v-model:visible="showHistoryDrawer" position="right" :style="{ width: '420px' }" class="history-drawer">
+                <template #header>
+                    <div class="history-drawer-header">
+                        <div class="history-icon">
+                            <i class="pi pi-history"></i>
+                        </div>
+                        <div class="history-title-section">
+                            <h3>VERSION TIMELINE</h3>
+                            <span class="history-subtitle">RESTORE PREVIOUS SHIFT STATES</span>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="history-content">
+                    <!-- Latest Changes Banner -->
+                    <div class="latest-changes-banner">
+                        <div class="banner-icon">
+                            <i class="pi pi-sync"></i>
+                        </div>
+                        <div class="banner-content">
+                            <span class="banner-title">LATEST CHANGES</span>
+                            <p class="banner-text">You have {{ Object.keys(scheduleAssignments).length }} unsaved assignments in the current view. Save them as a new draft or publish now.</p>
+                        </div>
+                    </div>
+
+                    <!-- Version Timeline -->
+                    <div class="version-timeline">
+                        <div v-for="version in versionHistory" :key="version.id" class="version-item">
+                            <div class="version-status-bar" :class="version.status"></div>
+                            <div class="version-content">
+                                <div class="version-header">
+                                    <span class="version-badge" :class="version.status">{{ version.status.toUpperCase() }}</span>
+                                    <span class="version-date">{{ version.date }}</span>
+                                </div>
+                                <h4 class="version-name">{{ version.name }}</h4>
+                                <div class="version-meta">
+                                    <span class="version-author">
+                                        <i class="pi pi-user"></i>
+                                        By {{ version.author }}
+                                    </span>
+                                </div>
+                                <div class="version-changes">
+                                    <i class="pi pi-file-edit"></i>
+                                    <span>{{ version.changedShifts }} Changed Shifts</span>
+                                </div>
+                                <div class="version-footer">
+                                    <span class="version-week">
+                                        <i class="pi pi-calendar"></i>
+                                        {{ version.weekRange }}
+                                    </span>
+                                    <span class="restore-link">RESTORE <i class="pi pi-arrow-right"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p-drawer>
         </div>
     `,
 
@@ -1587,14 +1757,74 @@ const ShiftAttendanceComponent = {
         };
 
         const saveShift = () => {
+            // Convert Date objects back to time strings for storage
+            const startTimeStr = dateToTimeString(shiftForm.value.startTimeDate) || shiftForm.value.startTime;
+            const endTimeStr = dateToTimeString(shiftForm.value.endTimeDate) || shiftForm.value.endTime;
+
+            // Compute clock window values for display
+            const clockInRules = shiftForm.value.clockIn;
+            const clockOutRules = shiftForm.value.clockOut;
+
+            const shiftData = {
+                name: shiftForm.value.name,
+                shiftType: shiftForm.value.shiftType,
+                startTime: startTimeStr,
+                endTime: endTimeStr,
+                color: shiftForm.value.color,
+                clockIn: {
+                    noEarlierThan: clockInRules.noEarlierThan,
+                    allowedDelay: clockInRules.allowedDelay,
+                    noLaterThan: clockInRules.noLaterThan,
+                    // Computed window values for display
+                    windowStart: subtractMinutes(startTimeStr, clockInRules.noEarlierThan),
+                    windowEnd: addMinutes(startTimeStr, clockInRules.noLaterThan),
+                    lateThreshold: addMinutes(startTimeStr, clockInRules.allowedDelay)
+                },
+                clockOut: {
+                    noEarlierThan: clockOutRules.noEarlierThan,
+                    allowedShortage: clockOutRules.allowedShortage,
+                    noLaterThan: clockOutRules.noLaterThan,
+                    // Computed window values for display
+                    windowStart: subtractMinutes(endTimeStr, clockOutRules.noEarlierThan),
+                    windowEnd: addMinutes(endTimeStr, clockOutRules.noLaterThan),
+                    earlyThreshold: subtractMinutes(endTimeStr, clockOutRules.allowedShortage || 0)
+                },
+                periods: shiftForm.value.periods.map(p => {
+                    const pStart = dateToTimeString(p.startTimeDate) || p.startTime;
+                    const pEnd = dateToTimeString(p.endTimeDate) || p.endTime;
+                    const pClockIn = p.clockIn || clockInRules;
+                    const pClockOut = p.clockOut || clockOutRules;
+                    return {
+                        startTime: pStart,
+                        endTime: pEnd,
+                        clockIn: {
+                            ...pClockIn,
+                            windowStart: subtractMinutes(pStart, pClockIn.noEarlierThan),
+                            windowEnd: addMinutes(pStart, pClockIn.noLaterThan),
+                            lateThreshold: addMinutes(pStart, pClockIn.allowedDelay)
+                        },
+                        clockOut: {
+                            ...pClockOut,
+                            windowStart: subtractMinutes(pEnd, pClockOut.noEarlierThan),
+                            windowEnd: addMinutes(pEnd, pClockOut.noLaterThan),
+                            earlyThreshold: subtractMinutes(pEnd, pClockOut.allowedShortage || 0)
+                        }
+                    };
+                }),
+                requiredHours: shiftForm.value.requiredHours,
+                validFrom: dateToTimeString(shiftForm.value.validFromDate) || shiftForm.value.validFrom,
+                validTo: dateToTimeString(shiftForm.value.validToDate) || shiftForm.value.validTo,
+                active: shiftForm.value.active
+            };
+
             if (editingShift.value) {
                 const index = allShifts.value.findIndex(s => s.id === editingShift.value.id);
                 if (index !== -1) {
-                    allShifts.value[index] = { ...shiftForm.value, id: editingShift.value.id };
+                    allShifts.value[index] = { ...shiftData, id: editingShift.value.id };
                 }
             } else {
                 const newId = Math.max(...allShifts.value.map(s => s.id), 0) + 1;
-                allShifts.value.push({ ...shiftForm.value, id: newId });
+                allShifts.value.push({ ...shiftData, id: newId });
             }
             showShiftDialog.value = false;
         };
@@ -1611,9 +1841,63 @@ const ShiftAttendanceComponent = {
         const pendingChanges = ref([]);
         const showShiftMenu = ref(false);
         const showTemplateSelector = ref(false);
+        const showCopyWeekMenu = ref(false);
+        const showCustomWeekPicker = ref(false);
+        const showHistoryDrawer = ref(false);
+
+        // Available weeks for custom week picker
+        const availableWeeks = ref([
+            { id: 1, label: 'Last Week', range: 'Jan 26 - Feb 1, 2026' },
+            { id: 2, label: '2 Weeks Ago', range: 'Jan 19 - Jan 25, 2026' },
+            { id: 3, label: '3 Weeks Ago', range: 'Jan 12 - Jan 18, 2026' },
+            { id: 4, label: '4 Weeks Ago', range: 'Jan 5 - Jan 11, 2026' },
+            { id: 5, label: '5 Weeks Ago', range: 'Dec 29 - Jan 4, 2026' },
+            { id: 6, label: '6 Weeks Ago', range: 'Dec 22 - Dec 28, 2025' }
+        ]);
+
+        // Version history mock data
+        const versionHistory = ref([
+            {
+                id: 1,
+                name: 'Version v2.4',
+                status: 'draft',
+                author: 'Admin Sarah',
+                date: 'Oct 24, 2023',
+                changedShifts: 12,
+                weekRange: 'Oct 21, 2023 - Oct 27, 2023'
+            },
+            {
+                id: 2,
+                name: 'Version v2.3',
+                status: 'published',
+                author: 'System Auto',
+                date: 'Oct 22, 2023',
+                changedShifts: 45,
+                weekRange: 'Oct 14, 2023 - Oct 20, 2023'
+            },
+            {
+                id: 3,
+                name: 'Version v2.2',
+                status: 'archived',
+                author: 'Admin Mike',
+                date: 'Oct 20, 2023',
+                changedShifts: 8,
+                weekRange: 'Oct 14, 2023 - Oct 20, 2023'
+            },
+            {
+                id: 4,
+                name: 'Version v2.1',
+                status: 'archived',
+                author: 'Admin Sarah',
+                date: 'Oct 15, 2023',
+                changedShifts: 23,
+                weekRange: 'Oct 7, 2023 - Oct 13, 2023'
+            }
+        ]);
         const shiftMenuPosition = ref({ top: '0px', left: '0px' });
         const templateSearch = ref('');
         const selectedTemplateId = ref(null);
+        const expandedShiftRules = ref(null);
         const currentScheduleTarget = ref({ schedule: null, day: null });
         const scheduleAssignments = ref({});
 
@@ -2095,9 +2379,27 @@ const ShiftAttendanceComponent = {
         // Open shift menu
         const openShiftMenu = (event, schedule, day) => {
             const rect = event.target.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const menuHeight = 100; // Approximate menu height
+            const menuWidth = 180; // Approximate menu width
+
+            let top = rect.bottom + 5;
+            let left = rect.left;
+
+            // Adjust if menu would go below viewport
+            if (top + menuHeight > viewportHeight) {
+                top = rect.top - menuHeight - 5;
+            }
+
+            // Adjust if menu would go beyond right edge
+            if (left + menuWidth > viewportWidth) {
+                left = viewportWidth - menuWidth - 10;
+            }
+
             shiftMenuPosition.value = {
-                top: `${rect.bottom + 5}px`,
-                left: `${rect.left}px`
+                top: `${top}px`,
+                left: `${left}px`
             };
             currentScheduleTarget.value = { schedule, day };
             showShiftMenu.value = true;
@@ -2153,6 +2455,37 @@ const ShiftAttendanceComponent = {
             selectedTemplateId.value = null;
         };
 
+        // Get employee weekly hours
+        const getEmployeeWeeklyHours = (schedule) => {
+            let totalHours = 0;
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            days.forEach(dayName => {
+                const key = `${schedule.id}-${dayName}`;
+                const assignment = scheduleAssignments.value[key];
+                if (assignment && assignment.type === 'shift') {
+                    // Assume 9 hours per shift (can be calculated from actual times)
+                    totalHours += 9;
+                }
+            });
+            return totalHours;
+        };
+
+        // Scheduler footer stats
+        const schedulerStats = computed(() => {
+            const totalEmployees = employeeSchedules.value.length;
+            const totalSlots = totalEmployees * 7;
+            const assignedShifts = Object.values(scheduleAssignments.value).filter(a => a.type === 'shift').length;
+            const timeOffs = Object.values(scheduleAssignments.value).filter(a => a.type === 'timeoff').length;
+            const unassigned = totalSlots - assignedShifts - timeOffs;
+            const weeklyHours = assignedShifts * 9; // Assume 9 hours per shift
+
+            return {
+                weeklyHours,
+                totalShifts: assignedShifts,
+                unassigned
+            };
+        });
+
         // Get shift time range
         const getShiftTimeRange = (shift) => {
             if (shift.shiftType === 'flexible') {
@@ -2175,7 +2508,11 @@ const ShiftAttendanceComponent = {
 
         // Toggle shift rules display
         const toggleShiftRules = (shiftId) => {
-            // Can be implemented to show rules in a tooltip or expanded view
+            if (expandedShiftRules.value === shiftId) {
+                expandedShiftRules.value = null;
+            } else {
+                expandedShiftRules.value = shiftId;
+            }
         };
 
         // Scheduler actions
@@ -2193,6 +2530,24 @@ const ShiftAttendanceComponent = {
                 pendingChanges.value = [];
                 alert('Changes published successfully!');
             }
+        };
+
+        // Copy week functions
+        const copyLastWeek = () => {
+            showCopyWeekMenu.value = false;
+            // Implementation for copying last week's schedule
+            console.log('Copy last week');
+        };
+
+        const copyCustomWeek = () => {
+            showCustomWeekPicker.value = !showCustomWeekPicker.value;
+        };
+
+        const selectCustomWeek = (week) => {
+            showCopyWeekMenu.value = false;
+            showCustomWeekPicker.value = false;
+            // Implementation for copying selected week's schedule
+            console.log('Copy week:', week.label, week.range);
         };
 
         // Close menus when clicking outside
@@ -2329,9 +2684,20 @@ const ShiftAttendanceComponent = {
             getShiftTimeRange,
             getShiftDuration,
             toggleShiftRules,
+            expandedShiftRules,
             draftAndReview,
             publishLater,
             publishAndLaunch,
+            showCopyWeekMenu,
+            showCustomWeekPicker,
+            availableWeeks,
+            copyLastWeek,
+            copyCustomWeek,
+            selectCustomWeek,
+            showHistoryDrawer,
+            versionHistory,
+            getEmployeeWeeklyHours,
+            schedulerStats,
             // Weekly Shift Summary
             reviewerTab,
             reviewerSearch,
