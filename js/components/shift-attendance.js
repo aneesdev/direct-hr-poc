@@ -542,23 +542,28 @@ const ShiftAttendanceComponent = {
                                         </div>
                                         <span>SHIFT REVIEWER</span>
                                     </div>
-                                    <div class="reviewer-tabs">
-                                        <button class="reviewer-tab" :class="{ active: reviewerTab === 'today' }" @click="reviewerTab = 'today'">Today</button>
-                                        <button class="reviewer-tab" :class="{ active: reviewerTab === 'week' }" @click="reviewerTab = 'week'">Current Week</button>
-                                        <button class="reviewer-tab" :class="{ active: reviewerTab === 'next' }" @click="reviewerTab = 'next'">Next Week</button>
-                                    </div>
-                                    <div class="reviewer-filter">
+                                </div>
+                                
+                                <!-- Filter Controls Bar -->
+                                <div class="filter-controls-bar">
+                                    <div class="filter-controls-left">
+                                        <div class="filter-label">
+                                            <i class="pi pi-filter"></i>
+                                            <span>FILTER</span>
+                                        </div>
+                                        <p-select v-model="reviewerDepartment" :options="departmentOptions" optionLabel="name" optionValue="value" placeholder="Select Department" style="width: 200px;"></p-select>
                                         <span class="p-input-icon-left">
                                             <i class="pi pi-search"></i>
-                                            <p-inputtext v-model="reviewerSearch" placeholder="Filter staff..." style="width: 180px;"></p-inputtext>
+                                            <p-inputtext v-model="reviewerSearch" placeholder="Search staff members..." style="width: 220px;"></p-inputtext>
                                         </span>
                                     </div>
-                                    <div class="reviewer-date-nav">
-                                        <button class="nav-arrow" @click="previousWeek"><i class="pi pi-chevron-left"></i></button>
-                                        <span class="date-range-sm">{{ weekLabelShort }}</span>
-                                        <button class="nav-arrow" @click="nextWeek"><i class="pi pi-chevron-right"></i></button>
+                                    <div class="filter-controls-right">
+                                        <div class="week-selector-pill">
+                                            <button class="week-nav-btn" @click="previousWeek"><i class="pi pi-chevron-left"></i></button>
+                                            <span class="week-range-label">{{ weekLabelShort }}</span>
+                                            <button class="week-nav-btn" @click="nextWeek"><i class="pi pi-chevron-right"></i></button>
+                                        </div>
                                     </div>
-                                    <button class="filter-btn"><i class="pi pi-filter"></i></button>
                                 </div>
                                 
                                 <!-- Reviewer Grid -->
@@ -612,7 +617,7 @@ const ShiftAttendanceComponent = {
                             <!-- Operational Insights Section -->
                             <div class="insights-section">
                                 <div class="section-title-row">
-                                    <div class="section-dot"></div>
+                                    <div class="section-bar orange"></div>
                                     <h3>OPERATIONAL INSIGHTS</h3>
                                 </div>
                                 <div class="insights-grid">
@@ -620,26 +625,26 @@ const ShiftAttendanceComponent = {
                                     <div class="insights-stats-card">
                                         <div class="insights-stat-row">
                                             <div class="insights-stat">
-                                                <div class="insights-stat-label">TOTAL HOURS</div>
-                                                <div class="insights-stat-value">{{ summaryStats.totalHours }}<span class="unit">hrs</span></div>
+                                                <div class="insights-stat-label orange">TOTAL HOURS</div>
+                                                <div class="insights-stat-value">{{ summaryStats.totalHours }}<span class="unit">HRS</span></div>
                                             </div>
                                             <div class="insights-stat">
                                                 <div class="insights-stat-label">ACTIVE STAFF</div>
-                                                <div class="insights-stat-value">{{ summaryStats.staffOnDuty }}<span class="unit">users</span></div>
+                                                <div class="insights-stat-value">{{ summaryStats.staffOnDuty }}<span class="unit">USERS</span></div>
                                             </div>
                                         </div>
                                         <div class="insights-stat-row">
                                             <div class="insights-stat">
                                                 <div class="insights-stat-label">SHIFT COUNT</div>
-                                                <div class="insights-stat-value">{{ summaryStats.scheduledShifts }}<span class="unit">slots</span></div>
+                                                <div class="insights-stat-value">{{ summaryStats.scheduledShifts }}<span class="unit">SLOTS</span></div>
                                             </div>
-                                            <div class="insights-stat">
+                                            <div class="insights-stat coverage">
                                                 <div class="insights-stat-label">COVERAGE</div>
-                                                <div class="insights-stat-value">{{ summaryStats.completionRate }}<span class="unit">%</span></div>
+                                                <div class="insights-stat-value">{{ summaryStats.completionRate }}%<i class="pi pi-arrow-up-right trend-up"></i></div>
                                             </div>
                                         </div>
                                         <div class="peak-load-card">
-                                            <div class="peak-icon"><i class="pi pi-chart-line"></i></div>
+                                            <div class="peak-icon"><i class="pi pi-bolt"></i></div>
                                             <div class="peak-info">
                                                 <div class="peak-label">PEAK LOAD DAY</div>
                                                 <div class="peak-value">{{ summaryStats.peakDay }} ({{ summaryStats.peakHours }} hrs total)</div>
@@ -650,25 +655,20 @@ const ShiftAttendanceComponent = {
                                     <!-- Chart Column -->
                                     <div class="insights-chart-card">
                                         <div class="chart-header">
-                                            <div class="chart-title">
-                                                <i class="pi pi-chart-bar"></i>
-                                                <span>Hourly Distribution</span>
-                                            </div>
-                                            <div class="chart-subtitle">Aggregated work hours across the week</div>
-                                        </div>
-                                        <div class="chart-content">
-                                            <div class="bar-chart">
-                                                <div v-for="(day, index) in hourlyDistribution" :key="index" class="bar-item">
-                                                    <div class="bar" :style="{ height: (day.hours / 60 * 100) + '%' }" :class="{ highlighted: day.isHighest }"></div>
-                                                    <span class="bar-label">{{ day.day }}</span>
+                                            <div class="chart-title-left">
+                                                <i class="pi pi-chart-bar chart-icon"></i>
+                                                <div class="chart-title-text">
+                                                    <span class="chart-title">Hourly Distribution</span>
+                                                    <span class="chart-subtitle">AGGREGATED WORK HOURS ACROSS THE WEEK</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="chart-footer">
                                             <div class="average-load">
                                                 <span class="avg-label">AVERAGE LOAD</span>
                                                 <span class="avg-value">{{ summaryStats.avgLoad }}h / user</span>
                                             </div>
+                                        </div>
+                                        <div class="chart-content">
+                                            <canvas ref="hourlyDistributionChart" style="max-height: 150px;"></canvas>
                                         </div>
                                     </div>
                                 </div>
@@ -676,21 +676,23 @@ const ShiftAttendanceComponent = {
 
                             <!-- Employee Density Heatmap -->
                             <div class="heatmap-section">
-                                <div class="heatmap-header">
-                                    <div class="heatmap-title">
-                                        <div class="section-dot orange"></div>
-                                        <h3>Employee Density Heatmap (24h)</h3>
-                                    </div>
-                                    <p>STAFF DISTRIBUTION ACROSS EVERY HOUR OF THE DAY</p>
-                                    <div class="density-legend">
-                                        <span>DENSITY</span>
-                                        <div class="density-gradient">
-                                            <span class="density-min"></span>
-                                            <span class="density-low"></span>
-                                            <span class="density-med"></span>
-                                            <span class="density-high"></span>
+                                <div class="heatmap-header-new">
+                                    <div class="heatmap-title-row">
+                                        <div class="heatmap-title-left">
+                                            <i class="pi pi-clock heatmap-icon"></i>
+                                            <h3>Employee Density Heatmap (24h)</h3>
+                                        </div>
+                                        <div class="density-legend">
+                                            <span>DENSITY</span>
+                                            <div class="density-gradient">
+                                                <span class="density-min"></span>
+                                                <span class="density-low"></span>
+                                                <span class="density-med"></span>
+                                                <span class="density-high"></span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <p class="heatmap-subtitle">STAFF DISTRIBUTION ACROSS EVERY HOUR OF THE DAY</p>
                                 </div>
                                 <div class="heatmap-grid-container">
                                     <table class="heatmap-grid">
@@ -716,30 +718,16 @@ const ShiftAttendanceComponent = {
                                 </div>
                                 <div class="heatmap-footer">
                                     <div class="heatmap-stat">
-                                        <div class="heatmap-stat-icon"><i class="pi pi-clock"></i></div>
+                                        <div class="heatmap-stat-icon hotels"><i class="pi pi-building"></i></div>
                                         <div class="heatmap-stat-info">
-                                            <div class="heatmap-stat-label">BUSIEST HOUR</div>
-                                            <div class="heatmap-stat-value">{{ heatmapStats.busiestHour }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="heatmap-stat">
-                                        <div class="heatmap-stat-icon quiet"><i class="pi pi-moon"></i></div>
-                                        <div class="heatmap-stat-info">
-                                            <div class="heatmap-stat-label">QUIETEST HOUR</div>
-                                            <div class="heatmap-stat-value">{{ heatmapStats.quietestHour }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="heatmap-stat">
-                                        <div class="heatmap-stat-icon schedule"><i class="pi pi-calendar"></i></div>
-                                        <div class="heatmap-stat-info">
-                                            <div class="heatmap-stat-label">SCHEDULE LOAD</div>
+                                            <div class="heatmap-stat-label">HOTELS LOAD</div>
                                             <div class="heatmap-stat-value">{{ heatmapStats.scheduleLoad }}</div>
                                         </div>
                                     </div>
                                     <div class="heatmap-stat">
-                                        <div class="heatmap-stat-icon flexible"><i class="pi pi-sliders-h"></i></div>
+                                        <div class="heatmap-stat-icon flights"><i class="pi pi-send"></i></div>
                                         <div class="heatmap-stat-info">
-                                            <div class="heatmap-stat-label">FLEXIBLE LOAD</div>
+                                            <div class="heatmap-stat-label">FLIGHTS LOAD</div>
                                             <div class="heatmap-stat-value">{{ heatmapStats.flexibleLoad }}</div>
                                         </div>
                                     </div>
@@ -1363,7 +1351,7 @@ const ShiftAttendanceComponent = {
     `,
 
     setup() {
-        const { ref, computed, onMounted } = Vue;
+        const { ref, computed, onMounted, watch, nextTick } = Vue;
 
         // Tab state
         const activeTab = ref('shifts');
@@ -1994,6 +1982,17 @@ const ShiftAttendanceComponent = {
         // Weekly Shift Summary State
         const reviewerTab = ref('week');
         const reviewerSearch = ref('');
+        const reviewerDepartment = ref(null);
+
+        // Department options for filter
+        const departmentOptions = ref([
+            { name: 'All Departments', value: null },
+            { name: 'IT', value: 'IT' },
+            { name: 'Operations', value: 'Operations' },
+            { name: 'Finance', value: 'Finance' },
+            { name: 'HR', value: 'HR' },
+            { name: 'Sales', value: 'Sales' }
+        ]);
 
         // Week label short format
         const weekLabelShort = computed(() => {
@@ -2029,14 +2028,86 @@ const ShiftAttendanceComponent = {
         const hourlyDistribution = computed(() => {
             return [
                 { day: 'Mon', hours: 56, isHighest: true },
-                { day: 'Tue', hours: 42, isHighest: false },
+                { day: 'Tue', hours: 52, isHighest: true },
                 { day: 'Wed', hours: 38, isHighest: false },
                 { day: 'Thu', hours: 45, isHighest: false },
-                { day: 'Fri', hours: 48, isHighest: false },
-                { day: 'Sat', hours: 28, isHighest: false },
-                { day: 'Sun', hours: 20, isHighest: false }
+                { day: 'Fri', hours: 42, isHighest: false },
+                { day: 'Sat', hours: 44, isHighest: false },
+                { day: 'Sun', hours: 46, isHighest: false }
             ];
         });
+
+        // Chart.js ref and instance
+        const hourlyDistributionChart = ref(null);
+        let chartInstance = null;
+
+        // Initialize Chart.js
+        const initHourlyChart = () => {
+            if (!hourlyDistributionChart.value) return;
+            
+            // Destroy existing chart if any
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const ctx = hourlyDistributionChart.value.getContext('2d');
+            const data = hourlyDistribution.value;
+            
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.day),
+                    datasets: [{
+                        data: data.map(d => d.hours),
+                        backgroundColor: data.map(d => d.isHighest ? '#f97316' : '#e2e8f0'),
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barThickness: 45
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleFont: { size: 12 },
+                            bodyFont: { size: 11 },
+                            padding: 10,
+                            callbacks: {
+                                label: (context) => `${context.raw} hours`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 60,
+                            ticks: {
+                                stepSize: 15,
+                                font: { size: 11 },
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11 },
+                                color: '#64748b'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        };
 
         // Heatmap hours labels
         const heatmapHours = ['12A', '1A', '2A', '3A', '4A', '5A', '6A', '7A', '8A', '9A', '10A', '11A',
@@ -2080,12 +2151,13 @@ const ShiftAttendanceComponent = {
 
         // Initialize mock reviewer shifts
         const initReviewerShifts = () => {
+            // Use same colors as shift presets
             const mockShiftTypes = [
-                { name: 'MORNING', time: '08:00-17:00' },
-                { name: 'MID-DAY', time: '10:00-17:00' },
-                { name: 'EVENING', time: '14:00-22:00' },
-                { name: 'FLEX', time: '09:00-17:00' },
-                { name: 'NIGHT', time: '22:00-06:00' }
+                { name: 'MORNING', time: '08:00-17:00', color: '#22c55e' },
+                { name: 'MID-DAY', time: '10:00-17:00', color: '#f97316' },
+                { name: 'EVENING', time: '14:00-22:00', color: '#3b82f6' },
+                { name: 'FLEX', time: '09:00-17:00', color: '#a855f7' },
+                { name: 'NIGHT', time: '22:00-06:00', color: '#1e293b' }
             ];
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const cache = {};
@@ -2109,6 +2181,24 @@ const ShiftAttendanceComponent = {
 
         // Initialize on component mount
         initReviewerShifts();
+
+        // Watch for tab changes to initialize chart
+        watch(activeTab, (newTab) => {
+            if (newTab === 'summary') {
+                nextTick(() => {
+                    initHourlyChart();
+                });
+            }
+        });
+
+        // Initialize chart if already on summary tab
+        onMounted(() => {
+            if (activeTab.value === 'summary') {
+                nextTick(() => {
+                    initHourlyChart();
+                });
+            }
+        });
 
         // Get reviewer shift for display
         const getReviewerShift = (schedule, dayName) => {
@@ -2143,7 +2233,9 @@ const ShiftAttendanceComponent = {
 
         // Get shift block style
         const getShiftBlockStyle = (schedule, dayName) => {
-            return {};
+            const shift = getReviewerShift(schedule, dayName);
+            if (!shift || !shift.color) return {};
+            return { background: shift.color };
         };
 
         // Get employee coverage percentage
@@ -2418,11 +2510,11 @@ const ShiftAttendanceComponent = {
             const today = new Date();
             const startOfWeek = new Date(today);
             startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (attendanceWeekOffset.value * 7));
-            
+
             const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
             const shiftTypes = ['Normal', 'Flexible', 'Template'];
             const contexts = ['Regular Workday', 'Regular Workday', 'Regular Workday', 'Regular Workday', 'Regular Workday', 'Weekend Off', 'Weekend Off'];
-            
+
             // Get unique employees from attendanceLogs
             const employees = attendanceLogs.value.slice(0, 10).map(emp => ({
                 employeeId: emp.employeeId,
@@ -2436,13 +2528,13 @@ const ShiftAttendanceComponent = {
                     date.setDate(startOfWeek.getDate() + idx);
                     const isToday = date.toDateString() === today.toDateString();
                     const isWeekend = idx >= 5;
-                    
+
                     // Generate varied data for each day
                     const hasShift = !isWeekend || Math.random() > 0.7;
                     const shiftType = hasShift ? shiftTypes[emp.employeeId % 3] : null;
                     const scheduleStart = hasShift ? ['08:00 AM', '09:00 AM', '07:00 AM'][emp.employeeId % 3] : null;
                     const scheduleEnd = hasShift ? ['05:00 PM', '06:00 PM', '10:00 PM'][emp.employeeId % 3] : null;
-                    
+
                     return {
                         dayName,
                         date: date.getDate(),
@@ -2460,7 +2552,7 @@ const ShiftAttendanceComponent = {
                     };
                 })
             }));
-            
+
             return employees;
         });
 
@@ -2903,9 +2995,12 @@ const ShiftAttendanceComponent = {
             // Weekly Shift Summary
             reviewerTab,
             reviewerSearch,
+            reviewerDepartment,
+            departmentOptions,
             weekLabelShort,
             summaryStats,
             hourlyDistribution,
+            hourlyDistributionChart,
             heatmapHours,
             heatmapData,
             heatmapStats,
