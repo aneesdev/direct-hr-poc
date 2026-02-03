@@ -4125,6 +4125,151 @@ img {
    ATTENDANCE TAB - REVAMPED STYLES
    ========================================================================== */
 
+/* Attendance Week Header */
+.attendance-week-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.week-filter-section {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 0.35rem 0.5rem;
+}
+
+.week-nav-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-color-secondary);
+    transition: all 0.15s ease;
+}
+
+.week-nav-btn:hover {
+    background: var(--surface-ground);
+    color: var(--text-color);
+}
+
+.week-nav-btn i {
+    font-size: 0.75rem;
+}
+
+.week-label-display {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 0 0.5rem;
+    letter-spacing: 0.3px;
+}
+
+/* Daily Overview Row */
+.daily-overview-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.daily-stat-card {
+    flex: 1;
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.daily-stat-card.current-day {
+    border-color: #f97316;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+}
+
+.daily-stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-name-att {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    letter-spacing: 0.5px;
+}
+
+.day-number-att {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.day-number-att.today-badge {
+    background: #f97316;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.daily-stat-bar {
+    height: 4px;
+    border-radius: 2px;
+    width: 100%;
+}
+
+.daily-stat-duration {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.25rem;
+}
+
+.daily-stat-duration .duration-label {
+    font-size: 0.65rem;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.daily-stat-duration .duration-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.daily-stat-shifts {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+}
+
+.daily-stat-shifts .shift-tag {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: white;
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
 /* Attendance Stats Row */
 .attendance-stats-row {
     display: flex;
@@ -4420,9 +4565,21 @@ img {
     color: #8b5cf6;
 }
 
-/* Shift Type Label */
+/* Shift Cell Content */
+.shift-cell-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
 .shift-type-label {
+    font-weight: 600;
     color: var(--text-color);
+}
+
+.shift-time-range {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
 }
 
 .shift-prefix {
@@ -4431,6 +4588,84 @@ img {
 
 .no-data {
     color: var(--text-color-secondary);
+}
+
+/* Expand Column */
+.col-expand {
+    width: 40px;
+    text-align: center;
+}
+
+.expand-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color-secondary);
+    transition: all 0.15s ease;
+}
+
+.expand-btn:hover {
+    background: var(--surface-ground);
+    color: var(--primary-color);
+}
+
+.expand-btn i {
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+/* Day Column */
+.col-day {
+    width: 80px;
+}
+
+.day-label-att {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface-ground);
+}
+
+.day-label-att.today {
+    background: #f97316;
+    color: white;
+}
+
+/* Main Row */
+.main-row {
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.main-row:hover {
+    background: var(--surface-ground);
+}
+
+.main-row.expanded {
+    background: #f8fafc;
+}
+
+/* Expanded Row */
+.expanded-row {
+    background: #f8fafc;
+}
+
+.expanded-row td {
+    border-top: 1px dashed var(--border-color) !important;
+}
+
+.expanded-row .col-employee,
+.expanded-row .col-expand {
+    border-top: none !important;
 }
 
 .time-value {

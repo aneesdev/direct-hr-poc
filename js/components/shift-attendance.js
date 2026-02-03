@@ -749,6 +749,41 @@ const ShiftAttendanceComponent = {
 
                         <!-- Attendance Tab -->
                         <p-tabpanel value="attendance">
+                            <!-- Week Filter Header -->
+                            <div class="attendance-week-header">
+                                <div class="week-filter-section">
+                                    <button class="week-nav-btn" @click="prevAttendanceWeek">
+                                        <i class="pi pi-chevron-left"></i>
+                                    </button>
+                                    <span class="week-label-display">WEEK OF {{ attendanceWeekLabel }}</span>
+                                    <button class="week-nav-btn" @click="nextAttendanceWeek">
+                                        <i class="pi pi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Daily Overview Stats -->
+                            <div class="daily-overview-row">
+                                <div v-for="day in weekDaysAttendance" :key="day.dayName" 
+                                     class="daily-stat-card" :class="{ 'current-day': day.isToday }">
+                                    <div class="daily-stat-header">
+                                        <span class="day-name-att">{{ day.dayName }}</span>
+                                        <span class="day-number-att" :class="{ 'today-badge': day.isToday }">{{ day.dayNumber }}</span>
+                                    </div>
+                                    <div class="daily-stat-bar" :style="{ background: day.isToday ? '#f97316' : '#22c55e' }"></div>
+                                    <div class="daily-stat-duration">
+                                        <span class="duration-label">DURATION</span>
+                                        <span class="duration-value">{{ day.duration }}</span>
+                                    </div>
+                                    <div class="daily-stat-shifts">
+                                        <span v-for="shift in day.shifts" :key="shift.name" 
+                                              class="shift-tag" :style="{ background: shift.color }">
+                                            {{ shift.name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Attendance Stats Row -->
                             <div class="attendance-stats-row">
                                 <div class="att-stat-card">
@@ -864,10 +899,11 @@ const ShiftAttendanceComponent = {
                                     <table class="attendance-table">
                                         <thead>
                                             <tr>
+                                                <th class="col-expand"></th>
                                                 <th class="col-employee">EMPLOYEE</th>
+                                                <th class="col-day">DAY</th>
                                                 <th class="col-context">DAY CONTEXT</th>
                                                 <th class="col-shift">SHIFT</th>
-                                                <th class="col-time">TIME RANGE</th>
                                                 <th class="col-in">IN</th>
                                                 <th class="col-out">OUT</th>
                                                 <th class="col-status">STATUS</th>
@@ -877,62 +913,116 @@ const ShiftAttendanceComponent = {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="record in paginatedAttendance" :key="record.id">
-                                                <td class="col-employee">
-                                                    <div class="employee-cell">
-                                                        <div class="emp-avatar-initial" :style="{ background: record.deptColor || 'var(--primary-color)' }">
-                                                            {{ (record.name || 'U').charAt(0).toUpperCase() }}
-                                                        </div>
-                                                        <div class="emp-info">
-                                                            <div class="emp-name">{{ record.name || getEmployeeName(record.employeeId) }}</div>
-                                                            <div class="emp-dept">
-                                                                <span class="dept-name" :style="{ color: record.deptColor || 'var(--primary-color)' }">{{ record.department }}</span>
-                                                                <span class="emp-id">{{ record.empId || '#' + record.employeeId }}</span>
+                                            <template v-for="employee in paginatedWeeklyAttendance" :key="employee.employeeId">
+                                                <!-- Main row (first day - Monday) -->
+                                                <tr class="main-row" :class="{ 'expanded': expandedEmployees.includes(employee.employeeId) }" @click="toggleEmployeeExpand(employee.employeeId)">
+                                                    <td class="col-expand">
+                                                        <button class="expand-btn">
+                                                            <i :class="expandedEmployees.includes(employee.employeeId) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                                                        </button>
+                                                    </td>
+                                                    <td class="col-employee">
+                                                        <div class="employee-cell">
+                                                            <div class="emp-avatar-initial" :style="{ background: employee.deptColor || 'var(--primary-color)' }">
+                                                                {{ (employee.name || 'U').charAt(0).toUpperCase() }}
                                                             </div>
-                                                            <div class="emp-role">{{ record.role }}</div>
+                                                            <div class="emp-info">
+                                                                <div class="emp-name">{{ employee.name }}</div>
+                                                                <div class="emp-dept">
+                                                                    <span class="dept-name" :style="{ color: employee.deptColor || 'var(--primary-color)' }">{{ employee.department }}</span>
+                                                                    <span class="emp-id">{{ employee.empId }}</span>
+                                                                </div>
+                                                                <div class="emp-role">{{ employee.role }}</div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td class="col-context">
-                                                    <div class="context-cell" :class="getDayContextClass(record.dayContext)">
-                                                        <i :class="getDayContextIcon(record.dayContext)"></i>
-                                                        <span>{{ record.dayContext || 'Regular Workday' }}</span>
-                                                    </div>
-                                                </td>
-                                                <td class="col-shift">
-                                                    <span v-if="record.shiftType" class="shift-type-label">
-                                                        <span class="shift-prefix">{{ record.shiftType }}</span>
-                                                        <span v-if="record.shiftName"> - {{ record.shiftName }}</span>
-                                                    </span>
-                                                    <span v-else class="no-data">---</span>
-                                                </td>
-                                                <td class="col-time">
-                                                    <span v-if="record.scheduledStart">{{ record.scheduledStart }} - {{ record.scheduledEnd }}</span>
-                                                    <span v-else class="no-data">---</span>
-                                                </td>
-                                                <td class="col-in">
-                                                    <span v-if="record.actualCheckIn" class="time-value">{{ record.actualCheckIn }}</span>
-                                                    <span v-else class="no-data">---</span>
-                                                </td>
-                                                <td class="col-out">
-                                                    <span v-if="record.actualCheckOut" class="time-value">{{ record.actualCheckOut }}</span>
-                                                    <span v-else class="no-data">---</span>
-                                                </td>
-                                                <td class="col-status">
-                                                    <span class="status-badge" :class="getStatusBadgeClass(record.status)">{{ record.status }}</span>
-                                                </td>
-                                                <td class="col-punch">
-                                                    <span class="punch-flag" :class="getPunchFlagClass(record.punchFlag)">{{ record.punchFlag || '---' }}</span>
-                                                </td>
-                                                <td class="col-duration">
-                                                    <span v-if="record.duration" class="duration-value">{{ record.duration }}</span>
-                                                    <span v-else class="no-data">---</span>
-                                                </td>
-                                                <td class="col-violation">
-                                                    <span v-if="record.violation" class="violation-badge" :class="getViolationClass(record.violation)">{{ record.violation }}</span>
-                                                    <span v-else class="no-data">---</span>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                    <td class="col-day">
+                                                        <span class="day-label-att" :class="{ 'today': employee.days[0].isToday }">{{ employee.days[0].dayName }}</span>
+                                                    </td>
+                                                    <td class="col-context">
+                                                        <div class="context-cell" :class="getDayContextClass(employee.days[0].dayContext)">
+                                                            <i :class="getDayContextIcon(employee.days[0].dayContext)"></i>
+                                                            <span>{{ employee.days[0].dayContext || 'Regular Workday' }}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="col-shift">
+                                                        <div v-if="employee.days[0].shiftType" class="shift-cell-content">
+                                                            <span class="shift-type-label">{{ employee.days[0].shiftType }}</span>
+                                                            <span v-if="employee.days[0].scheduledStart" class="shift-time-range">{{ employee.days[0].scheduledStart }} - {{ employee.days[0].scheduledEnd }}</span>
+                                                        </div>
+                                                        <span v-else class="no-data">---</span>
+                                                    </td>
+                                                    <td class="col-in">
+                                                        <span v-if="employee.days[0].actualCheckIn" class="time-value">{{ employee.days[0].actualCheckIn }}</span>
+                                                        <span v-else class="no-data">---</span>
+                                                    </td>
+                                                    <td class="col-out">
+                                                        <span v-if="employee.days[0].actualCheckOut" class="time-value">{{ employee.days[0].actualCheckOut }}</span>
+                                                        <span v-else class="no-data">---</span>
+                                                    </td>
+                                                    <td class="col-status">
+                                                        <span v-if="employee.days[0].status" class="status-badge" :class="getStatusBadgeClass(employee.days[0].status)">{{ employee.days[0].status }}</span>
+                                                        <span v-else class="no-data">---</span>
+                                                    </td>
+                                                    <td class="col-punch">
+                                                        <span class="punch-flag" :class="getPunchFlagClass(employee.days[0].punchFlag)">{{ employee.days[0].punchFlag || '---' }}</span>
+                                                    </td>
+                                                    <td class="col-duration">
+                                                        <span v-if="employee.days[0].duration" class="duration-value">{{ employee.days[0].duration }}</span>
+                                                        <span v-else class="no-data">---</span>
+                                                    </td>
+                                                    <td class="col-violation">
+                                                        <span v-if="employee.days[0].violation" class="violation-badge" :class="getViolationClass(employee.days[0].violation)">{{ employee.days[0].violation }}</span>
+                                                        <span v-else class="no-data">---</span>
+                                                    </td>
+                                                </tr>
+                                                <!-- Expanded rows (other days) -->
+                                                <template v-if="expandedEmployees.includes(employee.employeeId)">
+                                                    <tr v-for="(day, idx) in employee.days.slice(1)" :key="employee.employeeId + '-' + idx" class="expanded-row">
+                                                        <td class="col-expand"></td>
+                                                        <td class="col-employee"></td>
+                                                        <td class="col-day">
+                                                            <span class="day-label-att" :class="{ 'today': day.isToday }">{{ day.dayName }}</span>
+                                                        </td>
+                                                        <td class="col-context">
+                                                            <div class="context-cell" :class="getDayContextClass(day.dayContext)">
+                                                                <i :class="getDayContextIcon(day.dayContext)"></i>
+                                                                <span>{{ day.dayContext || 'Regular Workday' }}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="col-shift">
+                                                            <div v-if="day.shiftType" class="shift-cell-content">
+                                                                <span class="shift-type-label">{{ day.shiftType }}</span>
+                                                                <span v-if="day.scheduledStart" class="shift-time-range">{{ day.scheduledStart }} - {{ day.scheduledEnd }}</span>
+                                                            </div>
+                                                            <span v-else class="no-data">---</span>
+                                                        </td>
+                                                        <td class="col-in">
+                                                            <span v-if="day.actualCheckIn" class="time-value">{{ day.actualCheckIn }}</span>
+                                                            <span v-else class="no-data">---</span>
+                                                        </td>
+                                                        <td class="col-out">
+                                                            <span v-if="day.actualCheckOut" class="time-value">{{ day.actualCheckOut }}</span>
+                                                            <span v-else class="no-data">---</span>
+                                                        </td>
+                                                        <td class="col-status">
+                                                            <span v-if="day.status" class="status-badge" :class="getStatusBadgeClass(day.status)">{{ day.status }}</span>
+                                                            <span v-else class="no-data">---</span>
+                                                        </td>
+                                                        <td class="col-punch">
+                                                            <span class="punch-flag" :class="getPunchFlagClass(day.punchFlag)">{{ day.punchFlag || '---' }}</span>
+                                                        </td>
+                                                        <td class="col-duration">
+                                                            <span v-if="day.duration" class="duration-value">{{ day.duration }}</span>
+                                                            <span v-else class="no-data">---</span>
+                                                        </td>
+                                                        <td class="col-violation">
+                                                            <span v-if="day.violation" class="violation-badge" :class="getViolationClass(day.violation)">{{ day.violation }}</span>
+                                                            <span v-else class="no-data">---</span>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </template>
                                         </tbody>
                                     </table>
                                 </div>
@@ -2079,6 +2169,51 @@ const ShiftAttendanceComponent = {
 
         const attendancePage = ref(1);
         const attendancePerPage = 10;
+        const attendanceWeekOffset = ref(0);
+        const expandedEmployees = ref([]);
+
+        // Attendance Week Label
+        const attendanceWeekLabel = computed(() => {
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (attendanceWeekOffset.value * 7));
+            const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            return `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()}`;
+        });
+
+        const prevAttendanceWeek = () => {
+            attendanceWeekOffset.value -= 1;
+        };
+
+        const nextAttendanceWeek = () => {
+            attendanceWeekOffset.value += 1;
+        };
+
+        // Weekly Days Attendance Overview
+        const weekDaysAttendance = computed(() => {
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (attendanceWeekOffset.value * 7)); // Monday
+
+            const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+            return days.map((dayName, index) => {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + index);
+                const isToday = date.toDateString() === today.toDateString();
+
+                return {
+                    dayName,
+                    dayNumber: date.getDate(),
+                    isToday,
+                    duration: '8.5h',
+                    shifts: [
+                        { name: 'MORN', color: '#f97316' },
+                        { name: 'CS', color: '#22c55e' }
+                    ]
+                };
+            });
+        });
 
         // Attendance Stats - computed from logs
         const attendanceStats = computed(() => {
@@ -2117,7 +2252,7 @@ const ShiftAttendanceComponent = {
                     department: 'IT', deptColor: '#ef4444', empId: '#111',
                     role: 'FIXED DAYS', dayContext: 'Regular Workday',
                     shiftType: 'Normal', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '05:00 PM',
                     actualCheckIn: '8:00 am', actualCheckOut: null,
                     status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT',
                     duration: null, violation: null
@@ -2126,8 +2261,8 @@ const ShiftAttendanceComponent = {
                     id: 2, employeeId: 2, name: 'Ahmed',
                     department: 'PRODUCT', deptColor: '#22c55e', empId: '#555',
                     role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
-                    shiftType: 'Fixable', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    shiftType: 'Flexible', shiftName: null,
+                    scheduledStart: '07:00 AM', scheduledEnd: '10:00 PM',
                     actualCheckIn: '7:55 pm', actualCheckOut: '9:55 pm',
                     status: 'PRESENT', punchFlag: 'COMPLETE',
                     duration: '2 hours', violation: 'LESS EFFORT'
@@ -2147,7 +2282,7 @@ const ShiftAttendanceComponent = {
                     department: 'TECHTIC', deptColor: '#3b82f6', empId: '#888',
                     role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
                     shiftType: 'Normal', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '04:00 PM',
                     actualCheckIn: '8:00 am', actualCheckOut: '3 pm',
                     status: 'PRESENT', punchFlag: 'COMPLETE',
                     duration: '7 hours', violation: 'EARLY OUT'
@@ -2157,7 +2292,7 @@ const ShiftAttendanceComponent = {
                     department: 'TECHTIC', deptColor: '#3b82f6', empId: '#884',
                     role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
                     shiftType: 'Normal', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '04:00 PM',
                     actualCheckIn: '9:00 am', actualCheckOut: '3 pm',
                     status: 'PRESENT', punchFlag: 'COMPLETE',
                     duration: '6 hours', violation: 'LATE IN - EARLY OUT'
@@ -2167,7 +2302,7 @@ const ShiftAttendanceComponent = {
                     department: 'VISA', deptColor: '#8b5cf6', empId: '#852',
                     role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
                     shiftType: 'Normal', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    scheduledStart: '09:00 AM', scheduledEnd: '06:00 PM',
                     actualCheckIn: null, actualCheckOut: '4 pm',
                     status: 'PRESENT', punchFlag: 'MISSING CLOCK-IN',
                     duration: null, violation: null
@@ -2187,7 +2322,7 @@ const ShiftAttendanceComponent = {
                     department: 'FINANCE', deptColor: '#22c55e', empId: '#321',
                     role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
                     shiftType: 'Template', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '12:00 PM',
                     actualCheckIn: null, actualCheckOut: null,
                     status: 'NO SHIFT ASSIGNED', punchFlag: null,
                     duration: null, violation: null
@@ -2196,8 +2331,8 @@ const ShiftAttendanceComponent = {
                     id: 9, employeeId: 9, name: 'Sami',
                     department: 'PACKAGE', deptColor: '#14b8a6', empId: '#648',
                     role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
-                    shiftType: 'Fixable', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    shiftType: 'Flexible', shiftName: null,
+                    scheduledStart: '06:00 AM', scheduledEnd: '11:00 PM',
                     actualCheckIn: null, actualCheckOut: null,
                     status: 'ABSENT', punchFlag: null,
                     duration: null, violation: null
@@ -2207,7 +2342,7 @@ const ShiftAttendanceComponent = {
                     department: 'VISAS', deptColor: '#f59e0b', empId: '#257',
                     role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
                     shiftType: 'Normal', shiftName: null,
-                    scheduledStart: null, scheduledEnd: null,
+                    scheduledStart: '09:00 AM', scheduledEnd: '05:00 PM',
                     actualCheckIn: null, actualCheckOut: null,
                     status: null, punchFlag: null,
                     duration: null, violation: 'OUTSIDE WINDOW'
@@ -2277,6 +2412,73 @@ const ShiftAttendanceComponent = {
             const start = (attendancePage.value - 1) * attendancePerPage;
             return filteredAttendanceLogs.value.slice(start, start + attendancePerPage);
         });
+
+        // Weekly attendance data - grouped by employee with 7 days
+        const weeklyAttendance = computed(() => {
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (attendanceWeekOffset.value * 7));
+            
+            const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+            const shiftTypes = ['Normal', 'Flexible', 'Template'];
+            const contexts = ['Regular Workday', 'Regular Workday', 'Regular Workday', 'Regular Workday', 'Regular Workday', 'Weekend Off', 'Weekend Off'];
+            
+            // Get unique employees from attendanceLogs
+            const employees = attendanceLogs.value.slice(0, 10).map(emp => ({
+                employeeId: emp.employeeId,
+                name: emp.name,
+                department: emp.department,
+                deptColor: emp.deptColor,
+                empId: emp.empId,
+                role: emp.role,
+                days: dayNames.map((dayName, idx) => {
+                    const date = new Date(startOfWeek);
+                    date.setDate(startOfWeek.getDate() + idx);
+                    const isToday = date.toDateString() === today.toDateString();
+                    const isWeekend = idx >= 5;
+                    
+                    // Generate varied data for each day
+                    const hasShift = !isWeekend || Math.random() > 0.7;
+                    const shiftType = hasShift ? shiftTypes[emp.employeeId % 3] : null;
+                    const scheduleStart = hasShift ? ['08:00 AM', '09:00 AM', '07:00 AM'][emp.employeeId % 3] : null;
+                    const scheduleEnd = hasShift ? ['05:00 PM', '06:00 PM', '10:00 PM'][emp.employeeId % 3] : null;
+                    
+                    return {
+                        dayName,
+                        date: date.getDate(),
+                        isToday,
+                        dayContext: isWeekend ? 'Weekend Off' : emp.dayContext || 'Regular Workday',
+                        shiftType: isWeekend ? null : shiftType,
+                        scheduledStart: isWeekend ? null : scheduleStart,
+                        scheduledEnd: isWeekend ? null : scheduleEnd,
+                        actualCheckIn: isWeekend ? null : emp.actualCheckIn,
+                        actualCheckOut: isWeekend ? null : emp.actualCheckOut,
+                        status: isWeekend ? null : emp.status,
+                        punchFlag: isWeekend ? null : emp.punchFlag,
+                        duration: isWeekend ? null : emp.duration,
+                        violation: isWeekend ? null : emp.violation
+                    };
+                })
+            }));
+            
+            return employees;
+        });
+
+        // Paginated weekly attendance
+        const paginatedWeeklyAttendance = computed(() => {
+            const start = (attendancePage.value - 1) * attendancePerPage;
+            return weeklyAttendance.value.slice(start, start + attendancePerPage);
+        });
+
+        // Toggle employee expand
+        const toggleEmployeeExpand = (employeeId) => {
+            const idx = expandedEmployees.value.indexOf(employeeId);
+            if (idx === -1) {
+                expandedEmployees.value.push(employeeId);
+            } else {
+                expandedEmployees.value.splice(idx, 1);
+            }
+        };
 
         // Day context helpers
         const getDayContextClass = (context) => {
@@ -2715,11 +2917,20 @@ const ShiftAttendanceComponent = {
             getHeatmapCellClass,
             // Attendance Tab (Revamped)
             attendancePage,
+            attendanceWeekOffset,
+            attendanceWeekLabel,
+            prevAttendanceWeek,
+            nextAttendanceWeek,
+            weekDaysAttendance,
             attendanceStats,
             attendanceLogs,
             filteredAttendanceLogs,
             totalAttendancePages,
             paginatedAttendance,
+            weeklyAttendance,
+            paginatedWeeklyAttendance,
+            expandedEmployees,
+            toggleEmployeeExpand,
             getDayContextClass,
             getDayContextIcon,
             getStatusBadgeClass,
