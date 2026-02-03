@@ -1025,6 +1025,71 @@ const ShiftAttendanceComponent = {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Weekly Deviation Trends & Correction Queue Section -->
+                            <div class="deviation-section">
+                                <div class="deviation-grid">
+                                    <!-- Weekly Deviation Trends Chart -->
+                                    <div class="deviation-chart-card">
+                                        <div class="deviation-header">
+                                            <div class="deviation-title">
+                                                <i class="pi pi-chart-line"></i>
+                                                <div class="deviation-title-text">
+                                                    <h3>WEEKLY DEVIATION TRENDS</h3>
+                                                    <span class="deviation-subtitle">LATE IN VS EARLY OUT FREQUENCY</span>
+                                                </div>
+                                            </div>
+                                            <div class="deviation-legend">
+                                                <span class="legend-item"><span class="legend-dot orange"></span> LATE ARRIVALS</span>
+                                                <span class="legend-item"><span class="legend-dot blue"></span> EARLY EXITS</span>
+                                            </div>
+                                        </div>
+                                        <div class="deviation-chart-content">
+                                            <canvas ref="deviationTrendsChart" style="max-height: 200px;"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <!-- Correction Queue & Dept Health -->
+                                    <div class="correction-side-panel">
+                                        <!-- Correction Queue -->
+                                        <div class="correction-queue-card">
+                                            <div class="correction-header">
+                                                <div class="correction-icon">
+                                                    <i class="pi pi-exclamation-circle"></i>
+                                                </div>
+                                                <h3>CORRECTION QUEUE</h3>
+                                            </div>
+                                            <p class="correction-desc">{{ correctionQueue.length }} entries require supervisor review for manual punch correction.</p>
+                                            <div class="correction-list">
+                                                <div v-for="item in correctionQueue" :key="item.id" class="correction-item">
+                                                    <span class="correction-name">{{ item.name }}</span>
+                                                    <span class="correction-issue" :class="item.type">{{ item.issue }} <i class="pi pi-arrow-right"></i></span>
+                                                </div>
+                                            </div>
+                                            <button class="resolve-all-btn">RESOLVE ALL ISSUES</button>
+                                        </div>
+
+                                        <!-- Dept Attendance Health -->
+                                        <div class="dept-health-card">
+                                            <div class="dept-health-header">
+                                                <i class="pi pi-chart-line"></i>
+                                                <span>DEPT ATTENDANCE HEALTH</span>
+                                            </div>
+                                            <div class="dept-health-list">
+                                                <div v-for="dept in deptHealthData" :key="dept.name" class="dept-health-item">
+                                                    <div class="dept-health-label">
+                                                        <span class="dept-name-health">{{ dept.name }}</span>
+                                                        <span class="dept-percent">{{ dept.percent }}%</span>
+                                                    </div>
+                                                    <div class="dept-health-bar">
+                                                        <div class="dept-health-fill" :style="{ width: dept.percent + '%', background: dept.color }"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </p-tabpanel>
                     </p-tabpanels>
                 </p-tabs>
@@ -2182,20 +2247,30 @@ const ShiftAttendanceComponent = {
         // Initialize on component mount
         initReviewerShifts();
 
-        // Watch for tab changes to initialize chart
+        // Watch for tab changes to initialize charts
         watch(activeTab, (newTab) => {
             if (newTab === 'summary') {
                 nextTick(() => {
                     initHourlyChart();
                 });
             }
+            if (newTab === 'attendance') {
+                nextTick(() => {
+                    initDeviationChart();
+                });
+            }
         });
 
-        // Initialize chart if already on summary tab
+        // Initialize charts based on current tab
         onMounted(() => {
             if (activeTab.value === 'summary') {
                 nextTick(() => {
                     initHourlyChart();
+                });
+            }
+            if (activeTab.value === 'attendance') {
+                nextTick(() => {
+                    initDeviationChart();
                 });
             }
         });
@@ -2570,6 +2645,130 @@ const ShiftAttendanceComponent = {
             } else {
                 expandedEmployees.value.splice(idx, 1);
             }
+        };
+
+        // Correction Queue data
+        const correctionQueue = ref([
+            { id: 1, name: 'Saeed', issue: 'MISSING OUT', type: 'missing-out' },
+            { id: 2, name: 'Nurhan', issue: 'MISSING IN', type: 'missing-in' }
+        ]);
+
+        // Department Attendance Health data
+        const deptHealthData = ref([
+            { name: 'HOTEL', percent: 85, color: '#f97316' },
+            { name: 'FLIGHT', percent: 92, color: '#3b82f6' },
+            { name: 'IT', percent: 78, color: '#22c55e' },
+            { name: 'FINANCE', percent: 95, color: '#3b82f6' }
+        ]);
+
+        // Deviation Trends Chart
+        const deviationTrendsChart = ref(null);
+        let deviationChartInstance = null;
+
+        const initDeviationChart = () => {
+            if (!deviationTrendsChart.value) return;
+            
+            if (deviationChartInstance) {
+                deviationChartInstance.destroy();
+            }
+
+            const ctx = deviationTrendsChart.value.getContext('2d');
+            
+            deviationChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Late Arrivals',
+                            data: [4, 5, 4, 7, 2, 2, 1],
+                            borderColor: '#f97316',
+                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#f97316',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Early Exits',
+                            data: [2, 4, 5, 1, 8, 4, 1],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#3b82f6',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#1e293b',
+                            titleFont: { size: 13, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            bodyColor: '#64748b',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 8,
+                            boxPadding: 4,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label === 'Early Exits' ? 'early' : 'late';
+                                    const color = context.dataset.label === 'Early Exits' ? '#3b82f6' : '#f97316';
+                                    return label + ' : ' + context.raw;
+                                },
+                                labelTextColor: function(context) {
+                                    return context.dataset.label === 'Early Exits' ? '#3b82f6' : '#f97316';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 8,
+                            ticks: {
+                                stepSize: 2,
+                                font: { size: 11 },
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11 },
+                                color: '#64748b'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
         };
 
         // Day context helpers
@@ -3026,6 +3225,9 @@ const ShiftAttendanceComponent = {
             paginatedWeeklyAttendance,
             expandedEmployees,
             toggleEmployeeExpand,
+            correctionQueue,
+            deptHealthData,
+            deviationTrendsChart,
             getDayContextClass,
             getDayContextIcon,
             getStatusBadgeClass,
