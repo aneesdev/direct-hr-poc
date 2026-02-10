@@ -20,12 +20,15 @@ const app = createApp({
         'new-appraisal': NewAppraisalComponent,
         'appraisal-tracking': AppraisalTrackingComponent,
         'appraisal-results': AppraisalResultsComponent,
-        'appraisal-analytics': AppraisalAnalyticsComponent
+        'appraisal-analytics': AppraisalAnalyticsComponent,
+        'home': HomeComponent,
+        'employee-directory': EmployeeDirectoryComponent,
+        'company-news': CompanyNewsComponent
     },
 
     setup() {
         // Current page state
-        const currentPage = ref('company-settings');
+        const currentPage = ref('home');
 
         // Page title computed
         const pageTitle = computed(() => {
@@ -86,6 +89,9 @@ const primeVueComponents = {
 Object.entries(primeVueComponents).forEach(([name, component]) => {
     app.component(name, component);
 });
+
+// Register PrimeVue directives
+app.directive('tooltip', PrimeVue.Tooltip);
 
 // Mount the application
 app.mount('#app');

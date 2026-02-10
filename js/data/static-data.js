@@ -279,7 +279,9 @@ const StaticData = {
 
     // Page titles mapping
     pageTitles: {
-        'dashboard': 'Dashboard',
+        'home': 'Home',
+        'employee-directory': 'Employee Directory',
+        'company-news': 'Company News & Achievements',
         'company-settings': 'Company Settings',
         'employee-settings': 'Employee Settings',
         'employees': 'Employees',
@@ -2026,7 +2028,54 @@ const StaticData = {
     ],
 
     // Page title for appraisal results
-    appraisalResultsPageTitle: 'Appraisal Results'
+    appraisalResultsPageTitle: 'Appraisal Results',
+
+    // Home Page Data
+    homeData: {
+        currentUser: {
+            name: 'Ahmed',
+            avatar: 'https://i.pravatar.cc/80?img=12'
+        },
+        companyNews: [
+            {
+                id: 1,
+                type: 'achievement',
+                image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=300&fit=crop',
+                date: '2026-02-10',
+                title: 'New Milestone for Direct!',
+                content: 'We are incredibly proud to receive the Excellence in Travel & Tourism Award for 2026. Thank you to everyone who contributed to this success.',
+                likes: 8,
+                comments: 3
+            },
+            {
+                id: 2,
+                type: 'greeting',
+                image: 'https://picsum.photos/id/234/800/400',
+                date: '2026-02-01',
+                title: 'Ramadan Kareem Greetings',
+                content: 'Direct management extends its warmest congratulations to all employees on the occasion of the holy month of Ramadan. Wishing you all a blessed month.',
+                likes: 24,
+                comments: 8
+            }
+        ],
+        newJoiners: [
+            { id: 1, name: 'Laila Al-Zaidi', position: 'Business Analyst', avatar: 'https://i.pravatar.cc/40?img=25', joinedDaysAgo: 14 },
+            { id: 2, name: 'Omar Al-Harbi', position: 'Senior Developer', avatar: 'https://i.pravatar.cc/40?img=53', joinedDaysAgo: 14 }
+        ],
+        workforceStatus: {
+            activeDaily: { count: 142, change: 4.8 },
+            probation: { count: 12, change: 4.8 },
+            onLeave: { count: 5, change: -1.8 },
+            performance: { percent: 94, change: 4.4 }
+        },
+        birthdays: [
+            { id: 1, name: 'Sarah Al-Otaibi', date: 'Born 02-10', avatar: 'https://i.pravatar.cc/50?img=5', wishes: 12 },
+            { id: 2, name: 'Khaled Al-Anazi', date: 'Born 02-10', avatar: 'https://i.pravatar.cc/50?img=68', wishes: 5 }
+        ],
+        anniversaries: [
+            { id: 1, name: 'Rania Al-Otaibi', position: 'Sr. Coordinator', avatar: 'https://i.pravatar.cc/50?img=32', years: 5, joinedDate: 'Joined 02-10' }
+        ]
+    }
 };
 
 // Make it available globally

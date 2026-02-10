@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Direct HR - Admin Dashboard</title>
+    <title>Direct HR - Home</title>
 
     <!-- PrimeIcons -->
     <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
@@ -49,6 +49,9 @@
     <script src="js/components/appraisal-tracking.js"></script>
     <script src="js/components/appraisal-results.js"></script>
     <script src="js/components/appraisal-analytics.js"></script>
+    <script src="js/components/home.js"></script>
+    <script src="js/components/employee-directory.js"></script>
+    <script src="js/components/company-news.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -63,9 +66,13 @@
                     <div class="menu-section">
                         <div class="menu-section-title">Main</div>
                     </div>
-                    <div class="menu-item" @click="navigateTo('dashboard')">
+                    <div class="menu-item" :class="{ active: currentPage === 'home' }" @click="navigateTo('home')">
                         <i class="pi pi-home"></i>
-                        <span>Dashboard</span>
+                        <span>Home</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'employee-directory' }" @click="navigateTo('employee-directory')">
+                        <i class="pi pi-sitemap"></i>
+                        <span>Employee Directory</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'new-request' }"
                         @click="navigateTo('new-request')">
@@ -125,6 +132,11 @@
                         @click="navigateTo('orders-settings')">
                         <i class="pi pi-file-edit"></i>
                         <span>Orders & Requests</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'company-news' }"
+                        @click="navigateTo('company-news')">
+                        <i class="pi pi-megaphone"></i>
+                        <span>Company News</span>
                     </div>
 
                     <div class="menu-section">
@@ -224,6 +236,15 @@
 
                     <!-- Appraisal Analytics Page -->
                     <appraisal-analytics v-else-if="currentPage === 'appraisal-analytics'"></appraisal-analytics>
+
+                    <!-- Home Page -->
+                    <home v-else-if="currentPage === 'home'"></home>
+
+                    <!-- Employee Directory Page -->
+                    <employee-directory v-else-if="currentPage === 'employee-directory'"></employee-directory>
+
+                    <!-- Company News Page -->
+                    <company-news v-else-if="currentPage === 'company-news'"></company-news>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>
