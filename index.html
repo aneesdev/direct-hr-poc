@@ -45,6 +45,10 @@
     <script src="js/components/orders-settings.js"></script>
     <script src="js/components/new-request.js"></script>
     <script src="js/components/my-requests.js"></script>
+    <script src="js/components/new-appraisal.js"></script>
+    <script src="js/components/appraisal-tracking.js"></script>
+    <script src="js/components/appraisal-results.js"></script>
+    <script src="js/components/appraisal-analytics.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -72,6 +76,30 @@
                         @click="navigateTo('my-requests')">
                         <i class="pi pi-inbox"></i>
                         <span>Requests</span>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title">Appraisals</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'new-appraisal' }"
+                        @click="navigateTo('new-appraisal')">
+                        <i class="pi pi-plus-circle"></i>
+                        <span>New Appraisal Cycle</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-tracking' }"
+                        @click="navigateTo('appraisal-tracking')">
+                        <i class="pi pi-chart-line"></i>
+                        <span>Tracking</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-results' }"
+                        @click="navigateTo('appraisal-results')">
+                        <i class="pi pi-file-check"></i>
+                        <span>Results</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-analytics' }"
+                        @click="navigateTo('appraisal-analytics')">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>Analytics</span>
                     </div>
 
                     <div class="menu-section">
@@ -183,6 +211,19 @@
                     <!-- My Requests Page -->
                     <my-requests v-else-if="currentPage === 'my-requests'"
                         @new-request="navigateTo('new-request')"></my-requests>
+
+                    <!-- New Appraisal Page -->
+                    <new-appraisal v-else-if="currentPage === 'new-appraisal'" @back="navigateTo('appraisal-tracking')"
+                        @launched="navigateTo('appraisal-tracking')"></new-appraisal>
+
+                    <!-- Appraisal Tracking Page -->
+                    <appraisal-tracking v-else-if="currentPage === 'appraisal-tracking'"></appraisal-tracking>
+
+                    <!-- Appraisal Results Page -->
+                    <appraisal-results v-else-if="currentPage === 'appraisal-results'"></appraisal-results>
+
+                    <!-- Appraisal Analytics Page -->
+                    <appraisal-analytics v-else-if="currentPage === 'appraisal-analytics'"></appraisal-analytics>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>

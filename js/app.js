@@ -16,7 +16,11 @@ const app = createApp({
         'payroll-module': PayrollComponent,
         'orders-settings': OrdersSettingsComponent,
         'new-request': NewRequestComponent,
-        'my-requests': MyRequestsComponent
+        'my-requests': MyRequestsComponent,
+        'new-appraisal': NewAppraisalComponent,
+        'appraisal-tracking': AppraisalTrackingComponent,
+        'appraisal-results': AppraisalResultsComponent,
+        'appraisal-analytics': AppraisalAnalyticsComponent
     },
 
     setup() {
