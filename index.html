@@ -50,6 +50,7 @@
     <script src="js/components/appraisal-results.js"></script>
     <script src="js/components/appraisal-analytics.js"></script>
     <script src="js/components/home.js"></script>
+    <script src="js/components/my-profile.js"></script>
     <script src="js/components/employee-directory.js"></script>
     <script src="js/components/company-news.js"></script>
 
@@ -182,14 +183,31 @@
                             <i class="pi pi-bell"></i>
                             <span class="notification-badge"></span>
                         </button>
-                        <div class="user-profile">
-                            <div class="user-avatar">A</div>
-                            <div class="user-info">
-                                <div class="user-name">Admin User</div>
-                                <div class="user-role">Super Admin</div>
+                        <div class="user-profile-wrapper">
+                            <div class="user-profile" @click="showUserMenu = !showUserMenu">
+                                <div class="user-avatar">M</div>
+                                <div class="user-info">
+                                    <div class="user-name">Mohammed Alsoliman</div>
+                                    <div class="user-role">Senior Software Engineer</div>
+                                </div>
+                                <i class="pi pi-chevron-down"
+                                    style="color: var(--text-color-secondary); font-size: 0.75rem;"></i>
                             </div>
-                            <i class="pi pi-chevron-down"
-                                style="color: var(--text-color-secondary); font-size: 0.75rem;"></i>
+                            <div class="user-dropdown" v-if="showUserMenu" @click="showUserMenu = false">
+                                <div class="dropdown-item" @click="navigateTo('my-profile')">
+                                    <i class="pi pi-user"></i>
+                                    <span>My Profile</span>
+                                </div>
+                                <div class="dropdown-item">
+                                    <i class="pi pi-cog"></i>
+                                    <span>Settings</span>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-item logout">
+                                    <i class="pi pi-sign-out"></i>
+                                    <span>Logout</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -239,6 +257,9 @@
 
                     <!-- Home Page -->
                     <home v-else-if="currentPage === 'home'"></home>
+
+                    <!-- My Profile Page -->
+                    <my-profile v-else-if="currentPage === 'my-profile'"></my-profile>
 
                     <!-- Employee Directory Page -->
                     <employee-directory v-else-if="currentPage === 'employee-directory'"></employee-directory>

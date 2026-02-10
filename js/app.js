@@ -22,6 +22,7 @@ const app = createApp({
         'appraisal-results': AppraisalResultsComponent,
         'appraisal-analytics': AppraisalAnalyticsComponent,
         'home': HomeComponent,
+        'my-profile': MyProfileComponent,
         'employee-directory': EmployeeDirectoryComponent,
         'company-news': CompanyNewsComponent
     },
@@ -29,6 +30,7 @@ const app = createApp({
     setup() {
         // Current page state
         const currentPage = ref('home');
+        const showUserMenu = ref(false);
 
         // Page title computed
         const pageTitle = computed(() => {
@@ -38,12 +40,14 @@ const app = createApp({
         // Navigation method
         const navigateTo = (page) => {
             currentPage.value = page;
+            showUserMenu.value = false;
         };
 
         return {
             currentPage,
             pageTitle,
-            navigateTo
+            navigateTo,
+            showUserMenu
         };
     }
 });
