@@ -298,7 +298,13 @@ const StaticData = {
         'new-appraisal': 'New Appraisal Cycle',
         'appraisal-tracking': 'Appraisal Tracker',
         'appraisal-results': 'Appraisal Results',
-        'appraisal-analytics': 'Appraisal Analytics'
+        'appraisal-analytics': 'Appraisal Analytics',
+        'hr-request-center': 'HR Request Center',
+        'hr-request-form': 'HR Request Form',
+        'hr-requests-settings': 'HR Requests Settings',
+        'hr-requests-tracking': 'HR Requests Tracking',
+        'hr-request-view': 'HR Request Details',
+        'hr-bulk-settings': 'HR Settings'
     },
 
     // Employee dropdown options

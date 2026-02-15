@@ -53,6 +53,12 @@
     <script src="js/components/my-profile.js"></script>
     <script src="js/components/employee-directory.js"></script>
     <script src="js/components/company-news.js"></script>
+    <script src="js/components/hr-request-center.js"></script>
+    <script src="js/components/hr-request-form.js"></script>
+    <script src="js/components/hr-requests-settings.js"></script>
+    <script src="js/components/hr-requests-tracking.js"></script>
+    <script src="js/components/hr-request-view.js"></script>
+    <script src="js/components/hr-bulk-settings.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -84,6 +90,25 @@
                         @click="navigateTo('my-requests')">
                         <i class="pi pi-inbox"></i>
                         <span>Requests</span>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title">HR Help Desk</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'hr-request-center' || currentPage === 'hr-request-form' }"
+                        @click="navigateTo('hr-request-center')">
+                        <i class="pi pi-ticket"></i>
+                        <span>New HR Request</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'hr-requests-tracking' || currentPage === 'hr-request-view' }"
+                        @click="navigateTo('hr-requests-tracking')">
+                        <i class="pi pi-list-check"></i>
+                        <span>Tracking</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'hr-bulk-settings' }"
+                        @click="navigateTo('hr-bulk-settings')">
+                        <i class="pi pi-sliders-h"></i>
+                        <span>HR Settings</span>
                     </div>
 
                     <div class="menu-section">
@@ -133,6 +158,11 @@
                         @click="navigateTo('orders-settings')">
                         <i class="pi pi-file-edit"></i>
                         <span>Orders & Requests</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'hr-requests-settings' }"
+                        @click="navigateTo('hr-requests-settings')">
+                        <i class="pi pi-cog"></i>
+                        <span>HR Requests</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'company-news' }"
                         @click="navigateTo('company-news')">
@@ -266,6 +296,34 @@
 
                     <!-- Company News Page -->
                     <company-news v-else-if="currentPage === 'company-news'"></company-news>
+
+                    <!-- HR Request Center Page -->
+                    <hr-request-center v-else-if="currentPage === 'hr-request-center'" 
+                                       @open-request="openHrRequest($event)">
+                    </hr-request-center>
+
+                    <!-- HR Request Form Page -->
+                    <hr-request-form v-else-if="currentPage === 'hr-request-form'" 
+                                     :request-type="selectedHrRequest"
+                                     @back="navigateTo('hr-request-center')">
+                    </hr-request-form>
+
+                    <!-- HR Requests Settings Page -->
+                    <hr-requests-settings v-else-if="currentPage === 'hr-requests-settings'"></hr-requests-settings>
+
+                    <!-- HR Requests Tracking Page -->
+                    <hr-requests-tracking v-else-if="currentPage === 'hr-requests-tracking'"
+                                          @view-request="viewHrRequest($event)">
+                    </hr-requests-tracking>
+
+                    <!-- HR Request View Page -->
+                    <hr-request-view v-else-if="currentPage === 'hr-request-view'"
+                                     :request="selectedHrRequestView"
+                                     @back="navigateTo('hr-requests-tracking')">
+                    </hr-request-view>
+
+                    <!-- HR Bulk Settings Page -->
+                    <hr-bulk-settings v-else-if="currentPage === 'hr-bulk-settings'"></hr-bulk-settings>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>

@@ -24,13 +24,21 @@ const app = createApp({
         'home': HomeComponent,
         'my-profile': MyProfileComponent,
         'employee-directory': EmployeeDirectoryComponent,
-        'company-news': CompanyNewsComponent
+        'company-news': CompanyNewsComponent,
+        'hr-request-center': HrRequestCenterComponent,
+        'hr-request-form': HrRequestFormComponent,
+        'hr-requests-settings': HrRequestsSettingsComponent,
+        'hr-requests-tracking': HrRequestsTrackingComponent,
+        'hr-request-view': HrRequestViewComponent,
+        'hr-bulk-settings': HrBulkSettingsComponent
     },
 
     setup() {
         // Current page state
         const currentPage = ref('home');
         const showUserMenu = ref(false);
+        const selectedHrRequest = ref(null);
+        const selectedHrRequestView = ref(null);
 
         // Page title computed
         const pageTitle = computed(() => {
@@ -43,11 +51,27 @@ const app = createApp({
             showUserMenu.value = false;
         };
 
+        // Open HR Request form
+        const openHrRequest = (request) => {
+            selectedHrRequest.value = request;
+            currentPage.value = 'hr-request-form';
+        };
+
+        // View HR Request details
+        const viewHrRequest = (request) => {
+            selectedHrRequestView.value = request;
+            currentPage.value = 'hr-request-view';
+        };
+
         return {
             currentPage,
             pageTitle,
             navigateTo,
-            showUserMenu
+            showUserMenu,
+            selectedHrRequest,
+            openHrRequest,
+            selectedHrRequestView,
+            viewHrRequest
         };
     }
 });
@@ -86,7 +110,8 @@ const primeVueComponents = {
     'p-inputnumber': PrimeVue.InputNumber,
     'p-textarea': PrimeVue.Textarea,
     'p-fileupload': PrimeVue.FileUpload,
-    'p-multiselect': PrimeVue.MultiSelect
+    'p-multiselect': PrimeVue.MultiSelect,
+    'p-autocomplete': PrimeVue.AutoComplete
 };
 
 // Register all PrimeVue components
