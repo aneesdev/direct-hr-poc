@@ -59,6 +59,7 @@
     <script src="js/components/hr-requests-tracking.js"></script>
     <script src="js/components/hr-request-view.js"></script>
     <script src="js/components/hr-bulk-settings.js"></script>
+    <script src="js/components/company-documents.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -168,6 +169,11 @@
                         @click="navigateTo('company-news')">
                         <i class="pi pi-megaphone"></i>
                         <span>Company News</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'company-documents' }"
+                        @click="navigateTo('company-documents')">
+                        <i class="pi pi-folder"></i>
+                        <span>Company Documents</span>
                     </div>
 
                     <div class="menu-section">
@@ -324,6 +330,9 @@
 
                     <!-- HR Bulk Settings Page -->
                     <hr-bulk-settings v-else-if="currentPage === 'hr-bulk-settings'"></hr-bulk-settings>
+
+                    <!-- Company Documents Page -->
+                    <company-documents v-else-if="currentPage === 'company-documents'"></company-documents>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>

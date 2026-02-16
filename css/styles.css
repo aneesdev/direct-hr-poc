@@ -13545,15 +13545,177 @@ img {
 /* Home Content Grid */
 .home-content-grid {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 280px 1fr 280px;
     gap: 1.5rem;
 }
 
+@media (max-width: 1400px) {
+    .home-content-grid {
+        grid-template-columns: 260px 1fr 260px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .home-content-grid {
+        grid-template-columns: 1fr 320px;
+    }
+    .home-docs-column {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .home-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.home-docs-column,
+.home-center-column,
 .home-left-column,
 .home-right-column {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+/* Company Documents Widget */
+.documents-widget {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: sticky;
+    top: 1rem;
+}
+
+.documents-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: var(--primary-color);
+    color: #fff;
+    gap: 0.75rem;
+}
+
+.documents-header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.documents-header .docs-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.documents-list {
+    max-height: calc(100vh - 280px);
+    overflow-y: auto;
+}
+
+.document-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.document-item:last-child {
+    border-bottom: none;
+}
+
+.document-item:hover {
+    background: var(--surface-ground);
+}
+
+.document-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.document-icon.pdf {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.document-icon.doc {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.document-icon.policy {
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+}
+
+.document-icon.conduct {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.document-icon.guide {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.document-icon.health {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.document-icon.comm {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+}
+
+.document-icon.remote {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+}
+
+.document-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.document-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.document-name-ar {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    margin-top: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Section Header */
@@ -18761,4 +18923,223 @@ img {
 
 .attendance-logic-card .logic-list li strong {
     color: var(--text-color);
+}
+
+/* ============================================
+   COMPANY DOCUMENTS SETTINGS PAGE
+   ============================================ */
+
+.company-documents-page {
+    padding: 0;
+}
+
+/* Document Table Cell */
+.doc-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.doc-cell .doc-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.doc-cell .doc-icon.pdf {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.doc-cell .doc-icon.doc {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.doc-cell .doc-icon.policy {
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+}
+
+.doc-cell .doc-icon.conduct {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.doc-cell .doc-icon.guide {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.doc-cell .doc-icon.health {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.doc-cell .doc-icon.comm {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+}
+
+.doc-cell .doc-icon.remote {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+}
+
+.doc-cell .doc-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.doc-cell .doc-name-ar {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    margin-top: 0.15rem;
+}
+
+/* Document Category Badge */
+.doc-category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.doc-category-badge.policy {
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+}
+
+.doc-category-badge.guide {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.doc-category-badge.regulation {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+/* File Type Badge */
+.file-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+}
+
+.file-type-badge.pdf {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.file-type-badge.docx,
+.file-type-badge.doc {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.file-type-badge.xlsx,
+.file-type-badge.xls {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+/* Downloads Count */
+.downloads-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.downloads-count i {
+    font-size: 0.8rem;
+}
+
+/* Document Form View */
+.doc-form-view {
+    padding: 0;
+}
+
+.doc-form-view .form-main-section {
+    max-width: 800px;
+}
+
+/* File Upload Zone */
+.file-upload-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    background: var(--surface-ground);
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.file-upload-zone:hover {
+    border-color: var(--primary-color);
+    background: rgba(249, 115, 22, 0.02);
+}
+
+.file-upload-zone .upload-info {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: var(--text-color-secondary);
+    font-size: 0.85rem;
+}
+
+.file-upload-zone .file-types {
+    font-size: 0.75rem;
+}
+
+/* Selected File Display */
+.selected-file {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.selected-file i {
+    color: var(--primary-color);
+}
+
+.selected-file span {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.selected-file button {
+    background: none;
+    border: none;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.selected-file button:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
 }

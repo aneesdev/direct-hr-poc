@@ -41,8 +41,29 @@ const HomeComponent = {
 
             <!-- Main Content Grid -->
             <div class="home-content-grid">
-                <!-- Left Column: Company News -->
-                <div class="home-left-column">
+                <!-- Left Column: Company Documents -->
+                <div class="home-docs-column">
+                    <div class="documents-widget">
+                        <div class="documents-header">
+                            <h4><i class="pi pi-folder"></i> Company Documents</h4>
+                            <span class="docs-count">{{ companyDocuments.length }} FILES</span>
+                        </div>
+                        <div class="documents-list">
+                            <div v-for="doc in companyDocuments" :key="doc.id" class="document-item" @click="openDocument(doc)">
+                                <div class="document-icon" :class="doc.iconClass">
+                                    <i :class="'pi ' + doc.icon"></i>
+                                </div>
+                                <div class="document-info">
+                                    <div class="document-name">{{ doc.name }}</div>
+                                    <div class="document-name-ar">{{ doc.nameAr }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Column: Company News -->
+                <div class="home-center-column">
                     <div class="section-header">
                         <h2>Company News & Achievements</h2>
                     </div>
@@ -356,6 +377,24 @@ const HomeComponent = {
         const showBirthdayModal = ref(false);
         const showWallOfFameModal = ref(false);
 
+        // Company Documents data
+        const companyDocuments = ref([
+            { id: 1, name: 'Regulations of Work in Direct', nameAr: 'أنظمة العمل في دايركت', icon: 'pi-file-pdf', iconClass: 'pdf' },
+            { id: 2, name: 'Direct Strategy 2024-2026', nameAr: '2024-2026 إستراتيجية', icon: 'pi-file', iconClass: 'doc' },
+            { id: 3, name: 'Vacation & Leave Policy', nameAr: 'سياسة الإجازات', icon: 'pi-calendar', iconClass: 'policy' },
+            { id: 4, name: 'Employee Code of Conduct', nameAr: 'مدونة قواعد السلوك', icon: 'pi-users', iconClass: 'conduct' },
+            { id: 5, name: 'Performance Review Guide', nameAr: 'دليل تقييم الأداء', icon: 'pi-chart-line', iconClass: 'guide' },
+            { id: 6, name: 'Health & Insurance Guide', nameAr: 'دليل التأمين الصحي', icon: 'pi-heart', iconClass: 'health' },
+            { id: 7, name: 'Internal Communication', nameAr: 'سياسة التواصل الداخلي', icon: 'pi-comments', iconClass: 'comm' },
+            { id: 8, name: 'Remote Work Framework', nameAr: 'إطار العمل عن بعد', icon: 'pi-home', iconClass: 'remote' }
+        ]);
+
+        const openDocument = (doc) => {
+            console.log('Opening document:', doc.name);
+            // In real implementation, this would open/download the document
+            alert('Opening: ' + doc.name);
+        };
+
         // Wall of Fame data
         const goldenPillars = ref([
             {
@@ -596,6 +635,7 @@ const HomeComponent = {
         return {
             currentUser,
             companyNews,
+            companyDocuments,
             newJoiners,
             workforceStatus,
             birthdays,
@@ -617,7 +657,8 @@ const HomeComponent = {
             toggleComments,
             addComment,
             addBirthdayComment,
-            addAnniversaryComment
+            addAnniversaryComment,
+            openDocument
         };
     }
 };

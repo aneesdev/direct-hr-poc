@@ -30,7 +30,8 @@ const app = createApp({
         'hr-requests-settings': HrRequestsSettingsComponent,
         'hr-requests-tracking': HrRequestsTrackingComponent,
         'hr-request-view': HrRequestViewComponent,
-        'hr-bulk-settings': HrBulkSettingsComponent
+        'hr-bulk-settings': HrBulkSettingsComponent,
+        'company-documents': CompanyDocumentsComponent
     },
 
     setup() {

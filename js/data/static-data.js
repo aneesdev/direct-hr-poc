@@ -304,7 +304,8 @@ const StaticData = {
         'hr-requests-settings': 'HR Requests Settings',
         'hr-requests-tracking': 'HR Requests Tracking',
         'hr-request-view': 'HR Request Details',
-        'hr-bulk-settings': 'HR Settings'
+        'hr-bulk-settings': 'HR Settings',
+        'company-documents': 'Company Documents'
     },
 
     // Employee dropdown options
