@@ -164,6 +164,24 @@ const HrRequestsSettingsComponent = {
                         <i class="pi pi-inbox"></i>
                         <p>No fields added yet. Click "Add Field" to select employee fields.</p>
                     </div>
+
+                    <!-- Approval Flow Section -->
+                    <div class="form-section-title">Approval Flow</div>
+                    <div class="approval-flow-builder">
+                        <div class="approval-step">
+                            <div class="step-label">Primary Approval</div>
+                            <div class="approval-checkboxes">
+                                <div class="approval-checkbox-item">
+                                    <p-checkbox v-model="typeForm.approvalFlow.requireHrAdmin" :binary="true" inputId="hrAdmin"></p-checkbox>
+                                    <label for="hrAdmin">Requires HR Administrator</label>
+                                </div>
+                                <div class="approval-checkbox-item">
+                                    <p-checkbox v-model="typeForm.approvalFlow.requireHrManager" :binary="true" inputId="hrManager"></p-checkbox>
+                                    <label for="hrManager">Requires HR Manager</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <template #footer>
@@ -366,7 +384,11 @@ const HrRequestsSettingsComponent = {
             icon: 'pi-ticket',
             color: '#3b82f6',
             active: true,
-            fields: []
+            fields: [],
+            approvalFlow: {
+                requireHrAdmin: false,
+                requireHrManager: false
+            }
         });
 
         // Icon options
@@ -447,6 +469,10 @@ const HrRequestsSettingsComponent = {
             typeForm.color = '#3b82f6';
             typeForm.active = true;
             typeForm.fields = [];
+            typeForm.approvalFlow = {
+                requireHrAdmin: false,
+                requireHrManager: false
+            };
             showTypeDialog.value = true;
         };
 
@@ -458,6 +484,10 @@ const HrRequestsSettingsComponent = {
             typeForm.color = type.color;
             typeForm.active = type.active;
             typeForm.fields = [...type.fields];
+            typeForm.approvalFlow = type.approvalFlow ? { ...type.approvalFlow } : {
+                requireHrAdmin: false,
+                requireHrManager: false
+            };
             showTypeDialog.value = true;
         };
 
@@ -483,7 +513,8 @@ const HrRequestsSettingsComponent = {
                         icon: typeForm.icon,
                         color: typeForm.color,
                         active: typeForm.active,
-                        fields: [...typeForm.fields]
+                        fields: [...typeForm.fields],
+                        approvalFlow: { ...typeForm.approvalFlow }
                     };
                 }
             } else {
@@ -495,7 +526,8 @@ const HrRequestsSettingsComponent = {
                     icon: typeForm.icon,
                     color: typeForm.color,
                     active: typeForm.active,
-                    fields: [...typeForm.fields]
+                    fields: [...typeForm.fields],
+                    approvalFlow: { ...typeForm.approvalFlow }
                 });
             }
 

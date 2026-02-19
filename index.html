@@ -60,6 +60,7 @@
     <script src="js/components/hr-request-view.js"></script>
     <script src="js/components/hr-bulk-settings.js"></script>
     <script src="js/components/company-documents.js"></script>
+    <script src="js/components/stats.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -77,6 +78,10 @@
                     <div class="menu-item" :class="{ active: currentPage === 'home' }" @click="navigateTo('home')">
                         <i class="pi pi-home"></i>
                         <span>Home</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'stats' }" @click="navigateTo('stats')">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>Stats</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'employee-directory' }" @click="navigateTo('employee-directory')">
                         <i class="pi pi-sitemap"></i>
@@ -109,7 +114,7 @@
                     <div class="menu-item" :class="{ active: currentPage === 'hr-bulk-settings' }"
                         @click="navigateTo('hr-bulk-settings')">
                         <i class="pi pi-sliders-h"></i>
-                        <span>HR Settings</span>
+                        <span>HR Help Desk Settings</span>
                     </div>
 
                     <div class="menu-section">
@@ -163,7 +168,7 @@
                     <div class="menu-item" :class="{ active: currentPage === 'hr-requests-settings' }"
                         @click="navigateTo('hr-requests-settings')">
                         <i class="pi pi-cog"></i>
-                        <span>HR Requests</span>
+                        <span>HR Help Desk Requests</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'company-news' }"
                         @click="navigateTo('company-news')">
@@ -333,6 +338,9 @@
 
                     <!-- Company Documents Page -->
                     <company-documents v-else-if="currentPage === 'company-documents'"></company-documents>
+
+                    <!-- Stats Page -->
+                    <stats-module v-else-if="currentPage === 'stats'"></stats-module>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>

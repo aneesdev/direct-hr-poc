@@ -8669,6 +8669,24 @@ img {
     border-top: 1px solid var(--border-color);
 }
 
+.approval-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.approval-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.approval-checkbox-item label {
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+}
+
 .condition-config {
     padding: 1rem;
     background: var(--surface-card);
@@ -17426,16 +17444,36 @@ img {
 
 .hr-form-fields .salary-input-wrapper {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
-.hr-form-fields .salary-input-wrapper .currency-label {
+.hr-form-fields .salary-input-wrapper .currency-prefix {
     position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 1px;
+    top: 1px;
+    bottom: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.75rem;
+    background: var(--surface-ground);
+    border-right: 1px solid var(--border-color);
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
     font-size: 0.85rem;
+    font-weight: 500;
     color: var(--text-color-secondary);
     z-index: 1;
+}
+
+.hr-form-fields .salary-input-wrapper .p-inputnumber,
+.hr-form-fields .salary-input-wrapper .p-inputtext {
+    width: 100%;
+}
+
+.hr-form-fields .salary-input-wrapper .p-inputnumber input,
+.hr-form-fields .salary-input-wrapper input.p-inputtext {
+    padding-left: 3.5rem !important;
 }
 
 .hr-form-fields .salary-field .form-label {
@@ -19142,4 +19180,1261 @@ img {
 .selected-file button:hover {
     color: #ef4444;
     background: rgba(239, 68, 68, 0.1);
+}
+
+/* ============================================
+   STATS MODULE
+   ============================================ */
+
+.stats-page {
+    padding: 0;
+}
+
+/* Module Tabs (Horizontal navigation) */
+.stats-module-tabs {
+    display: flex;
+    gap: 0;
+    background: #fff;
+    border-bottom: 2px solid var(--border-color);
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    padding: 0 1.5rem;
+    overflow-x: auto;
+}
+
+.module-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--text-color-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.module-tab:hover {
+    color: var(--primary-color);
+    background: rgba(249, 115, 22, 0.05);
+}
+
+.module-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.module-tab i {
+    font-size: 1rem;
+}
+
+/* Stats Header */
+.stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.stats-title h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.stats-title p {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    margin: 0.25rem 0 0;
+}
+
+/* Insights Tabs */
+.insights-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.insight-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    color: var(--text-color-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.insight-tab:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.insight-tab.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Date Range Filters (Techtic style) */
+.stats-filters {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.date-range-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.date-range-btn {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    color: var(--text-color-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.date-range-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.date-range-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Dynamic Date Filters */
+.dynamic-date-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+}
+
+/* Date Range Button & Dropdown */
+.date-range-trigger {
+    position: relative;
+}
+
+.date-range-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    min-width: 160px;
+    transition: all 0.2s ease;
+}
+
+.date-range-button:hover {
+    border-color: var(--primary-color);
+}
+
+.date-range-button.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.1);
+}
+
+.date-range-button.has-dates {
+    background: var(--primary-color-bg);
+    border-color: var(--primary-color);
+}
+
+.date-range-button .pi-calendar {
+    color: var(--primary-color);
+}
+
+.date-range-button .pi-chevron-down {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--text-color-secondary);
+    transition: transform 0.2s ease;
+}
+
+.date-range-button.active .pi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.date-range-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    z-index: 1000;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    min-width: 320px;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.date-range-dropdown-content {
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.date-range-dropdown-content .date-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.date-range-dropdown-content .date-field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+}
+
+.date-range-dropdown-content .p-datepicker {
+    width: 100%;
+}
+
+.date-range-dropdown-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--surface-ground);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+/* Module-specific Filters */
+.module-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    align-items: flex-end;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Payroll Filters - full width */
+.module-filters.payroll-filters {
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+}
+
+.module-filters.payroll-filters .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.module-filters.payroll-filters .filter-group label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+}
+
+.module-filters.payroll-filters .p-select {
+    min-width: 120px;
+}
+
+.module-filters.payroll-filters .filter-action {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.module-filters.payroll-filters .filter-action label {
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+}
+
+.module-filters .search-btn {
+    background: #475569 !important;
+    border-color: #475569 !important;
+    padding: 0.5rem 1.25rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.module-filters .search-btn:hover {
+    background: #334155 !important;
+    border-color: #334155 !important;
+}
+
+/* Stats Actions */
+.stats-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+/* Appraisal Cycle Selector */
+.appraisal-cycle-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: rgba(249, 115, 22, 0.05);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+}
+
+.cycle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.appraisal-placeholder {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-lg);
+    color: var(--text-color-secondary);
+}
+
+.appraisal-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* ============================================
+   STATIC INSIGHTS CONTENT
+   ============================================ */
+
+.static-insights-content {
+    padding: 0;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    letter-spacing: 0.025em;
+    margin-bottom: 1rem;
+}
+
+/* Period Cards Grid */
+.period-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 1400px) {
+    .period-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .period-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.period-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    transition: box-shadow 0.2s;
+}
+
+.period-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.period-card.highlighted {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.period-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.period-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.period-date {
+    font-size: 0.7rem;
+    color: var(--text-color-secondary);
+}
+
+.period-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.period-badge.confirmed {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+/* Stats Section */
+.stats-section {
+    margin-bottom: 1rem;
+}
+
+.stats-section .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    letter-spacing: 0.025em;
+    margin-bottom: 0.5rem;
+}
+
+.stats-section .section-label i {
+    font-size: 0.75rem;
+}
+
+.main-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+    margin-bottom: 0.75rem;
+}
+
+.main-stat i {
+    color: var(--primary-color);
+}
+
+.main-stat .stat-label {
+    flex: 1;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.main-stat .stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.stat-dot.green { background: #16a34a; }
+.stat-dot.red { background: #ef4444; }
+.stat-dot.blue { background: #3b82f6; }
+.stat-dot.orange { background: #f97316; }
+.stat-dot.purple { background: #8b5cf6; }
+.stat-dot.gray { background: #9ca3af; }
+
+.stat-row span:nth-child(2) {
+    flex: 1;
+    color: var(--text-color-secondary);
+}
+
+.stat-num {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.stat-percent {
+    font-weight: 600;
+}
+
+.stat-percent.green { color: #16a34a; }
+.stat-percent.red { color: #ef4444; }
+.stat-percent.blue { color: #3b82f6; }
+.stat-percent.orange { color: #f97316; }
+
+.view-details-link {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.view-details-link:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   DYNAMIC INSIGHTS CONTENT
+   ============================================ */
+
+.dynamic-insights-content {
+    padding: 0;
+}
+
+.dynamic-performance-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+}
+
+.dynamic-performance-link:hover {
+    text-decoration: underline;
+}
+
+/* Chart Cards */
+.chart-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.chart-card.full-width {
+    width: 100%;
+}
+
+.chart-header {
+    margin-bottom: 1rem;
+}
+
+.chart-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-header small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    margin-top: 0.25rem;
+}
+
+.charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Chart Placeholder (Mock Charts) */
+.chart-placeholder {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
+.chart-container.small {
+    height: 180px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.legend-dot.green { background: #16a34a; }
+.legend-dot.red { background: #ef4444; }
+.legend-dot.blue { background: #3b82f6; }
+.legend-dot.orange { background: #f97316; }
+.legend-dot.purple { background: #8b5cf6; }
+.legend-dot.gray { background: #9ca3af; }
+
+
+/* ============================================
+   DEMOGRAPHY INSIGHTS
+   ============================================ */
+
+.demography-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 1400px) {
+    .demography-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .demography-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .demography-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.demography-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+}
+
+.demography-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.category-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.category-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.category-icon.orange { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+.category-icon.purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.category-icon.green { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+.category-icon.red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.category-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    letter-spacing: 0.025em;
+}
+
+.demography-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.demography-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.item-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.item-dot.orange { background: #f97316; }
+.item-dot.blue { background: #3b82f6; }
+.item-dot.green { background: #16a34a; }
+.item-dot.purple { background: #8b5cf6; }
+.item-dot.red { background: #ef4444; }
+.item-dot.gray { background: #9ca3af; }
+
+.item-name {
+    flex: 1;
+    color: var(--text-color-secondary);
+}
+
+.item-count {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.view-more-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.75rem;
+    padding: 0;
+}
+
+.view-more-btn:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   DIRECTORY INSIGHTS
+   ============================================ */
+
+.directory-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 1100px) {
+    .directory-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .directory-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.directory-stat-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+}
+
+.directory-stat-card .stat-header {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    margin-bottom: 1rem;
+}
+
+.directory-stat-card .stat-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.directory-stat-card .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.directory-stat-card .stat-item span:nth-child(2) {
+    flex: 1;
+    color: var(--text-color-secondary);
+}
+
+.directory-stat-card .stat-item .item-count {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Feeling Card */
+.feeling-card {
+    background: linear-gradient(135deg, #fff 0%, rgba(249, 115, 22, 0.05) 100%);
+}
+
+.feeling-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.feeling-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    background: #fff;
+    border-radius: var(--radius-md);
+}
+
+.feeling-item .emoji {
+    font-size: 1.5rem;
+}
+
+.feeling-item .feeling-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.feeling-item .feeling-count {
+    font-size: 0.65rem;
+    color: var(--text-color-secondary);
+}
+
+/* Retention Chart */
+.retention-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+}
+
+.retention-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.retention-label {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    margin-top: 0.5rem;
+}
+
+/* ============================================
+   SETTINGS INSIGHTS
+   ============================================ */
+
+.settings-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+    .settings-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .settings-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.settings-stat-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+}
+
+.settings-stat-card .stat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    margin-bottom: 1rem;
+}
+
+.settings-stat-card .stat-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.settings-stat-card .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.settings-stat-card .stat-item span:nth-child(2) {
+    flex: 1;
+    color: var(--text-color-secondary);
+}
+
+.view-more-link {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    cursor: pointer;
+    margin-top: 0.75rem;
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.view-more-link:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   APPRAISALS INSIGHTS
+   ============================================ */
+
+.appraisals-insights-content {
+    padding: 0;
+}
+
+.appraisal-cycle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+}
+
+.cycle-info .cycle-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    letter-spacing: 0.025em;
+}
+
+.cycle-info h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0 0.25rem;
+}
+
+.live-tracking {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: #16a34a;
+}
+
+.live-tracking i {
+    font-size: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.coverage-card {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.coverage-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.coverage-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0.25rem 0;
+}
+
+.coverage-detail {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.appraisal-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.appraisal-stat-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.appraisal-stat-card i {
+    font-size: 1.5rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.appraisal-stat-card .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.appraisal-stat-card .stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    letter-spacing: 0.025em;
+}
+
+.appraisal-stat-card.completed {
+    border-color: #16a34a;
+}
+
+.appraisal-stat-card.completed i {
+    color: #16a34a;
+}
+
+/* Score Distribution */
+.score-distribution-card {
+    background: var(--primary-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    color: #fff;
+}
+
+.score-header {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    margin-bottom: 1rem;
+}
+
+.score-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.score-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+}
+
+.score-bar.exceptional { background: rgba(34, 197, 94, 0.3); }
+.score-bar.meets { background: rgba(59, 130, 246, 0.3); }
+.score-bar.needs { background: rgba(249, 115, 22, 0.3); }
+.score-bar.unsatisfactory { background: rgba(239, 68, 68, 0.3); }
+
+.score-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.score-count {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.appraisal-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.appraisal-note i {
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+/* Payroll Cards */
+.period-cards-grid.payroll {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.payroll-card .payroll-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.payroll-stat-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.payroll-stat-row .stat-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.payroll-stat-row .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.payroll-stat-row .stat-icon.green { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+
+.payroll-stat-row .stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+}
+
+.payroll-stat-row .stat-value {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.payroll-amounts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.amount-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.amount-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.amount-dot.green { background: #16a34a; }
+.amount-dot.blue { background: #3b82f6; }
+.amount-dot.orange { background: #f97316; }
+.amount-dot.purple { background: #8b5cf6; }
+.amount-dot.red { background: #ef4444; }
+.amount-dot.gray { background: #9ca3af; }
+
+.amount-row span:nth-child(2) {
+    flex: 1;
+    color: var(--text-color-secondary);
+}
+
+.amount {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.amount small {
+    font-weight: 400;
+    color: var(--text-color-secondary);
 }

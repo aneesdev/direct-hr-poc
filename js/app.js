@@ -31,7 +31,22 @@ const app = createApp({
         'hr-requests-tracking': HrRequestsTrackingComponent,
         'hr-request-view': HrRequestViewComponent,
         'hr-bulk-settings': HrBulkSettingsComponent,
-        'company-documents': CompanyDocumentsComponent
+        'company-documents': CompanyDocumentsComponent,
+        'stats-module': StatsComponent,
+        'attendance-static-insights': AttendanceStaticInsights,
+        'attendance-dynamic-insights': AttendanceDynamicInsights,
+        'payroll-static-insights': PayrollStaticInsights,
+        'payroll-dynamic-insights': PayrollDynamicInsights,
+        'requests-static-insights': RequestsStaticInsights,
+        'requests-dynamic-insights': RequestsDynamicInsights,
+        'demography-static-insights': DemographyStaticInsights,
+        'demography-dynamic-insights': DemographyDynamicInsights,
+        'hrdesk-static-insights': HrdeskStaticInsights,
+        'hrdesk-dynamic-insights': HrdeskDynamicInsights,
+        'directory-static-insights': DirectoryStaticInsights,
+        'directory-dynamic-insights': DirectoryDynamicInsights,
+        'settings-static-insights': SettingsStaticInsights,
+        'appraisals-insights': AppraisalsInsights
     },
 
     setup() {

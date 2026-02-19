@@ -89,11 +89,11 @@ const HrRequestFormComponent = {
 
                                 <!-- Number Input (for salary fields) -->
                                 <div v-else-if="field.type === 'number'" class="salary-input-wrapper">
-                                    <span v-if="isSalaryGroup(groupName)" class="currency-label">SAR</span>
+                                    <span v-if="isSalaryGroup(groupName)" class="currency-prefix">SAR</span>
                                     <p-inputnumber v-model="formValues[field.id]" 
                                                   mode="decimal" 
-                                                  :minFractionDigits="2"
-                                                  :placeholder="'0.00'"
+                                                  :minFractionDigits="0"
+                                                  :placeholder="'0'"
                                                   style="width: 100%;">
                                     </p-inputnumber>
                                 </div>
