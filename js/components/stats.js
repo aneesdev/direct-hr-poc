@@ -738,8 +738,8 @@ const StatsComponent = {
                 </div>
             </div>
 
-            <!-- Insights Tabs -->
-            <div class="insights-tabs">
+            <!-- Insights Tabs (not for Settings and Appraisals) -->
+            <div class="insights-tabs" v-if="activeModule !== 'settings' && activeModule !== 'appraisals'">
                 <button class="insight-tab" :class="{ active: insightTab === 'static' }" @click="insightTab = 'static'">
                     <i class="pi pi-table"></i> Static Insights
                 </button>
