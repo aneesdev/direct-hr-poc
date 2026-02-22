@@ -20735,7 +20735,8 @@ img {
     font-size: 0.875rem;
 }
 
-.training-paths-page .hours-badge {
+.training-paths-page .hours-badge,
+.hours-badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
     background: rgba(249, 115, 22, 0.1);

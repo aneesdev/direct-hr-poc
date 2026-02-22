@@ -47,6 +47,9 @@ const MyProfileComponent = {
                     <button class="profile-tab" :class="{ active: activeTab === 'appraisal' }" @click="activeTab = 'appraisal'">
                         <i class="pi pi-chart-bar"></i> Appraisal
                     </button>
+                    <button class="profile-tab" :class="{ active: activeTab === 'training' }" @click="activeTab = 'training'">
+                        <i class="pi pi-book"></i> Training
+                    </button>
                     <button class="profile-tab" :class="{ active: activeTab === 'kpi' }" @click="activeTab = 'kpi'">
                         <i class="pi pi-chart-line"></i> KPI
                     </button>
@@ -838,6 +841,57 @@ const MyProfileComponent = {
                     </div>
                 </div>
 
+                <!-- Training Tab -->
+                <div v-if="activeTab === 'training'" class="tab-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">
+                                    <i class="pi pi-book"></i>
+                                    My Training Paths
+                                </div>
+                                <div class="card-subtitle">View your assigned training courses and progress</div>
+                            </div>
+                        </div>
+
+                        <p-datatable :value="myTrainings" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20]">
+                            <p-column header="TRAINING PATH">
+                                <template #body="slotProps">
+                                    <span style="font-weight: 600;">{{ slotProps.data.path }}</span>
+                                </template>
+                            </p-column>
+                            <p-column header="TOTAL HOURS" style="width: 120px;">
+                                <template #body="slotProps">
+                                    <span class="hours-badge">{{ slotProps.data.totalHours }} HRS</span>
+                                </template>
+                            </p-column>
+                            <p-column header="BATCH DETAILS" style="width: 160px;">
+                                <template #body="slotProps">
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 0.85rem;">Cycle {{ slotProps.data.cycle }}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-color-secondary);">{{ slotProps.data.period }}</div>
+                                    </div>
+                                </template>
+                            </p-column>
+                            <p-column header="STATUS" style="width: 130px;">
+                                <template #body="slotProps">
+                                    <p-tag :value="slotProps.data.status" :severity="getTrainingStatusSeverity(slotProps.data.status)"></p-tag>
+                                </template>
+                            </p-column>
+                            <p-column header="PROGRESS SCORE" style="width: 140px;">
+                                <template #body="slotProps">
+                                    <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                        <span style="font-weight: 600; font-size: 0.85rem;">{{ slotProps.data.progress }}%</span>
+                                        <div style="width: 100%; height: 4px; background: var(--surface-200); border-radius: 2px; overflow: hidden;">
+                                            <div :style="{ width: slotProps.data.progress + '%', height: '100%', background: getTrainingProgressColor(slotProps.data.progress), borderRadius: '2px' }"></div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </p-column>
+                        </p-datatable>
+                    </div>
+                </div>
+
                 <!-- KPI Tab -->
                 <div v-if="activeTab === 'kpi'" class="tab-panel">
                     <div class="coming-soon-container">
@@ -1079,6 +1133,26 @@ const MyProfileComponent = {
             }
         ]);
 
+        // Training Data
+        const myTrainings = ref([
+            { id: 1, path: 'Cybersecurity Essentials', totalHours: 10, cycle: 1, period: 'JANUARY 2024 — JUNE 2024', status: 'Completed', progress: 100 },
+            { id: 2, path: 'Leadership & Management', totalHours: 40, cycle: 2, period: 'JANUARY 2024 — JUNE 2024', status: 'In Progress', progress: 65 },
+            { id: 3, path: 'Python for Data Analysis', totalHours: 60, cycle: 3, period: 'FEBRUARY 2024 — AUGUST 2024', status: 'Assigned', progress: 10 },
+            { id: 4, path: 'Workplace Safety & Health', totalHours: 5, cycle: 1, period: 'MARCH 2024 — APRIL 2024', status: 'Completed', progress: 100 }
+        ]);
+
+        const getTrainingStatusSeverity = (status) => {
+            const map = { 'Assigned': 'warn', 'In Progress': 'info', 'Completed': 'success', 'Failed': 'danger' };
+            return map[status] || 'secondary';
+        };
+
+        const getTrainingProgressColor = (progress) => {
+            if (progress >= 100) return '#22c55e';
+            if (progress >= 50) return '#3b82f6';
+            if (progress > 0) return '#f97316';
+            return '#ef4444';
+        };
+
         // Previous Years Appraisal Results
         const previousAppraisals = ref([
             {
@@ -1139,7 +1213,10 @@ const MyProfileComponent = {
             getViolationClass,
             appraisalYear,
             myAppraisals,
-            previousAppraisals
+            previousAppraisals,
+            myTrainings,
+            getTrainingStatusSeverity,
+            getTrainingProgressColor
         };
     }
 };
