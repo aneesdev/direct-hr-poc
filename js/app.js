@@ -46,7 +46,11 @@ const app = createApp({
         'directory-static-insights': DirectoryStaticInsights,
         'directory-dynamic-insights': DirectoryDynamicInsights,
         'settings-static-insights': SettingsStaticInsights,
-        'appraisals-insights': AppraisalsInsights
+        'appraisals-insights': AppraisalsInsights,
+        'training-paths': TrainingPathsComponent,
+        'training-assign': TrainingAssignComponent,
+        'training-tracker': TrainingTrackerComponent,
+        'training-insights': TrainingInsightsComponent
     },
 
     setup() {
@@ -127,7 +131,8 @@ const primeVueComponents = {
     'p-textarea': PrimeVue.Textarea,
     'p-fileupload': PrimeVue.FileUpload,
     'p-multiselect': PrimeVue.MultiSelect,
-    'p-autocomplete': PrimeVue.AutoComplete
+    'p-autocomplete': PrimeVue.AutoComplete,
+    'p-menu': PrimeVue.Menu
 };
 
 // Register all PrimeVue components

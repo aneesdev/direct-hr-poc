@@ -5,11 +5,13 @@
 
 // ATTENDANCE STATIC INSIGHTS
 const AttendanceStaticInsights = {
-    props: ['dateRange', 'customRangeApplied'],
+    props: ['dateRange', 'customRangeApplied', 'customRangeDates'],
+    emits: ['open-date-picker'],
     template: `
         <div class="static-insights-content">
             <div class="period-cards-grid">
-                <div v-for="period in displayPeriods" :key="period.id" class="period-card" :class="{ highlighted: period.highlighted }">
+                <!-- Regular period cards -->
+                <div v-for="period in regularPeriods" :key="period.id" class="period-card">
                     <div class="period-header">
                         <span class="period-title">{{ period.title }}</span>
                         <span class="period-date">{{ period.date }}</span>
@@ -63,11 +65,91 @@ const AttendanceStaticInsights = {
                         <div class="section-label"><i class="pi pi-chart-bar"></i> PERFORMANCE</div>
                         <div class="stats-list">
                             <div class="stat-row" v-for="stat in period.performanceStats" :key="stat.label">
-                                <span>{{ stat.label }}</span>
+                                <span class="stat-label-with-tooltip">
+                                    {{ stat.label }}
+                                    <i class="pi pi-info-circle tooltip-icon" v-tooltip.top="performanceTooltips[stat.label]"></i>
+                                </span>
                                 <span class="stat-percent" :class="stat.color">{{ stat.value }}</span>
                             </div>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Custom Range Card - Always shown at last -->
+                <div class="period-card custom-range-card" :class="{ highlighted: customRangeApplied, 'not-applied': !customRangeApplied }" @click="!customRangeApplied && $emit('open-date-picker')">
+                    <div class="period-header">
+                        <span class="period-title">CUSTOM RANGE</span>
+                        <span class="period-date" v-if="customRangeApplied">{{ formattedDateRange }}</span>
+                        <span class="period-date" v-else>Not Applied</span>
+                    </div>
+                    
+                    <!-- Placeholder when not applied -->
+                    <div v-if="!customRangeApplied" class="custom-range-placeholder">
+                        <i class="pi pi-calendar-plus"></i>
+                        <span class="placeholder-text">Apply Custom Range</span>
+                        <p class="placeholder-hint">Click to select a date range</p>
+                    </div>
+                    
+                    <!-- Data content when applied -->
+                    <template v-else>
+                        <div class="main-stat">
+                            <i class="pi pi-users"></i>
+                            <span class="stat-label">Total Staff</span>
+                            <span class="stat-value">{{ customPeriod.totalStaff }}</span>
+                        </div>
+                        <div class="stats-section">
+                            <div class="section-label"><i class="pi pi-users"></i> ATTENDANCE STATUS</div>
+                            <div class="stats-list">
+                                <div class="stat-row" v-for="stat in customPeriod.attendanceStats" :key="stat.label">
+                                    <span class="stat-dot" :class="stat.color"></span>
+                                    <span>{{ stat.label }}</span>
+                                    <span class="stat-num">{{ stat.value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-section">
+                            <div class="section-label"><i class="pi pi-calendar"></i> VACATION STATUS</div>
+                            <div class="stats-list">
+                                <div class="stat-row" v-for="stat in customPeriod.vacationStats" :key="stat.label">
+                                    <span class="stat-dot" :class="stat.color"></span>
+                                    <span>{{ stat.label }}</span>
+                                    <span class="stat-num">{{ stat.value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-section">
+                            <div class="section-label"><i class="pi pi-flag"></i> PUNCH FLAG</div>
+                            <div class="stats-list">
+                                <div class="stat-row" v-for="stat in customPeriod.punchStats" :key="stat.label">
+                                    <span class="stat-dot" :class="stat.color"></span>
+                                    <span>{{ stat.label }}</span>
+                                    <span class="stat-num">{{ stat.value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-section">
+                            <div class="section-label"><i class="pi pi-exclamation-triangle"></i> VIOLATIONS</div>
+                            <div class="stats-list">
+                                <div class="stat-row" v-for="stat in customPeriod.violationStats" :key="stat.label">
+                                    <span class="stat-dot" :class="stat.color"></span>
+                                    <span>{{ stat.label }}</span>
+                                    <span class="stat-num">{{ stat.value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-section performance">
+                            <div class="section-label"><i class="pi pi-chart-bar"></i> PERFORMANCE</div>
+                            <div class="stats-list">
+                                <div class="stat-row" v-for="stat in customPeriod.performanceStats" :key="stat.label">
+                                    <span class="stat-label-with-tooltip">
+                                        {{ stat.label }}
+                                        <i class="pi pi-info-circle tooltip-icon" v-tooltip.top="performanceTooltips[stat.label]"></i>
+                                    </span>
+                                    <span class="stat-percent" :class="stat.color">{{ stat.value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
@@ -98,28 +180,39 @@ const AttendanceStaticInsights = {
                 punchStats: [{ label: 'Total Missing Clock In', value: 28, color: 'red' }, { label: 'Total Missing Clock Out', value: 105, color: 'orange' }],
                 violationStats: [{ label: 'Total LATE In', value: 680, color: 'orange' }, { label: 'Total EARLY Out', value: 245, color: 'red' }, { label: 'Total Less Effort', value: 140, color: 'purple' }, { label: 'Total NO SHIFT ASSIGNED', value: 1, color: 'gray' }, { label: 'Total OUTSIDE WINDOW', value: 29, color: 'blue' }],
                 performanceStats: [{ label: 'Attendance Rate', value: '90.5%', color: 'green' }, { label: 'Absent Rate', value: '3.2%', color: 'red' }, { label: 'Day Off Rate', value: '2.5%', color: 'gray' }, { label: 'Leave Utilization', value: '2.5%', color: 'blue' }, { label: 'Missing Punch Rate', value: '0.7%', color: 'orange' }, { label: 'Violation Rate', value: '6.4%', color: 'red' }]
-            },
-            {
-                id: 'custom', title: 'CUSTOM RANGE', date: 'Selected', highlighted: false, totalStaff: 450,
-                attendanceStats: [{ label: 'Total Present', value: 2410, color: 'green' }, { label: 'Total Absent', value: 95, color: 'red' }, { label: 'Total Business Trip', value: 18, color: 'blue' }, { label: 'Total Work From Home', value: 60, color: 'purple' }, { label: 'Total Working Hours', value: '19,280h', color: 'orange' }],
-                vacationStats: [{ label: 'Total in Annual Vacation', value: 42, color: 'blue' }, { label: 'Total in Others Type Vacation', value: 12, color: 'purple' }, { label: 'Total Working on Public Holiday', value: 0, color: 'green' }, { label: 'Total Day Off', value: 35, color: 'gray' }],
-                punchStats: [{ label: 'Total Missing Clock In', value: 38, color: 'red' }, { label: 'Total Missing Clock Out', value: 29, color: 'orange' }],
-                violationStats: [{ label: 'Total LATE IN', value: 115, color: 'orange' }, { label: 'Total EARLY OUT', value: 32, color: 'red' }, { label: 'Total Less Effort', value: 8, color: 'purple' }, { label: 'Total NO SHIFT ASSIGNED', value: 0, color: 'gray' }, { label: 'Total OUTSIDE WINDOW', value: 5, color: 'blue' }],
-                performanceStats: [{ label: 'Attendance Rate', value: '88.4%', color: 'green' }, { label: 'Absent Rate', value: '3.5%', color: 'red' }, { label: 'Day Off Rate', value: '1.3%', color: 'gray' }, { label: 'Leave Utilization', value: '2.0%', color: 'blue' }, { label: 'Missing Punch Rate', value: '2.5%', color: 'orange' }, { label: 'Violation Rate', value: '5.8%', color: 'red' }]
             }
         ]);
         
-        const displayPeriods = computed(() => {
-            if (props.customRangeApplied) {
-                const customPeriod = periods.value.find(p => p.id === 'custom');
-                const otherPeriods = periods.value.filter(p => p.id !== 'custom');
-                return [{ ...customPeriod, highlighted: true }, ...otherPeriods.map(p => ({ ...p, highlighted: false }))];
-            }
-            // Hide custom range card when not applied
-            return periods.value.filter(p => p.id !== 'custom');
+        const customPeriod = ref({
+            id: 'custom', title: 'CUSTOM RANGE', date: 'Selected', highlighted: false, totalStaff: 450,
+            attendanceStats: [{ label: 'Total Present', value: 2410, color: 'green' }, { label: 'Total Absent', value: 95, color: 'red' }, { label: 'Total Business Trip', value: 18, color: 'blue' }, { label: 'Total Work From Home', value: 60, color: 'purple' }, { label: 'Total Working Hours', value: '19,280h', color: 'orange' }],
+            vacationStats: [{ label: 'Total in Annual Vacation', value: 42, color: 'blue' }, { label: 'Total in Others Type Vacation', value: 12, color: 'purple' }, { label: 'Total Working on Public Holiday', value: 0, color: 'green' }, { label: 'Total Day Off', value: 35, color: 'gray' }],
+            punchStats: [{ label: 'Total Missing Clock In', value: 38, color: 'red' }, { label: 'Total Missing Clock Out', value: 29, color: 'orange' }],
+            violationStats: [{ label: 'Total LATE IN', value: 115, color: 'orange' }, { label: 'Total EARLY OUT', value: 32, color: 'red' }, { label: 'Total Less Effort', value: 8, color: 'purple' }, { label: 'Total NO SHIFT ASSIGNED', value: 0, color: 'gray' }, { label: 'Total OUTSIDE WINDOW', value: 5, color: 'blue' }],
+            performanceStats: [{ label: 'Attendance Rate', value: '88.4%', color: 'green' }, { label: 'Absent Rate', value: '3.5%', color: 'red' }, { label: 'Day Off Rate', value: '1.3%', color: 'gray' }, { label: 'Leave Utilization', value: '2.0%', color: 'blue' }, { label: 'Missing Punch Rate', value: '2.5%', color: 'orange' }, { label: 'Violation Rate', value: '5.8%', color: 'red' }]
         });
         
-        return { periods, displayPeriods };
+        const regularPeriods = computed(() => periods.value);
+        
+        const formattedDateRange = computed(() => {
+            if (props.customRangeDates?.from && props.customRangeDates?.to) {
+                const from = new Date(props.customRangeDates.from);
+                const to = new Date(props.customRangeDates.to);
+                return `${from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} - ${to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}`;
+            }
+            return 'Selected';
+        });
+        
+        const performanceTooltips = {
+            'Attendance Rate': '(Total Present / Total Staff) * 100',
+            'Absent Rate': '(Total Absent / Total Staff) * 100',
+            'Day Off Rate': '(Total Day Off / Total Staff) * 100',
+            'Leave Utilization': '(Annual Vac + Other Vac) / Total Staff * 100',
+            'Missing Punch Rate': '(Missing In + Missing Out) / Total Present * 100',
+            'Violation Rate': '((Total LATE IN + Total EARLY OUT + Total Less Effort + Total OUTSIDE WINDOW + Total NO SHIFT ASSIGNED) / Total Present) * 100'
+        };
+        
+        return { periods, regularPeriods, customPeriod, formattedDateRange, performanceTooltips };
     }
 };
 
@@ -677,7 +770,39 @@ const AppraisalsInsights = {
         <div class="appraisals-insights-content">
             <div class="appraisal-cycle-header"><div class="cycle-info"><span class="cycle-badge">ACTIVE ANALYSIS CYCLE</span><h2>APRIL 2024 - APRIL 2025</h2><span class="live-tracking"><i class="pi pi-circle-fill"></i> LIVE PERFORMANCE TRACKING</span></div><div class="coverage-card"><span class="coverage-label">ORGANISATION COVERAGE</span><span class="coverage-value">82%</span><span class="coverage-detail">9 OF 11 EMPLOYEES IN CYCLE</span></div></div>
             <div class="appraisal-stats-grid"><div class="appraisal-stat-card"><i class="pi pi-users"></i><span class="stat-value">2</span><span class="stat-label">ASSIGNED</span></div><div class="appraisal-stat-card"><i class="pi pi-user-edit"></i><span class="stat-value">0</span><span class="stat-label">SELF EVAL</span></div><div class="appraisal-stat-card"><i class="pi pi-file-edit"></i><span class="stat-value">0</span><span class="stat-label">COMMITTED</span></div><div class="appraisal-stat-card completed"><i class="pi pi-check-circle"></i><span class="stat-value">9</span><span class="stat-label">COMPLETED</span></div></div>
-            <div class="score-distribution-card"><div class="score-header">SCORE DISTRIBUTION</div><div class="score-bars"><div class="score-bar exceptional"><span class="score-label">EXCEPTIONAL (90%+)</span><span class="score-count">3</span></div><div class="score-bar meets"><span class="score-label">MEETS EXPECTATIONS</span><span class="score-count">5</span></div><div class="score-bar needs"><span class="score-label">NEEDS IMPROVEMENT</span><span class="score-count">1</span></div><div class="score-bar unsatisfactory"><span class="score-label">UNSATISFACTORY</span><span class="score-count">0</span></div></div></div>
+            <div class="score-distribution-card">
+                <div class="score-header">SCORE DISTRIBUTION</div>
+                <div class="score-bars">
+                    <div class="score-bar-row">
+                        <div class="score-bar-content">
+                            <span class="score-label">EXCEPTIONAL (90%+)</span>
+                            <div class="score-bar-track"><div class="score-bar-fill" style="width: 33%"></div></div>
+                        </div>
+                        <span class="score-count">3</span>
+                    </div>
+                    <div class="score-bar-row">
+                        <div class="score-bar-content">
+                            <span class="score-label">MEETS EXPECTATIONS</span>
+                            <div class="score-bar-track"><div class="score-bar-fill" style="width: 56%"></div></div>
+                        </div>
+                        <span class="score-count">5</span>
+                    </div>
+                    <div class="score-bar-row">
+                        <div class="score-bar-content">
+                            <span class="score-label">NEEDS IMPROVEMENT</span>
+                            <div class="score-bar-track"><div class="score-bar-fill" style="width: 11%"></div></div>
+                        </div>
+                        <span class="score-count">1</span>
+                    </div>
+                    <div class="score-bar-row">
+                        <div class="score-bar-content">
+                            <span class="score-label">UNSATISFACTORY</span>
+                            <div class="score-bar-track"><div class="score-bar-fill" style="width: 0%"></div></div>
+                        </div>
+                        <span class="score-count">0</span>
+                    </div>
+                </div>
+            </div>
             <div class="appraisal-note"><i class="pi pi-info-circle"></i><span>Data is aggregated from individual performance reviews and objective tracking modules for this selected cycle. Values update in real-time as managers submit their final assessments.</span></div>
         </div>
     `
@@ -750,43 +875,33 @@ const StatsComponent = {
 
             <!-- Filters Section -->
             <div class="stats-filters" v-if="activeModule !== 'appraisals'">
-                <!-- Payroll Dynamic Date Filters (Type, Month/Quarter, Year) -->
-                <div class="module-filters payroll-filters" v-if="activeModule === 'payroll'">
-                    <div class="filter-group">
-                        <label>Type</label>
-                        <p-select v-model="dynamicFilters.type" :options="['Monthly', 'Quarterly', 'Yearly']" 
-                                  placeholder="Monthly"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="dynamicFilters.type === 'Monthly'">
-                        <label>Month</label>
-                        <p-select v-model="dynamicFilters.month" :options="months" 
-                                  placeholder="Select month" showClear></p-select>
-                    </div>
-                    <div class="filter-group" v-if="dynamicFilters.type === 'Quarterly'">
-                        <label>Quarter</label>
-                        <p-select v-model="dynamicFilters.quarter" :options="quarters" 
-                                  placeholder="Select quarter" showClear></p-select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Year</label>
-                        <p-select v-model="dynamicFilters.year" :options="years" 
-                                  placeholder="Select year" showClear></p-select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Cost Center</label>
-                        <p-select v-model="filters.costCenter" :options="costCenters" optionLabel="name" optionValue="id"
-                                  placeholder="All Cost Centers" showClear></p-select>
-                    </div>
-                    <div class="filter-group filter-action">
-                        <label>&nbsp;</label>
-                        <p-button label="Search" class="search-btn"></p-button>
-                    </div>
-                </div>
+                <div class="module-filters">
+                    <!-- Type/Month/Year Date Filters (for Payroll, Demography, Directory, Settings) -->
+                    <template v-if="usesTypeDateFilter">
+                        <div class="filter-group">
+                            <label>Type</label>
+                            <p-select v-model="dynamicFilters.type" :options="['Monthly', 'Quarterly', 'Yearly']" 
+                                      placeholder="Monthly"></p-select>
+                        </div>
+                        <div class="filter-group" v-if="dynamicFilters.type === 'Monthly'">
+                            <label>Month</label>
+                            <p-select v-model="dynamicFilters.month" :options="months" 
+                                      placeholder="Select month" showClear></p-select>
+                        </div>
+                        <div class="filter-group" v-if="dynamicFilters.type === 'Quarterly'">
+                            <label>Quarter</label>
+                            <p-select v-model="dynamicFilters.quarter" :options="quarters" 
+                                      placeholder="Select quarter" showClear></p-select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Year</label>
+                            <p-select v-model="dynamicFilters.year" :options="years" 
+                                      placeholder="Select year" showClear></p-select>
+                        </div>
+                    </template>
 
-                <!-- Other Module Filters -->
-                <div class="module-filters" v-if="activeModule !== 'payroll'">
-                    <!-- Custom Date Range Button -->
-                    <div class="filter-group date-range-trigger">
+                    <!-- Custom Date Range Filter (for Attendance, Requests, HR Desk only) -->
+                    <div class="filter-group date-range-trigger" v-if="usesCustomDateRange">
                         <label>Date Range</label>
                         <button class="date-range-button" :class="{ active: showDateRangePicker, 'has-dates': customRange.from || customRange.to }" @click="toggleDateRangePicker">
                             <i class="pi pi-calendar"></i>
@@ -812,6 +927,8 @@ const StatsComponent = {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Common Filters -->
                     <div class="filter-group" v-if="showDepartmentFilter">
                         <label>Department</label>
                         <p-select v-model="filters.department" :options="departments" optionLabel="name" optionValue="id"
@@ -855,6 +972,15 @@ const StatsComponent = {
                         <p-select v-model="filters.office" :options="offices" optionLabel="name" optionValue="id"
                                   placeholder="All Offices" showClear style="width: 130px;"></p-select>
                     </div>
+
+                    <!-- Search and Reset Buttons -->
+                    <div class="filter-group filter-action">
+                        <label>&nbsp;</label>
+                        <div class="filter-buttons">
+                            <p-button label="Search" icon="pi pi-search" class="search-btn" @click="applyFilters"></p-button>
+                            <p-button label="Reset" icon="pi pi-refresh" class="reset-btn" outlined @click="resetFilters"></p-button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -876,7 +1002,7 @@ const StatsComponent = {
             <!-- Content Area -->
             <div class="stats-content">
                 <template v-if="activeModule === 'attendance'">
-                    <attendance-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange" :custom-range-applied="customRangeApplied"></attendance-static-insights>
+                    <attendance-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange" :custom-range-applied="customRangeApplied" :custom-range-dates="customRange" @open-date-picker="toggleDateRangePicker"></attendance-static-insights>
                     <attendance-dynamic-insights v-else></attendance-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'payroll'">
@@ -1030,6 +1156,8 @@ const StatsComponent = {
             return f.unit ? teams.value.filter(t => t.unitId === f.unit) : [];
         });
         const hasModuleFilters = computed(() => ['attendance', 'requests', 'hrdesk'].includes(activeModule.value));
+        const usesCustomDateRange = computed(() => ['attendance', 'requests', 'hrdesk'].includes(activeModule.value));
+        const usesTypeDateFilter = computed(() => ['payroll', 'demography', 'directory', 'settings'].includes(activeModule.value));
         const showDepartmentFilter = computed(() => hasModuleFilters.value);
         const showSectionFilter = computed(() => hasModuleFilters.value);
         const showUnitFilter = computed(() => hasModuleFilters.value);
@@ -1076,14 +1204,32 @@ const StatsComponent = {
             }
             moduleStates[activeModule.value].showDateRangePicker = false;
         };
+        
+        const applyFilters = () => {
+            console.log('Applying filters for module:', activeModule.value, filters.value);
+        };
+        
+        const resetFilters = () => {
+            const state = moduleStates[activeModule.value];
+            // Reset filters
+            state.filters = { department: null, section: null, unit: null, team: null, entity: null, costCenter: null, country: null, office: null };
+            // Reset dynamic filters
+            state.dynamicFilters = { type: 'Monthly', month: null, quarter: null, year: 2026 };
+            // Reset custom range
+            state.customRange = { from: null, to: null };
+            state.customRangeApplied = false;
+            state.showDateRangePicker = false;
+            console.log('Filters reset for module:', activeModule.value);
+        };
 
         return {
             modules, activeModule, insightTab, selectedDateRange, customRange, dynamicFilters, months, quarters, years,
             filters, departments, sections, units, teams, entities, costCenters, countries, offices,
             appraisalCycles, selectedAppraisalCycle, appraisalCycleApplied, customRangeApplied, currentModuleTitle,
             filteredSections, filteredUnits, filteredTeams, hasModuleFilters, showDateRangePicker, formatDateRange,
+            usesCustomDateRange, usesTypeDateFilter,
             showDepartmentFilter, showSectionFilter, showUnitFilter, showTeamFilter, showEntityFilter, showCostCenterFilter, showCountryFilter, showOfficeFilter,
-            onDepartmentChange, onSectionChange, onUnitChange, applyAppraisalCycle, toggleDateRangePicker, clearDateRange, applyDateRange
+            onDepartmentChange, onSectionChange, onUnitChange, applyAppraisalCycle, toggleDateRangePicker, clearDateRange, applyDateRange, applyFilters, resetFilters
         };
     }
 };

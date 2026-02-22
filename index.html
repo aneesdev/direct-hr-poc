@@ -61,6 +61,10 @@
     <script src="js/components/hr-bulk-settings.js"></script>
     <script src="js/components/company-documents.js"></script>
     <script src="js/components/stats.js"></script>
+    <script src="js/components/training-paths.js"></script>
+    <script src="js/components/training-assign.js"></script>
+    <script src="js/components/training-tracker.js"></script>
+    <script src="js/components/training-insights.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -96,6 +100,30 @@
                         @click="navigateTo('my-requests')">
                         <i class="pi pi-inbox"></i>
                         <span>Requests</span>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title">Training</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'training-paths' }"
+                        @click="navigateTo('training-paths')">
+                        <i class="pi pi-bookmark"></i>
+                        <span>Paths</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'training-assign' }"
+                        @click="navigateTo('training-assign')">
+                        <i class="pi pi-user-plus"></i>
+                        <span>Assign</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'training-tracker' }"
+                        @click="navigateTo('training-tracker')">
+                        <i class="pi pi-chart-line"></i>
+                        <span>Tracker</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'training-insights' }"
+                        @click="navigateTo('training-insights')">
+                        <i class="pi pi-chart-pie"></i>
+                        <span>Insights</span>
                     </div>
 
                     <div class="menu-section">
@@ -341,6 +369,12 @@
 
                     <!-- Stats Page -->
                     <stats-module v-else-if="currentPage === 'stats'"></stats-module>
+
+                    <!-- Training Pages -->
+                    <training-paths v-else-if="currentPage === 'training-paths'"></training-paths>
+                    <training-assign v-else-if="currentPage === 'training-assign'"></training-assign>
+                    <training-tracker v-else-if="currentPage === 'training-tracker'"></training-tracker>
+                    <training-insights v-else-if="currentPage === 'training-insights'"></training-insights>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>

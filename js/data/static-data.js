@@ -306,7 +306,11 @@ const StaticData = {
         'hr-request-view': 'HR Request Details',
         'hr-bulk-settings': 'HR Help Desk Settings',
         'company-documents': 'Company Documents',
-        'stats': 'Stats'
+        'stats': 'Stats',
+        'training-paths': 'Training Paths',
+        'training-assign': 'Assign Training',
+        'training-tracker': 'Training Tracker',
+        'training-insights': 'Training Insights'
     },
 
     // Employee dropdown options
