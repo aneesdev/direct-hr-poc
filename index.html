@@ -48,7 +48,6 @@
     <script src="js/components/new-appraisal.js"></script>
     <script src="js/components/appraisal-tracking.js"></script>
     <script src="js/components/appraisal-results.js"></script>
-    <script src="js/components/appraisal-analytics.js"></script>
     <script src="js/components/home.js"></script>
     <script src="js/components/my-profile.js"></script>
     <script src="js/components/employee-directory.js"></script>
@@ -76,6 +75,7 @@
                 </div>
 
                 <nav class="sidebar-menu">
+                    <!-- Main Section -->
                     <div class="menu-section">
                         <div class="menu-section-title">Main</div>
                     </div>
@@ -83,149 +83,130 @@
                         <i class="pi pi-home"></i>
                         <span>Home</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'stats' }" @click="navigateTo('stats')">
-                        <i class="pi pi-chart-bar"></i>
-                        <span>Stats</span>
-                    </div>
                     <div class="menu-item" :class="{ active: currentPage === 'employee-directory' }" @click="navigateTo('employee-directory')">
                         <i class="pi pi-sitemap"></i>
                         <span>Employee Directory</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'new-request' }"
-                        @click="navigateTo('new-request')">
+                    <div class="menu-item" :class="{ active: currentPage === 'my-profile' }" @click="navigateTo('my-profile')">
+                        <i class="pi pi-user"></i>
+                        <span>My Profile</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'stats' }" @click="navigateTo('stats')">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>Stats</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'attendance' }" @click="navigateTo('attendance')">
+                        <i class="pi pi-clock"></i>
+                        <span>Shift Attendance</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'payroll' }" @click="navigateTo('payroll')">
+                        <i class="pi pi-wallet"></i>
+                        <span>Payroll</span>
+                    </div>
+
+                    <!-- Requests Section -->
+                    <div class="menu-section">
+                        <div class="menu-section-title">Requests</div>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'new-request' }" @click="navigateTo('new-request')">
                         <i class="pi pi-plus-circle"></i>
                         <span>New Request</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'my-requests' }"
-                        @click="navigateTo('my-requests')">
+                    <div class="menu-item" :class="{ active: currentPage === 'my-requests' }" @click="navigateTo('my-requests')">
                         <i class="pi pi-inbox"></i>
-                        <span>Requests</span>
+                        <span>Requests Tracker</span>
                     </div>
 
-                    <div class="menu-section">
-                        <div class="menu-section-title">Training</div>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'training-paths' }"
-                        @click="navigateTo('training-paths')">
-                        <i class="pi pi-bookmark"></i>
-                        <span>Paths</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'training-assign' }"
-                        @click="navigateTo('training-assign')">
-                        <i class="pi pi-user-plus"></i>
-                        <span>Assign</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'training-tracker' }"
-                        @click="navigateTo('training-tracker')">
-                        <i class="pi pi-chart-line"></i>
-                        <span>Tracker</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'training-insights' }"
-                        @click="navigateTo('training-insights')">
-                        <i class="pi pi-chart-pie"></i>
-                        <span>Insights</span>
-                    </div>
-
+                    <!-- HR Help Desk Section -->
                     <div class="menu-section">
                         <div class="menu-section-title">HR Help Desk</div>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'hr-request-center' || currentPage === 'hr-request-form' }"
                         @click="navigateTo('hr-request-center')">
                         <i class="pi pi-ticket"></i>
-                        <span>New HR Request</span>
+                        <span>New HD Request</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'hr-requests-tracking' || currentPage === 'hr-request-view' }"
                         @click="navigateTo('hr-requests-tracking')">
                         <i class="pi pi-list-check"></i>
-                        <span>Tracking</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'hr-bulk-settings' }"
-                        @click="navigateTo('hr-bulk-settings')">
-                        <i class="pi pi-sliders-h"></i>
-                        <span>HR Help Desk Settings</span>
+                        <span>Request HD Tracker</span>
                     </div>
 
+                    <!-- Training Section -->
                     <div class="menu-section">
-                        <div class="menu-section-title">Appraisals</div>
+                        <div class="menu-section-title">Training</div>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'new-appraisal' }"
-                        @click="navigateTo('new-appraisal')">
-                        <i class="pi pi-plus-circle"></i>
-                        <span>New Appraisal Cycle</span>
+                    <div class="menu-item" :class="{ active: currentPage === 'training-paths' }" @click="navigateTo('training-paths')">
+                        <i class="pi pi-bookmark"></i>
+                        <span>Paths</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-tracking' }"
-                        @click="navigateTo('appraisal-tracking')">
+                    <div class="menu-item" :class="{ active: currentPage === 'training-assign' }" @click="navigateTo('training-assign')">
+                        <i class="pi pi-user-plus"></i>
+                        <span>Assign</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'training-tracker' }" @click="navigateTo('training-tracker')">
                         <i class="pi pi-chart-line"></i>
                         <span>Tracking</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-results' }"
-                        @click="navigateTo('appraisal-results')">
-                        <i class="pi pi-file-check"></i>
-                        <span>Results</span>
+
+                    <!-- Appraisals Section -->
+                    <div class="menu-section">
+                        <div class="menu-section-title">Appraisals</div>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-analytics' }"
-                        @click="navigateTo('appraisal-analytics')">
-                        <i class="pi pi-chart-bar"></i>
-                        <span>Analytics</span>
+                    <div class="menu-item" :class="{ active: currentPage === 'new-appraisal' }" @click="navigateTo('new-appraisal')">
+                        <i class="pi pi-plus-circle"></i>
+                        <span>New Appraisal Cycle</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-tracking' }" @click="navigateTo('appraisal-tracking')">
+                        <i class="pi pi-chart-line"></i>
+                        <span>Appraisals Tracking</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'appraisal-results' }" @click="navigateTo('appraisal-results')">
+                        <i class="pi pi-file-check"></i>
+                        <span>Appraisals Results</span>
                     </div>
 
+                    <!-- HR Management Section -->
                     <div class="menu-section">
                         <div class="menu-section-title">HR Management</div>
                     </div>
-                    <div class="menu-item"
-                        :class="{ active: currentPage === 'employees' || currentPage === 'add-employee' }"
-                        @click="navigateTo('employees')">
+                    <div class="menu-item" :class="{ active: currentPage === 'employees' || currentPage === 'add-employee' }" @click="navigateTo('employees')">
                         <i class="pi pi-users"></i>
                         <span>Employees</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'attendance' }"
-                        @click="navigateTo('attendance')">
-                        <i class="pi pi-clock"></i>
-                        <span>Shift & Attendance</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'payroll' }"
-                        @click="navigateTo('payroll')">
-                        <i class="pi pi-wallet"></i>
-                        <span>Payroll</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'orders-settings' }"
-                        @click="navigateTo('orders-settings')">
-                        <i class="pi pi-file-edit"></i>
-                        <span>Orders & Requests</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'hr-requests-settings' }"
-                        @click="navigateTo('hr-requests-settings')">
-                        <i class="pi pi-cog"></i>
-                        <span>HR Help Desk Requests</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'company-news' }"
-                        @click="navigateTo('company-news')">
+                    <div class="menu-item" :class="{ active: currentPage === 'company-news' }" @click="navigateTo('company-news')">
                         <i class="pi pi-megaphone"></i>
                         <span>Company News</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'company-documents' }"
-                        @click="navigateTo('company-documents')">
-                        <i class="pi pi-folder"></i>
-                        <span>Company Documents</span>
+                    <div class="menu-item" :class="{ active: currentPage === 'orders-settings' }" @click="navigateTo('orders-settings')">
+                        <i class="pi pi-file-edit"></i>
+                        <span>Orders Requests Settings</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'hr-requests-settings' }" @click="navigateTo('hr-requests-settings')">
+                        <i class="pi pi-cog"></i>
+                        <span>Help Desk Requests Settings</span>
                     </div>
 
-                    <div class="menu-section">
-                        <div class="menu-section-title">Reports</div>
-                    </div>
-
-                    <div class="menu-item" :class="{ active: currentPage === 'reports' }"
-                        @click="navigateTo('reports')">
-                        <i class="pi pi-chart-bar"></i>
-                        <span>Reports</span>
-                    </div>
-
+                    <!-- Settings Section -->
                     <div class="menu-section">
                         <div class="menu-section-title">Settings</div>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'company-settings' }"
-                        @click="navigateTo('company-settings')">
+                    <div class="menu-item" :class="{ active: currentPage === 'company-settings' }" @click="navigateTo('company-settings')">
                         <i class="pi pi-building"></i>
-                        <span>Company Settings</span>
+                        <span>Main Company Settings</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'hr-bulk-settings' }" @click="navigateTo('hr-bulk-settings')">
+                        <i class="pi pi-sliders-h"></i>
+                        <span>HR Help Desk Settings</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'company-documents' }" @click="navigateTo('company-documents')">
+                        <i class="pi pi-folder"></i>
+                        <span>Company Documents</span>
+                    </div>
+                    <div class="menu-item disabled">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>Reports</span>
+                        <span class="coming-soon-badge">Soon</span>
                     </div>
                 </nav>
             </aside>
@@ -321,8 +302,6 @@
                     <!-- Appraisal Results Page -->
                     <appraisal-results v-else-if="currentPage === 'appraisal-results'"></appraisal-results>
 
-                    <!-- Appraisal Analytics Page -->
-                    <appraisal-analytics v-else-if="currentPage === 'appraisal-analytics'"></appraisal-analytics>
 
                     <!-- Home Page -->
                     <home v-else-if="currentPage === 'home'"></home>
@@ -372,13 +351,20 @@
 
                     <!-- Training Pages -->
                     <training-paths v-else-if="currentPage === 'training-paths'"></training-paths>
-                    <training-assign v-else-if="currentPage === 'training-assign'"></training-assign>
+                    <training-assign v-else-if="currentPage === 'training-assign'" @navigate="navigateTo"></training-assign>
                     <training-tracker v-else-if="currentPage === 'training-tracker'"></training-tracker>
-                    <training-insights v-else-if="currentPage === 'training-insights'"></training-insights>
 
                     <!-- Other Pages (Placeholder) -->
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>
                 </div>
+
+                <!-- Floating Action Button -->
+                <button class="fab-button" 
+                        v-if="currentPage === 'home' || currentPage === 'my-profile'"
+                        @click="navigateTo('new-request')"
+                        v-tooltip.left="'New Request'">
+                    <i class="pi pi-plus"></i>
+                </button>
             </main>
         </div>
     </div>

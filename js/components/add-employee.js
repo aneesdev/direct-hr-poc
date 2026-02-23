@@ -1,7 +1,7 @@
 /**
  * Add Employee Component
- * 6-Step Wizard for adding new employees
- * Updated: nationality with flags, entity, grades hierarchy, GOSI, etc.
+ * 7-Step Wizard for adding new employees
+ * Updated: Added Step 7 (Checklist) for onboarding completion
  */
 
 const AddEmployeeComponent = {
@@ -678,6 +678,92 @@ const AddEmployeeComponent = {
                         </div>
                     </div>
                 </div>
+
+                <!-- Step 7: Checklist -->
+                <div v-show="currentStep === 6" class="step-panel">
+                    <div class="step-title">
+                        <i class="pi pi-check-square"></i>
+                        Onboarding Checklist
+                    </div>
+                    <div class="step-subtitle">Final verification before completing employee onboarding</div>
+                    
+                    <div class="onboarding-checklist">
+                        <div class="checklist-section">
+                            <h4><i class="pi pi-file"></i> Documentation</h4>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.documentsVerified" :binary="true"></p-checkbox>
+                                <span>All required documents have been collected and verified</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.contractSigned" :binary="true"></p-checkbox>
+                                <span>Employment contract signed by both parties</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.ndasSigned" :binary="true"></p-checkbox>
+                                <span>NDA and confidentiality agreements signed</span>
+                            </div>
+                        </div>
+
+                        <div class="checklist-section">
+                            <h4><i class="pi pi-desktop"></i> System Access</h4>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.emailCreated" :binary="true"></p-checkbox>
+                                <span>Corporate email account created</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.systemAccessGranted" :binary="true"></p-checkbox>
+                                <span>Required system access and permissions granted</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.biometricEnrolled" :binary="true"></p-checkbox>
+                                <span>Biometric/attendance system enrollment complete</span>
+                            </div>
+                        </div>
+
+                        <div class="checklist-section">
+                            <h4><i class="pi pi-briefcase"></i> Equipment & Resources</h4>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.equipmentIssued" :binary="true"></p-checkbox>
+                                <span>Laptop/computer and peripherals issued</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.idCardIssued" :binary="true"></p-checkbox>
+                                <span>Employee ID card issued</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.workstationAssigned" :binary="true"></p-checkbox>
+                                <span>Workstation/desk assigned</span>
+                            </div>
+                        </div>
+
+                        <div class="checklist-section">
+                            <h4><i class="pi pi-users"></i> Orientation</h4>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.hrOrientationComplete" :binary="true"></p-checkbox>
+                                <span>HR orientation session completed</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.teamIntroduction" :binary="true"></p-checkbox>
+                                <span>Team introduction and manager meeting done</span>
+                            </div>
+                            <div class="checklist-item">
+                                <p-checkbox v-model="form.checklist.policiesReviewed" :binary="true"></p-checkbox>
+                                <span>Company policies and handbook reviewed</span>
+                            </div>
+                        </div>
+
+                        <div class="checklist-progress">
+                            <div class="checklist-progress-label">
+                                <span>Checklist Progress</span>
+                                <span>{{ checklistProgress }}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" :class="checklistProgress === 100 ? 'completed' : 'pending'" 
+                                     :style="{ width: checklistProgress + '%' }"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Wizard Footer -->
@@ -685,7 +771,7 @@ const AddEmployeeComponent = {
                 <p-button v-if="currentStep > 0" label="Previous" icon="pi pi-arrow-left" outlined @click="prevStep"></p-button>
                 <div style="flex: 1;"></div>
                 <p-button v-if="currentStep < steps.length - 1" label="Next" icon="pi pi-arrow-right" iconPos="right" @click="nextStep"></p-button>
-                <p-button v-else label="Submit Employee" icon="pi pi-check" @click="submitEmployee"></p-button>
+                <p-button v-else label="Submit Employee" icon="pi pi-check" @click="submitEmployee" :disabled="checklistProgress < 100"></p-button>
             </div>
         </div>
     `,
@@ -702,7 +788,8 @@ const AddEmployeeComponent = {
             { label: 'Work Access' },
             { label: 'Contract & Salary' },
             { label: 'Attendance' },
-            { label: 'Iqama' }
+            { label: 'Iqama' },
+            { label: 'Checklist' }
         ]);
 
         const currentStep = ref(0);
@@ -777,7 +864,22 @@ const AddEmployeeComponent = {
             hasIqama: false,
             iqamaNumber: '',
             iqamaExpiryDate: null,
-            iqamaOccupation: null
+            iqamaOccupation: null,
+            // Step 7 - Checklist
+            checklist: {
+                documentsVerified: false,
+                contractSigned: false,
+                ndasSigned: false,
+                emailCreated: false,
+                systemAccessGranted: false,
+                biometricEnrolled: false,
+                equipmentIssued: false,
+                idCardIssued: false,
+                workstationAssigned: false,
+                hrOrientationComplete: false,
+                teamIntroduction: false,
+                policiesReviewed: false
+            }
         });
 
         // Static data references
@@ -812,6 +914,14 @@ const AddEmployeeComponent = {
         const annualLeaveDays = ref([...StaticData.annualLeaveDays]);
         const salaryTransferMethods = ref([...StaticData.salaryTransferMethods]);
         const scheduleTypes = ref([...StaticData.scheduleTypes]);
+
+        // Checklist progress
+        const checklistProgress = computed(() => {
+            const checklist = form.value.checklist;
+            const totalItems = Object.keys(checklist).length;
+            const completedItems = Object.values(checklist).filter(v => v === true).length;
+            return Math.round((completedItems / totalItems) * 100);
+        });
 
         // Computed filtered options
         const filteredSections = computed(() => {
@@ -950,13 +1060,14 @@ const AddEmployeeComponent = {
                 mainGrade: mainGradeName,
                 subGrade: subGradeName,
                 jobTitle: jobTitleName,
-                status: 'Active',
+                status: 'Complete',
                 dateOfHiring: form.value.dateOfHiring ? form.value.dateOfHiring.toLocaleDateString('en-GB') : '',
                 contractType: form.value.contractType,
-                completedSteps: 6,
-                totalSteps: 6,
+                completedSteps: 7,
+                totalSteps: 7,
                 progress: 100,
                 slaStatus: 'completed',
+                slaDays: Math.floor(Math.random() * 15) + 5,
                 createdAt: new Date().toLocaleDateString('en-GB')
             };
             StaticData.employees.push(newEmployee);
@@ -996,6 +1107,7 @@ const AddEmployeeComponent = {
             annualLeaveDays,
             salaryTransferMethods,
             scheduleTypes,
+            checklistProgress,
             filteredSections,
             filteredUnits,
             filteredTeams,

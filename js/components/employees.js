@@ -1,7 +1,7 @@
 /**
  * Employees Component
  * Handles employee listing and management
- * Updated: Added step filters, progress bars, and SLA tracking
+ * Updated: New statuses (Draft, Active, Complete, Non-active), SLA tracking, termination flow
  */
 
 const EmployeesComponent = {
@@ -14,7 +14,7 @@ const EmployeesComponent = {
                         <i class="pi pi-users"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ employees.length }}</div>
+                        <div class="stat-value">{{ activeEmployeeCount }}</div>
                         <div class="stat-label">Total Employees</div>
                     </div>
                 </div>
@@ -23,8 +23,8 @@ const EmployeesComponent = {
                         <i class="pi pi-check-circle"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ completedCount }}</div>
-                        <div class="stat-label">Completed</div>
+                        <div class="stat-value">{{ completeCount }}</div>
+                        <div class="stat-label">Complete</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -32,17 +32,17 @@ const EmployeesComponent = {
                         <i class="pi pi-clock"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ pendingCount }}</div>
-                        <div class="stat-label">Pending</div>
+                        <div class="stat-value">{{ draftCount }}</div>
+                        <div class="stat-label">Draft</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon purple">
-                        <i class="pi pi-exclamation-triangle"></i>
+                        <i class="pi pi-chart-line"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ overdueCount }}</div>
-                        <div class="stat-label">Overdue SLA</div>
+                        <div class="stat-value">{{ averageSla }} days</div>
+                        <div class="stat-label">Average SLA</div>
                     </div>
                 </div>
             </div>
@@ -65,21 +65,21 @@ const EmployeesComponent = {
 
                 <!-- Step Filters -->
                 <div class="step-filter-tabs">
-                    <div class="step-filter-tab" :class="{ active: stepFilter === null }" @click="stepFilter = null">
+                    <div class="step-filter-tab" :class="{ active: stepFilter === null && statusFilter === null }" @click="clearFilters">
                         All
-                        <span class="step-filter-count">{{ employees.length }}</span>
+                        <span class="step-filter-count">{{ activeEmployeeCount }}</span>
                     </div>
-                    <div v-for="step in 6" :key="step" 
+                    <div v-for="step in 7" :key="step" 
                          class="step-filter-tab" 
                          :class="{ active: stepFilter === step }"
-                         @click="stepFilter = step">
+                         @click="setStepFilter(step)">
                         Step {{ step }}
                         <span class="step-filter-count">{{ getStepCount(step) }}</span>
                     </div>
-                    <div class="step-filter-tab" :class="{ active: slaFilter === 'overdue' }" @click="toggleSlaFilter('overdue')">
-                        <i class="pi pi-exclamation-triangle" style="color: #ef4444;"></i>
-                        Overdue
-                        <span class="step-filter-count">{{ overdueCount }}</span>
+                    <div class="step-filter-tab" :class="{ active: statusFilter === 'Non-active' }" @click="setStatusFilter('Non-active')">
+                        <i class="pi pi-ban" style="color: #94a3b8;"></i>
+                        Non-active
+                        <span class="step-filter-count">{{ nonActiveCount }}</span>
                     </div>
                 </div>
 
@@ -121,7 +121,7 @@ const EmployeesComponent = {
                                 </div>
                                 <div class="progress-bar-container">
                                     <div class="progress-bar-fill" 
-                                         :class="slotProps.data.slaStatus"
+                                         :class="getProgressClass(slotProps.data)"
                                          :style="{ width: slotProps.data.progress + '%' }"></div>
                                 </div>
                             </div>
@@ -129,9 +129,10 @@ const EmployeesComponent = {
                     </p-column>
                     <p-column header="SLA" sortable style="width: 100px;">
                         <template #body="slotProps">
-                            <span class="sla-tag" :class="slotProps.data.slaStatus">
-                                {{ formatSlaStatus(slotProps.data.slaStatus) }}
+                            <span v-if="slotProps.data.slaDays" class="sla-days-badge">
+                                {{ slotProps.data.slaDays }}d
                             </span>
+                            <span v-else class="sla-tag pending">Pending</span>
                         </template>
                     </p-column>
                     <p-column header="Status" sortable>
@@ -144,14 +145,76 @@ const EmployeesComponent = {
                     <p-column header="Actions" style="width: 120px">
                         <template #body="slotProps">
                             <div style="display: flex; gap: 0.25rem;">
-                                <button class="action-btn" title="View"><i class="pi pi-eye"></i></button>
-                                <button class="action-btn edit" title="Edit"><i class="pi pi-pencil"></i></button>
-                                <button class="action-btn delete" title="Delete"><i class="pi pi-trash"></i></button>
+                                <!-- Draft: Edit, Terminate -->
+                                <template v-if="slotProps.data.status === 'Draft'">
+                                    <button class="action-btn edit" title="Edit" @click="$emit('add-employee', slotProps.data)"><i class="pi pi-pencil"></i></button>
+                                    <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
+                                </template>
+                                <!-- Active: Edit, View, Terminate -->
+                                <template v-else-if="slotProps.data.status === 'Active'">
+                                    <button class="action-btn edit" title="Edit" @click="$emit('add-employee', slotProps.data)"><i class="pi pi-pencil"></i></button>
+                                    <button class="action-btn" title="View Profile"><i class="pi pi-eye"></i></button>
+                                    <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
+                                </template>
+                                <!-- Complete: View, Terminate -->
+                                <template v-else-if="slotProps.data.status === 'Complete'">
+                                    <button class="action-btn" title="View Profile"><i class="pi pi-eye"></i></button>
+                                    <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
+                                </template>
+                                <!-- Non-active: View only -->
+                                <template v-else>
+                                    <button class="action-btn" title="View Profile"><i class="pi pi-eye"></i></button>
+                                </template>
                             </div>
                         </template>
                     </p-column>
                 </p-datatable>
             </div>
+
+            <!-- Termination Dialog -->
+            <p-dialog v-model:visible="showTerminateDialog" header="Employee Termination" :modal="true" :style="{ width: '500px' }">
+                <div class="terminate-dialog-content" v-if="employeeToTerminate">
+                    <div class="terminate-employee-info">
+                        <img :src="employeeToTerminate.avatar" :alt="employeeToTerminate.firstName">
+                        <div>
+                            <strong>{{ employeeToTerminate.firstName }} {{ employeeToTerminate.familyName }}</strong>
+                            <span>{{ employeeToTerminate.employeeNumber }} • {{ employeeToTerminate.jobTitle }}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Termination Reason <span class="required">*</span></label>
+                        <p-select v-model="terminationForm.reason" :options="terminationReasons" 
+                                  placeholder="Select reason" style="width: 100%;"></p-select>
+                    </div>
+
+                    <div class="terminate-checklist">
+                        <label>Exit Checklist</label>
+                        <div class="checklist-item">
+                            <p-checkbox v-model="terminationForm.checklist.assetsReturned" :binary="true"></p-checkbox>
+                            <span>Company assets returned (laptop, ID card, keys)</span>
+                        </div>
+                        <div class="checklist-item">
+                            <p-checkbox v-model="terminationForm.checklist.accessRevoked" :binary="true"></p-checkbox>
+                            <span>System access and credentials revoked</span>
+                        </div>
+                        <div class="checklist-item">
+                            <p-checkbox v-model="terminationForm.checklist.finalSettlement" :binary="true"></p-checkbox>
+                            <span>Final settlement processed</span>
+                        </div>
+                    </div>
+
+                    <div class="terminate-warning">
+                        <i class="pi pi-exclamation-triangle"></i>
+                        <span>This action will mark the employee as Non-active and cannot be undone.</span>
+                    </div>
+                </div>
+                <template #footer>
+                    <p-button label="Cancel" text @click="showTerminateDialog = false"></p-button>
+                    <p-button label="Confirm Termination" severity="danger" 
+                              :disabled="!canTerminate" @click="confirmTermination"></p-button>
+                </template>
+            </p-dialog>
         </div>
     `,
 
@@ -167,35 +230,71 @@ const EmployeesComponent = {
         const filterEntity = ref(null);
         const filterStatus = ref(null);
         const stepFilter = ref(null);
-        const slaFilter = ref(null);
+        const statusFilter = ref(null);
+
+        // Termination
+        const showTerminateDialog = ref(false);
+        const employeeToTerminate = ref(null);
+        const terminationReasons = ref(['Resignation', 'Layoff', 'End of Contract']);
+        const terminationForm = ref({
+            reason: null,
+            checklist: {
+                assetsReturned: false,
+                accessRevoked: false,
+                finalSettlement: false
+            }
+        });
 
         // Options
         const departmentOptions = computed(() => StaticData.departments.map(d => d.name));
         const entityOptions = computed(() => StaticData.entities.map(e => e.name));
-        const statusOptions = ref(['Active', 'On Leave', 'Inactive', 'Terminated']);
+        const statusOptions = ref(['Draft', 'Active', 'Complete', 'Non-active']);
 
-        // Computed counts
-        const completedCount = computed(() => employees.value.filter(e => e.slaStatus === 'completed').length);
-        const pendingCount = computed(() => employees.value.filter(e => e.slaStatus === 'pending').length);
-        const overdueCount = computed(() => employees.value.filter(e => e.slaStatus === 'overdue').length);
+        // Computed counts (excluding Non-active)
+        const activeEmployeeCount = computed(() => employees.value.filter(e => e.status !== 'Non-active').length);
+        const completeCount = computed(() => employees.value.filter(e => e.status === 'Complete').length);
+        const draftCount = computed(() => employees.value.filter(e => e.status === 'Draft').length);
+        const activeCount = computed(() => employees.value.filter(e => e.status === 'Active').length);
+        const nonActiveCount = computed(() => employees.value.filter(e => e.status === 'Non-active').length);
 
-        // Get count per step
+        // Average SLA calculation
+        const averageSla = computed(() => {
+            const completedEmployees = employees.value.filter(e => e.slaDays !== null && e.slaDays > 0);
+            if (completedEmployees.length === 0) return 0;
+            const totalDays = completedEmployees.reduce((sum, e) => sum + e.slaDays, 0);
+            return Math.round(totalDays / completedEmployees.length);
+        });
+
+        // Get count per step (excluding Non-active)
         const getStepCount = (step) => {
-            return employees.value.filter(e => e.completedSteps === step).length;
+            return employees.value.filter(e => e.completedSteps === step && e.status !== 'Non-active').length;
         };
 
-        // Toggle SLA filter
-        const toggleSlaFilter = (status) => {
-            if (slaFilter.value === status) {
-                slaFilter.value = null;
-            } else {
-                slaFilter.value = status;
-                stepFilter.value = null;
-            }
+        // Clear all filters
+        const clearFilters = () => {
+            stepFilter.value = null;
+            statusFilter.value = null;
+        };
+
+        // Set step filter
+        const setStepFilter = (step) => {
+            stepFilter.value = step;
+            statusFilter.value = null;
+        };
+
+        // Set status filter
+        const setStatusFilter = (status) => {
+            statusFilter.value = status;
+            stepFilter.value = null;
         };
 
         const filteredEmployees = computed(() => {
             let result = employees.value;
+
+            // By default, exclude Non-active unless specifically filtered
+            if (statusFilter.value !== 'Non-active' && !filterStatus.value) {
+                result = result.filter(e => e.status !== 'Non-active');
+            }
 
             if (searchQuery.value) {
                 const query = searchQuery.value.toLowerCase();
@@ -219,12 +318,12 @@ const EmployeesComponent = {
                 result = result.filter(e => e.status === filterStatus.value);
             }
 
-            if (stepFilter.value !== null) {
-                result = result.filter(e => e.completedSteps === stepFilter.value);
+            if (statusFilter.value) {
+                result = employees.value.filter(e => e.status === statusFilter.value);
             }
 
-            if (slaFilter.value) {
-                result = result.filter(e => e.slaStatus === slaFilter.value);
+            if (stepFilter.value !== null) {
+                result = result.filter(e => e.completedSteps === stepFilter.value);
             }
 
             return result;
@@ -233,21 +332,53 @@ const EmployeesComponent = {
         // Methods
         const getStatusClass = (status) => {
             const classes = {
+                'Draft': 'draft',
                 'Active': 'active',
-                'On Leave': 'warning',
-                'Inactive': 'inactive',
-                'Terminated': 'inactive'
+                'Complete': 'complete',
+                'Non-active': 'inactive'
             };
             return classes[status] || '';
         };
 
-        const formatSlaStatus = (status) => {
-            const labels = {
-                'completed': 'Done',
-                'pending': 'Pending',
-                'overdue': 'Overdue'
+        const getProgressClass = (employee) => {
+            if (employee.status === 'Complete') return 'completed';
+            if (employee.status === 'Non-active') return 'inactive';
+            if (employee.slaStatus === 'overdue') return 'overdue';
+            return 'pending';
+        };
+
+        // Termination methods
+        const openTerminateDialog = (employee) => {
+            employeeToTerminate.value = employee;
+            terminationForm.value = {
+                reason: null,
+                checklist: {
+                    assetsReturned: false,
+                    accessRevoked: false,
+                    finalSettlement: false
+                }
             };
-            return labels[status] || status;
+            showTerminateDialog.value = true;
+        };
+
+        const canTerminate = computed(() => {
+            const form = terminationForm.value;
+            return form.reason && 
+                   form.checklist.assetsReturned && 
+                   form.checklist.accessRevoked && 
+                   form.checklist.finalSettlement;
+        });
+
+        const confirmTermination = () => {
+            if (employeeToTerminate.value && canTerminate.value) {
+                const index = employees.value.findIndex(e => e.id === employeeToTerminate.value.id);
+                if (index !== -1) {
+                    employees.value[index].status = 'Non-active';
+                    employees.value[index].terminationReason = terminationForm.value.reason;
+                }
+                showTerminateDialog.value = false;
+                employeeToTerminate.value = null;
+            }
         };
 
         return {
@@ -257,18 +388,30 @@ const EmployeesComponent = {
             filterEntity,
             filterStatus,
             stepFilter,
-            slaFilter,
+            statusFilter,
             departmentOptions,
             entityOptions,
             statusOptions,
-            completedCount,
-            pendingCount,
-            overdueCount,
+            activeEmployeeCount,
+            completeCount,
+            draftCount,
+            activeCount,
+            nonActiveCount,
+            averageSla,
             getStepCount,
-            toggleSlaFilter,
+            clearFilters,
+            setStepFilter,
+            setStatusFilter,
             filteredEmployees,
             getStatusClass,
-            formatSlaStatus
+            getProgressClass,
+            showTerminateDialog,
+            employeeToTerminate,
+            terminationReasons,
+            terminationForm,
+            openTerminateDialog,
+            canTerminate,
+            confirmTermination
         };
     }
 };

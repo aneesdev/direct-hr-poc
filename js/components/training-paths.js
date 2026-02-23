@@ -111,25 +111,13 @@ const TrainingPathsComponent = {
             hours: null
         });
 
-        const hoursOptions = ref([
-            { label: '1 hour', value: 1 },
-            { label: '5 hours', value: 5 },
-            { label: '10 hours', value: 10 },
-            { label: '15 hours', value: 15 },
-            { label: '20 hours', value: 20 },
-            { label: '25 hours', value: 25 },
-            { label: '30 hours', value: 30 },
-            { label: '35 hours', value: 35 },
-            { label: '40 hours', value: 40 },
-            { label: '50 hours', value: 50 },
-            { label: '60 hours', value: 60 },
-            { label: '70 hours', value: 70 },
-            { label: '80 hours', value: 80 },
-            { label: '90 hours', value: 90 },
-            { label: '100 hours', value: 100 },
-            { label: '120 hours', value: 120 },
-            { label: '150 hours', value: 150 }
-        ]);
+        // Generate 150 hours options (1 to 150)
+        const hoursOptions = computed(() => {
+            return Array.from({ length: 150 }, (_, i) => ({
+                label: `${i + 1} hour${i + 1 > 1 ? 's' : ''}`,
+                value: i + 1
+            }));
+        });
 
         const paths = ref([
             { id: 1, name: 'Cybersecurity Essentials', description: 'Master the basics of digital safety, threat detection, and response protocols.', hours: 10, dateAdded: '2026-02-22' },

@@ -863,8 +863,8 @@ const StatsComponent = {
                 </div>
             </div>
 
-            <!-- Insights Tabs (not for Settings and Appraisals) -->
-            <div class="insights-tabs" v-if="activeModule !== 'settings' && activeModule !== 'appraisals'">
+            <!-- Insights Tabs (not for Settings, Appraisals, and Training) -->
+            <div class="insights-tabs" v-if="activeModule !== 'settings' && activeModule !== 'appraisals' && activeModule !== 'training'">
                 <button class="insight-tab" :class="{ active: insightTab === 'static' }" @click="insightTab = 'static'">
                     <i class="pi pi-table"></i> Static Insights
                 </button>
@@ -874,7 +874,7 @@ const StatsComponent = {
             </div>
 
             <!-- Filters Section -->
-            <div class="stats-filters" v-if="activeModule !== 'appraisals'">
+            <div class="stats-filters" v-if="activeModule !== 'appraisals' && activeModule !== 'training'">
                 <div class="module-filters">
                     <!-- Type/Month/Year Date Filters (for Payroll, Demography, Directory, Settings) -->
                     <template v-if="usesTypeDateFilter">
@@ -1035,6 +1035,9 @@ const StatsComponent = {
                         <p>Please select an appraisal cycle and click Apply to view insights</p>
                     </div>
                 </template>
+                <template v-else-if="activeModule === 'training'">
+                    <training-insights></training-insights>
+                </template>
             </div>
         </div>
     `,
@@ -1050,7 +1053,8 @@ const StatsComponent = {
             { id: 'hrdesk', name: 'HR Desk', icon: 'pi-ticket' },
             { id: 'directory', name: 'Directory and Onboarding', icon: 'pi-id-card' },
             { id: 'settings', name: 'Settings', icon: 'pi-cog' },
-            { id: 'appraisals', name: 'Appraisal', icon: 'pi-star' }
+            { id: 'appraisals', name: 'Appraisal', icon: 'pi-star' },
+            { id: 'training', name: 'Training', icon: 'pi-book' }
         ]);
 
         const activeModule = ref('attendance');

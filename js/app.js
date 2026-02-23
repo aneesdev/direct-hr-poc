@@ -20,7 +20,6 @@ const app = createApp({
         'new-appraisal': NewAppraisalComponent,
         'appraisal-tracking': AppraisalTrackingComponent,
         'appraisal-results': AppraisalResultsComponent,
-        'appraisal-analytics': AppraisalAnalyticsComponent,
         'home': HomeComponent,
         'my-profile': MyProfileComponent,
         'employee-directory': EmployeeDirectoryComponent,
@@ -47,10 +46,10 @@ const app = createApp({
         'directory-dynamic-insights': DirectoryDynamicInsights,
         'settings-static-insights': SettingsStaticInsights,
         'appraisals-insights': AppraisalsInsights,
+        'training-insights': TrainingInsightsComponent,
         'training-paths': TrainingPathsComponent,
         'training-assign': TrainingAssignComponent,
-        'training-tracker': TrainingTrackerComponent,
-        'training-insights': TrainingInsightsComponent
+        'training-tracker': TrainingTrackerComponent
     },
 
     setup() {

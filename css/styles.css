@@ -214,6 +214,57 @@ img {
     color: var(--text-color);
 }
 
+.menu-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.coming-soon-badge {
+    margin-left: auto;
+    font-size: 0.65rem;
+    font-weight: 600;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+/* Floating Action Button */
+.fab-button {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px 0 0 6px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: -2px 2px 8px rgba(249, 115, 22, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.fab-button:hover {
+    transform: translateY(-50%);
+    box-shadow: -2px 2px 12px rgba(249, 115, 22, 0.5);
+}
+
+.fab-button:active {
+    transform: translateY(-50%);
+}
+
+.fab-button i {
+    font-size: 0.85rem;
+}
+
 /* ==========================================================================
    Main Content Area
    ========================================================================== */
@@ -551,8 +602,154 @@ img {
 }
 
 .status-tag.inactive {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+}
+
+.status-tag.draft {
+    background: rgba(251, 146, 60, 0.15);
+    color: #f97316;
+}
+
+.status-tag.complete {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+/* SLA Days Badge */
+.sla-days-badge {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Termination Dialog */
+.terminate-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.terminate-employee-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface-ground);
+    border-radius: 8px;
+}
+
+.terminate-employee-info img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+.terminate-employee-info div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.terminate-employee-info strong {
+    font-size: 1rem;
+}
+
+.terminate-employee-info span {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.terminate-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.terminate-checklist > label {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface-ground);
+    border-radius: 6px;
+}
+
+.checklist-item span {
+    font-size: 0.9rem;
+}
+
+.terminate-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
     color: #ef4444;
+    font-size: 0.85rem;
+}
+
+.terminate-warning i {
+    font-size: 1.25rem;
+}
+
+/* Onboarding Checklist */
+.onboarding-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.checklist-section {
+    background: var(--surface-ground);
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.checklist-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+.checklist-section h4 i {
+    font-size: 1rem;
+}
+
+.checklist-section .checklist-item {
+    background: var(--surface-card);
+    margin-bottom: 0.5rem;
+}
+
+.checklist-section .checklist-item:last-child {
+    margin-bottom: 0;
+}
+
+.checklist-progress {
+    background: var(--surface-ground);
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.checklist-progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
 }
 
 /* ==========================================================================
@@ -20814,6 +21011,77 @@ img {
     padding-bottom: 200px;
 }
 
+/* Training Assign Success Confirmation */
+.training-assign-page .success-confirmation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    min-height: 60vh;
+}
+
+.training-assign-page .success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.1);
+}
+
+.training-assign-page .success-icon i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.training-assign-page .success-confirmation h1 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.training-assign-page .success-subtitle {
+    margin: 0 0 2rem 0;
+    color: var(--text-color-secondary);
+    font-size: 1rem;
+    max-width: 400px;
+}
+
+.training-assign-page .success-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.training-assign-page .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+}
+
+.training-assign-page .detail-item i {
+    color: var(--primary-color);
+    font-size: 0.85rem;
+}
+
+.training-assign-page .detail-item strong {
+    color: var(--text-color);
+}
+
+.training-assign-page .success-actions {
+    display: flex;
+    gap: 1rem;
+}
+
 .training-assign-page .page-header-centered {
     text-align: center;
     margin-bottom: 2rem;
@@ -21002,6 +21270,16 @@ img {
 .participants-header .search-box {
     flex: 1;
     margin-bottom: 0;
+}
+
+.participants-header .dept-filter,
+.participants-header .section-filter {
+    min-width: 180px;
+}
+
+.participants-header .dept-filter .p-select,
+.participants-header .section-filter .p-select {
+    width: 100%;
 }
 
 .employees-list {
@@ -21233,6 +21511,64 @@ img {
 .launch-btn {
     width: 100%;
     border-radius: 0 !important;
+}
+
+/* Participants Dialog */
+.participants-dialog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.participant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--surface-200);
+}
+
+.participant-item:last-child {
+    border-bottom: none;
+}
+
+.participant-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.participant-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.participant-details {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.remove-participant-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.remove-participant-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.no-participants {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-color-secondary);
 }
 
 /* Training Tracker Page */

@@ -4,8 +4,44 @@
  */
 
 const TrainingAssignComponent = {
+    emits: ['navigate'],
     template: `
         <div class="training-assign-page">
+            <!-- Success Confirmation Screen -->
+            <div v-if="showSuccess" class="success-confirmation">
+                <div class="success-icon">
+                    <i class="pi pi-check"></i>
+                </div>
+                <h1>Training Assigned Successfully!</h1>
+                <p class="success-subtitle">
+                    Your <strong>{{ submittedData.pathName }}</strong> training has been assigned and is now pending completion.
+                </p>
+                <div class="success-details">
+                    <div class="detail-item">
+                        <i class="pi pi-hashtag"></i>
+                        <span>Assignment ID: <strong>TRN-{{ submittedData.assignmentId }}</strong></span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="pi pi-users"></i>
+                        <span>Participants: <strong>{{ submittedData.participantCount }} employees</strong></span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="pi pi-calendar"></i>
+                        <span>Period: <strong>{{ submittedData.period }}</strong></span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="pi pi-envelope"></i>
+                        <span>Participants will receive email notifications</span>
+                    </div>
+                </div>
+                <div class="success-actions">
+                    <p-button label="Assign Another Training" icon="pi pi-plus" outlined @click="resetForm"></p-button>
+                    <p-button label="View Training Tracker" icon="pi pi-list" @click="$emit('navigate', 'training-tracker')"></p-button>
+                </div>
+            </div>
+
+            <!-- Wizard Content (hidden when success) -->
+            <template v-else>
             <!-- Page Header -->
             <div class="page-header-centered">
                 <h1>Assign Training</h1>
@@ -61,6 +97,10 @@ const TrainingAssignComponent = {
                             <i class="pi pi-search"></i>
                             <input type="text" v-model="employeeSearch" placeholder="Search ID, Name, Email...">
                         </div>
+                        <p-select v-model="selectedDepartment" :options="departmentOptions" optionLabel="name" optionValue="id" 
+                                  placeholder="All Departments" class="dept-filter"></p-select>
+                        <p-select v-if="selectedDepartment" v-model="selectedSection" :options="filteredSections" optionLabel="name" optionValue="id" 
+                                  placeholder="All Sections" class="section-filter"></p-select>
                         <p-button label="Select Visible" outlined size="small" @click="selectAllVisible" 
                                   :badge="filteredEmployees.length.toString()"></p-button>
                     </div>
@@ -72,7 +112,7 @@ const TrainingAssignComponent = {
                             <div class="employee-info">
                                 <span class="employee-name">{{ emp.name }}</span>
                                 <span class="employee-id">{{ emp.empId }}</span>
-                                <span class="employee-dept">{{ emp.department }}</span>
+                                <span class="employee-dept">{{ emp.department }} > {{ emp.section }}</span>
                             </div>
                             <span class="employee-grade">{{ emp.grade }}</span>
                         </div>
@@ -142,17 +182,39 @@ const TrainingAssignComponent = {
                     </div>
                     <div class="summary-footer">
                         <span class="participants-count">{{ selectedEmployees.length }} Participants</span>
-                        <a class="view-list-link" @click="clearSelection">VIEW LIST</a>
+                        <a class="view-list-link" @click="showParticipantsDialog = true">VIEW LIST</a>
                     </div>
                 </div>
                 <p-button label="Confirm & Launch" class="launch-btn" 
                           :disabled="!canLaunch" @click="launchTraining"></p-button>
             </div>
+
+            <!-- Selected Participants Dialog -->
+            <p-dialog v-model:visible="showParticipantsDialog" header="Selected Participants" :modal="true" :style="{ width: '450px' }">
+                <div class="participants-dialog-list">
+                    <div v-for="emp in selectedEmployees" :key="emp.id" class="participant-item">
+                        <div class="participant-info">
+                            <span class="participant-name">{{ emp.name }}</span>
+                            <span class="participant-details">{{ emp.empId }} • {{ emp.department }} • {{ emp.grade.replace('GRADE ', '') }}</span>
+                        </div>
+                        <button class="remove-participant-btn" @click="removeEmployee(emp.id)">
+                            <i class="pi pi-trash"></i>
+                        </button>
+                    </div>
+                    <div v-if="selectedEmployees.length === 0" class="no-participants">
+                        No participants selected
+                    </div>
+                </div>
+                <template #footer>
+                    <p-button label="Close" @click="showParticipantsDialog = false" class="w-full" outlined></p-button>
+                </template>
+            </p-dialog>
+            </template>
         </div>
     `,
 
     setup() {
-        const { ref, computed } = Vue;
+        const { ref, computed, watch } = Vue;
 
         const pathSearch = ref('');
         const employeeSearch = ref('');
@@ -161,6 +223,35 @@ const TrainingAssignComponent = {
         const selectedCycle = ref(null);
         const startDate = ref(null);
         const endDate = ref(null);
+        const selectedDepartment = ref(null);
+        const selectedSection = ref(null);
+        const showParticipantsDialog = ref(false);
+        const showSuccess = ref(false);
+        const submittedData = ref({
+            pathName: '',
+            assignmentId: '',
+            participantCount: 0,
+            period: ''
+        });
+
+        // Departments from StaticData
+        const departments = ref([...StaticData.departments]);
+        const sections = ref([...StaticData.sections]);
+
+        const departmentOptions = computed(() => {
+            return [{ id: null, name: 'All Departments' }, ...departments.value];
+        });
+
+        const filteredSections = computed(() => {
+            if (!selectedDepartment.value) return [];
+            const deptSections = sections.value.filter(s => s.departmentId === selectedDepartment.value);
+            return [{ id: null, name: 'All Sections' }, ...deptSections];
+        });
+
+        // Reset section when department changes
+        watch(selectedDepartment, () => {
+            selectedSection.value = null;
+        });
 
         const paths = ref([
             { id: 1, name: 'Cybersecurity Essentials', hours: 10 },
@@ -176,13 +267,18 @@ const TrainingAssignComponent = {
         ]);
 
         const employees = ref([
-            { id: 1, name: 'Employee 1', empId: 'EMP-1000', department: 'Engineering', grade: 'GRADE 5' },
-            { id: 2, name: 'Employee 2', empId: 'EMP-1001', department: 'Sales', grade: 'GRADE 4' },
-            { id: 3, name: 'Employee 3', empId: 'EMP-1002', department: 'Marketing', grade: 'GRADE 3' },
-            { id: 4, name: 'Employee 4', empId: 'EMP-1003', department: 'Human Resources', grade: 'GRADE 5' },
-            { id: 5, name: 'Employee 5', empId: 'EMP-1004', department: 'Finance', grade: 'GRADE 6' },
-            { id: 6, name: 'Employee 6', empId: 'EMP-1005', department: 'Operations', grade: 'GRADE 4' },
-            { id: 7, name: 'Employee 7', empId: 'EMP-1006', department: 'IT Support', grade: 'GRADE 3' }
+            { id: 1, name: 'Employee 1', empId: 'EMP-1000', department: 'Engineering', departmentId: 1, sectionId: 11, section: 'FRONTEND', grade: 'GRADE P' },
+            { id: 2, name: 'Employee 2', empId: 'EMP-1001', department: 'Sales', departmentId: 5, sectionId: 5, section: 'INSIDE SALES', grade: 'GRADE S' },
+            { id: 3, name: 'Employee 3', empId: 'EMP-1002', department: 'Marketing', departmentId: 6, sectionId: 7, section: 'PAID MEDIA', grade: 'GRADE M' },
+            { id: 4, name: 'Employee 4', empId: 'EMP-1003', department: 'Human Resources', departmentId: 2, sectionId: 3, section: 'RECRUITMENT', grade: 'GRADE E' },
+            { id: 5, name: 'Employee 5', empId: 'EMP-1004', department: 'Finance', departmentId: 3, sectionId: 12, section: 'ACCOUNTING', grade: 'GRADE S' },
+            { id: 6, name: 'Employee 6', empId: 'EMP-1005', department: 'Customer Success', departmentId: 7, sectionId: 9, section: 'IMPLEMENTATION', grade: 'GRADE S' },
+            { id: 7, name: 'Employee 7', empId: 'EMP-1006', department: 'Engineering', departmentId: 1, sectionId: 10, section: 'DEVOPS', grade: 'GRADE M' },
+            { id: 8, name: 'Employee 8', empId: 'EMP-1007', department: 'Sales', departmentId: 5, sectionId: 6, section: 'INSIDE ACCOUNTS', grade: 'GRADE S' },
+            { id: 9, name: 'Employee 9', empId: 'EMP-1008', department: 'Engineering', departmentId: 1, sectionId: 1, section: 'SOFTWARE DEVELOPMENT', grade: 'GRADE P' },
+            { id: 10, name: 'Employee 10', empId: 'EMP-1009', department: 'Human Resources', departmentId: 2, sectionId: 3, section: 'RECRUITMENT', grade: 'GRADE E' },
+            { id: 11, name: 'Employee 11', empId: 'EMP-1010', department: 'Engineering', departmentId: 1, sectionId: 2, section: 'QUALITY ASSURANCE', grade: 'GRADE M' },
+            { id: 12, name: 'Employee 12', empId: 'EMP-1011', department: 'Finance', departmentId: 3, sectionId: 4, section: 'PAYROLL', grade: 'GRADE S' }
         ]);
 
         const cycles = ref([
@@ -197,13 +293,29 @@ const TrainingAssignComponent = {
         });
 
         const filteredEmployees = computed(() => {
-            if (!employeeSearch.value) return employees.value;
-            const search = employeeSearch.value.toLowerCase();
-            return employees.value.filter(e => 
-                e.name.toLowerCase().includes(search) || 
-                e.empId.toLowerCase().includes(search) ||
-                e.department.toLowerCase().includes(search)
-            );
+            let result = employees.value;
+            
+            // Filter by department
+            if (selectedDepartment.value) {
+                result = result.filter(e => e.departmentId === selectedDepartment.value);
+            }
+            
+            // Filter by section
+            if (selectedSection.value) {
+                result = result.filter(e => e.sectionId === selectedSection.value);
+            }
+            
+            // Filter by search
+            if (employeeSearch.value) {
+                const search = employeeSearch.value.toLowerCase();
+                result = result.filter(e => 
+                    e.name.toLowerCase().includes(search) || 
+                    e.empId.toLowerCase().includes(search) ||
+                    e.department.toLowerCase().includes(search)
+                );
+            }
+            
+            return result;
         });
 
         const canLaunch = computed(() => {
@@ -224,6 +336,16 @@ const TrainingAssignComponent = {
                 selectedEmployees.value.push(emp);
             } else {
                 selectedEmployees.value.splice(index, 1);
+            }
+        };
+
+        const removeEmployee = (id) => {
+            const index = selectedEmployees.value.findIndex(e => e.id === id);
+            if (index !== -1) {
+                selectedEmployees.value.splice(index, 1);
+            }
+            if (selectedEmployees.value.length === 0) {
+                showParticipantsDialog.value = false;
             }
         };
 
@@ -248,11 +370,24 @@ const TrainingAssignComponent = {
             selectedCycle.value = null;
             startDate.value = null;
             endDate.value = null;
+            selectedDepartment.value = null;
+            selectedSection.value = null;
         };
 
         const launchTraining = () => {
-            alert('Training assignment launched successfully!');
+            // Store submitted data for success screen
+            submittedData.value = {
+                pathName: selectedPath.value.name,
+                assignmentId: Math.floor(100000 + Math.random() * 900000),
+                participantCount: selectedEmployees.value.length,
+                period: formatPeriod()
+            };
+            showSuccess.value = true;
+        };
+
+        const resetForm = () => {
             clearSelection();
+            showSuccess.value = false;
         };
 
         const showStepWarning = (step) => {
@@ -272,6 +407,10 @@ const TrainingAssignComponent = {
             selectedCycle,
             startDate,
             endDate,
+            selectedDepartment,
+            selectedSection,
+            departmentOptions,
+            filteredSections,
             paths,
             employees,
             cycles,
@@ -281,11 +420,16 @@ const TrainingAssignComponent = {
             selectPath,
             isEmployeeSelected,
             toggleEmployee,
+            removeEmployee,
+            showParticipantsDialog,
             selectAllVisible,
             formatPeriod,
             clearSelection,
             launchTraining,
-            showStepWarning
+            showStepWarning,
+            showSuccess,
+            submittedData,
+            resetForm
         };
     }
 };
