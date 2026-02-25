@@ -185,7 +185,7 @@ const HrRequestsSettingsComponent = {
                 </div>
 
                 <template #footer>
-                    <p-button label="Cancel" text @click="showTypeDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showTypeDialog = false"></p-button>
                     <p-button :label="editingType ? 'Update' : 'Save'" @click="saveType"></p-button>
                 </template>
             </p-dialog>
@@ -222,7 +222,7 @@ const HrRequestsSettingsComponent = {
                 </div>
 
                 <template #footer>
-                    <p-button label="Cancel" text @click="showFieldSelector = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showFieldSelector = false"></p-button>
                     <p-button label="Add Selected Fields" @click="addSelectedFields" :disabled="selectedFieldIds.length === 0"></p-button>
                 </template>
             </p-dialog>

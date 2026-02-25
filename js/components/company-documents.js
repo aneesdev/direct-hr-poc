@@ -266,7 +266,7 @@ const CompanyDocumentsComponent = {
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <p-button label="Cancel" severity="secondary" outlined @click="currentView = 'list'"></p-button>
+                        <p-button label="Cancel" severity="danger" outlined @click="currentView = 'list'"></p-button>
                         <p-button :label="editingDoc ? 'Update Document' : 'Add Document'" icon="pi pi-check" @click="saveDocument"></p-button>
                     </div>
                 </div>
@@ -279,7 +279,7 @@ const CompanyDocumentsComponent = {
                     <span>Are you sure you want to delete "{{ docToDelete?.name }}"?</span>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showDeleteDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showDeleteDialog = false"></p-button>
                     <p-button label="Delete" severity="danger" @click="deleteDocument"></p-button>
                 </template>
             </p-dialog>

@@ -4,6 +4,35 @@
  */
 
 const StaticData = {
+    // Country Phone Codes (for phone input)
+    countryPhoneCodes: [
+        { code: 'eg', name: 'Egypt', dialCode: '+20', flag: 'https://flagcdn.com/w40/eg.png' },
+        { code: 'sa', name: 'Saudi Arabia', dialCode: '+966', flag: 'https://flagcdn.com/w40/sa.png' },
+        { code: 'ae', name: 'United Arab Emirates', dialCode: '+971', flag: 'https://flagcdn.com/w40/ae.png' },
+        { code: 'jo', name: 'Jordan', dialCode: '+962', flag: 'https://flagcdn.com/w40/jo.png' },
+        { code: 'lb', name: 'Lebanon', dialCode: '+961', flag: 'https://flagcdn.com/w40/lb.png' },
+        { code: 'sy', name: 'Syria', dialCode: '+963', flag: 'https://flagcdn.com/w40/sy.png' },
+        { code: 'iq', name: 'Iraq', dialCode: '+964', flag: 'https://flagcdn.com/w40/iq.png' },
+        { code: 'kw', name: 'Kuwait', dialCode: '+965', flag: 'https://flagcdn.com/w40/kw.png' },
+        { code: 'bh', name: 'Bahrain', dialCode: '+973', flag: 'https://flagcdn.com/w40/bh.png' },
+        { code: 'qa', name: 'Qatar', dialCode: '+974', flag: 'https://flagcdn.com/w40/qa.png' },
+        { code: 'om', name: 'Oman', dialCode: '+968', flag: 'https://flagcdn.com/w40/om.png' },
+        { code: 'ye', name: 'Yemen', dialCode: '+967', flag: 'https://flagcdn.com/w40/ye.png' },
+        { code: 'ps', name: 'Palestine', dialCode: '+970', flag: 'https://flagcdn.com/w40/ps.png' },
+        { code: 'ma', name: 'Morocco', dialCode: '+212', flag: 'https://flagcdn.com/w40/ma.png' },
+        { code: 'tn', name: 'Tunisia', dialCode: '+216', flag: 'https://flagcdn.com/w40/tn.png' },
+        { code: 'dz', name: 'Algeria', dialCode: '+213', flag: 'https://flagcdn.com/w40/dz.png' },
+        { code: 'sd', name: 'Sudan', dialCode: '+249', flag: 'https://flagcdn.com/w40/sd.png' },
+        { code: 'in', name: 'India', dialCode: '+91', flag: 'https://flagcdn.com/w40/in.png' },
+        { code: 'pk', name: 'Pakistan', dialCode: '+92', flag: 'https://flagcdn.com/w40/pk.png' },
+        { code: 'bd', name: 'Bangladesh', dialCode: '+880', flag: 'https://flagcdn.com/w40/bd.png' },
+        { code: 'us', name: 'United States', dialCode: '+1', flag: 'https://flagcdn.com/w40/us.png' },
+        { code: 'gb', name: 'United Kingdom', dialCode: '+44', flag: 'https://flagcdn.com/w40/gb.png' },
+        { code: 'de', name: 'Germany', dialCode: '+49', flag: 'https://flagcdn.com/w40/de.png' },
+        { code: 'fr', name: 'France', dialCode: '+33', flag: 'https://flagcdn.com/w40/fr.png' },
+        { code: 'tr', name: 'Turkey', dialCode: '+90', flag: 'https://flagcdn.com/w40/tr.png' },
+    ],
+
     // Countries of Work (company operates in these countries)
     countriesOfWork: [
         { id: 1, name: 'Egypt', code: 'eg', timezone: 'Africa/Cairo (GMT+2)', logo: 'https://flagcdn.com/w40/eg.png', active: true },
@@ -331,13 +360,13 @@ const StaticData = {
     contractDurations: ['1 Year', '2 Years', '3 Years'],
     contractTypes: ['Full-time', 'Part-time', 'Full-time Remote', 'Part-time Remote', 'Intern'],
     probationPeriods: ['90 Days', '180 Days'],
-    annualLeaveDays: ['21 Days', '25 Days', '30 Days'],
+    annualLeaveDays: ['0 Days', '21 Days', '25 Days', '30 Days'],
     salaryTransferMethods: ['Cash', 'Bank Transfer'],
     scheduleTypes: ['Fixed Schedule', 'Variable Schedule'],
     weekDays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 
     // Sample employees data (with progress tracking, SLA, and new statuses)
-    // Status: Draft (steps 1-4), Active (steps 5-6), Complete (step 7), Non-active (terminated)
+    // Status: Draft (steps 1-4), Onboarding (steps 5-6), Active (step 7 complete), Non-active (terminated)
     employees: [
         {
             id: 1,
@@ -357,7 +386,7 @@ const StaticData = {
             mainGrade: 'Professional',
             subGrade: 'Senior',
             jobTitle: 'Senior Software Engineer',
-            status: 'Complete',
+            status: 'Active',
             dateOfHiring: '15/01/2023',
             contractType: 'Full-time',
             completedSteps: 7,
@@ -385,7 +414,7 @@ const StaticData = {
             mainGrade: 'Management',
             subGrade: 'Manager',
             jobTitle: 'HR Manager',
-            status: 'Complete',
+            status: 'Active',
             dateOfHiring: '01/03/2022',
             contractType: 'Full-time',
             completedSteps: 7,
@@ -413,7 +442,7 @@ const StaticData = {
             mainGrade: 'Professional',
             subGrade: 'Mid-Level',
             jobTitle: 'Financial Analyst',
-            status: 'Complete',
+            status: 'Active',
             dateOfHiring: '10/06/2023',
             contractType: 'Full-time',
             completedSteps: 7,
@@ -441,7 +470,7 @@ const StaticData = {
             mainGrade: 'Professional',
             subGrade: 'Mid-Level',
             jobTitle: 'QA Engineer',
-            status: 'Active',
+            status: 'Onboarding',
             dateOfHiring: '20/09/2023',
             contractType: 'Full-time',
             completedSteps: 6,
@@ -497,7 +526,7 @@ const StaticData = {
             mainGrade: 'Management',
             subGrade: 'Senior Manager',
             jobTitle: 'Engineering Manager',
-            status: 'Complete',
+            status: 'Active',
             dateOfHiring: '15/06/2021',
             contractType: 'Full-time',
             completedSteps: 7,
@@ -525,7 +554,7 @@ const StaticData = {
             mainGrade: 'Professional',
             subGrade: 'Mid-Level',
             jobTitle: 'Marketing Specialist',
-            status: 'Active',
+            status: 'Onboarding',
             dateOfHiring: '01/01/2026',
             contractType: 'Full-time',
             completedSteps: 5,
@@ -581,7 +610,7 @@ const StaticData = {
             mainGrade: 'Executives',
             subGrade: 'Director',
             jobTitle: 'HR Director',
-            status: 'Complete',
+            status: 'Active',
             dateOfHiring: '15/03/2018',
             contractType: 'Full-time',
             completedSteps: 7,
@@ -638,7 +667,7 @@ const StaticData = {
             mainGrade: 'Management',
             subGrade: 'Director',
             jobTitle: 'Finance Director',
-            status: 'Complete',
+            status: 'Active',
             dateOfHiring: '01/02/2019',
             contractType: 'Full-time',
             completedSteps: 7,

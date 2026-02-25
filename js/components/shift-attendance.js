@@ -1319,7 +1319,7 @@ const ShiftAttendanceComponent = {
 
                 <template #footer>
                     <div class="shift-dialog-footer">
-                        <p-button label="Cancel" text @click="showShiftDialog = false"></p-button>
+                        <p-button label="Cancel" severity="danger" outlined @click="showShiftDialog = false"></p-button>
                         <p-button label="Save Shift Preset" icon="pi pi-check" @click="saveShift"></p-button>
                     </div>
                 </template>
@@ -1349,7 +1349,7 @@ const ShiftAttendanceComponent = {
                     </div>
                 </template>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showAssignDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showAssignDialog = false"></p-button>
                     <p-button label="Save" icon="pi pi-check" @click="saveAssignment"></p-button>
                 </template>
             </p-dialog>

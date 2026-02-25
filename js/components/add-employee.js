@@ -17,8 +17,8 @@ const AddEmployeeComponent = {
                     </div>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
-                    <p-button label="Save as Draft" icon="pi pi-save" outlined @click="saveAsDraft"></p-button>
-                    <p-button label="Cancel" icon="pi pi-times" severity="secondary" text @click="$emit('back')"></p-button>
+                    <p-button label="Save as Draft" icon="pi pi-save" severity="warning" @click="saveAsDraft"></p-button>
+                    <p-button label="Cancel" icon="pi pi-times" severity="danger" outlined @click="$emit('back')"></p-button>
                 </div>
             </div>
 
@@ -73,7 +73,26 @@ const AddEmployeeComponent = {
                         </div>
                         <div class="form-group">
                             <label class="form-label">Mobile Number <span class="required">*</span></label>
-                            <p-inputtext v-model="form.mobile" placeholder="+20 100 000 0000" style="width: 100%;"></p-inputtext>
+                            <div class="phone-input-container">
+                                <p-select v-model="form.mobileCountry" :options="countryPhoneCodes" optionLabel="name" 
+                                          placeholder="Code" class="phone-country-select" filter filterPlaceholder="Search country">
+                                    <template #value="slotProps">
+                                        <div v-if="slotProps.value" class="phone-country-value">
+                                            <img :src="slotProps.value.flag" class="phone-flag" :alt="slotProps.value.code">
+                                            <span>{{ slotProps.value.dialCode }}</span>
+                                        </div>
+                                        <span v-else>Code</span>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <div class="phone-country-option">
+                                            <img :src="slotProps.option.flag" class="phone-flag" :alt="slotProps.option.code">
+                                            <span>{{ slotProps.option.name }}</span>
+                                            <span class="phone-dial-code">{{ slotProps.option.dialCode }}</span>
+                                        </div>
+                                    </template>
+                                </p-select>
+                                <p-inputtext v-model="form.mobileNumber" placeholder="Phone number" class="phone-number-input" style="width: 100%;"></p-inputtext>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Personal Email <span class="required">*</span></label>
@@ -220,23 +239,29 @@ const AddEmployeeComponent = {
                     <div class="step-subtitle">Identity documents, bank information, and emergency contacts</div>
                     
                     <div class="form-section-title">Professional Picture</div>
-                    <div class="picture-upload-container">
-                        <div class="picture-preview">
-                            <img v-if="form.picturePreview" :src="form.picturePreview" alt="Preview">
-                            <i v-else class="pi pi-user"></i>
+                    <div class="picture-upload-section">
+                        <div class="form-group">
+                            <label class="form-label">Profile Photo</label>
+                            <label class="file-upload-area" :class="{ 'has-file': form.picturePreview }">
+                                <input type="file" accept="image/*" @change="onPictureSelect" hidden>
+                                <div v-if="form.picturePreview" class="file-preview-image">
+                                    <img :src="form.picturePreview" alt="Preview">
+                                </div>
+                                <div v-else class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                    <small>Size: 400×400px, Max: 2MB</small>
+                                </div>
+                            </label>
                         </div>
-                        <div class="picture-guidelines">
-                            <h4>Photo Guidelines</h4>
+                        <div class="picture-guidelines-card">
+                            <h4>PHOTO GUIDELINES</h4>
                             <ul>
-                                <li>Size: 400 x 400 pixels (square)</li>
                                 <li>Format: JPG or PNG</li>
-                                <li>Max file size: 2MB</li>
-                                <li>Use a plain white or light background</li>
                                 <li>Face the camera directly with good lighting</li>
+                                <li>Use a plain white or light background</li>
                                 <li>Dress professionally</li>
                             </ul>
-                            <p-fileupload mode="basic" accept="image/*" :maxFileSize="2000000" 
-                                          chooseLabel="Upload Photo" @select="onPictureSelect" style="margin-top: 0.5rem;"></p-fileupload>
                         </div>
                     </div>
 
@@ -244,15 +269,33 @@ const AddEmployeeComponent = {
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">CV <span class="required">*</span></label>
-                            <p-fileupload mode="basic" accept="application/pdf,.doc,.docx" :maxFileSize="5000000" chooseLabel="Upload CV (Required)"></p-fileupload>
+                            <label class="file-upload-area">
+                                <input type="file" accept="application/pdf,.doc,.docx" hidden>
+                                <div class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                </div>
+                            </label>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">National ID Document <span class="required">*</span></label>
-                            <p-fileupload mode="basic" accept="image/*,application/pdf" :maxFileSize="5000000" chooseLabel="Upload National ID"></p-fileupload>
+                            <label class="form-label">National ID <span class="required">*</span></label>
+                            <label class="file-upload-area">
+                                <input type="file" accept="image/*,application/pdf" hidden>
+                                <div class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                </div>
+                            </label>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Passport (Optional)</label>
-                            <p-fileupload mode="basic" accept="image/*,application/pdf" :maxFileSize="5000000" chooseLabel="Upload Passport"></p-fileupload>
+                            <label class="file-upload-area">
+                                <input type="file" accept="image/*,application/pdf" hidden>
+                                <div class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                </div>
+                            </label>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Date of Birth <span class="required">*</span></label>
@@ -268,7 +311,13 @@ const AddEmployeeComponent = {
                         </div>
                         <div class="form-group">
                             <label class="form-label">Graduation Certificate</label>
-                            <p-fileupload mode="basic" accept="image/*,application/pdf" :maxFileSize="5000000" chooseLabel="Upload Certificate"></p-fileupload>
+                            <label class="file-upload-area">
+                                <input type="file" accept="image/*,application/pdf" hidden>
+                                <div class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
@@ -308,7 +357,13 @@ const AddEmployeeComponent = {
                         </div>
                         <div class="form-group">
                             <label class="form-label">IBAN Attachment</label>
-                            <p-fileupload mode="basic" accept="image/*,application/pdf" :maxFileSize="5000000" chooseLabel="Upload IBAN"></p-fileupload>
+                            <label class="file-upload-area">
+                                <input type="file" accept="image/*,application/pdf" hidden>
+                                <div class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
@@ -380,7 +435,13 @@ const AddEmployeeComponent = {
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Offer Contract Attachment</label>
-                            <p-fileupload mode="basic" accept="application/pdf,.doc,.docx" :maxFileSize="5000000" chooseLabel="Upload Contract"></p-fileupload>
+                            <label class="file-upload-area">
+                                <input type="file" accept="application/pdf,.doc,.docx" hidden>
+                                <div class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                </div>
+                            </label>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Contract Classification <span class="required">*</span></label>
@@ -394,11 +455,11 @@ const AddEmployeeComponent = {
                             <label class="form-label">Contract Type <span class="required">*</span></label>
                             <p-select v-model="form.contractType" :options="contractTypes" placeholder="Select type" style="width: 100%;"></p-select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" v-if="form.contractType !== 'Intern'">
                             <label class="form-label">Probation Period</label>
                             <p-select v-model="form.probationPeriod" :options="probationPeriods" placeholder="Select period" style="width: 100%;"></p-select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" v-if="form.contractType !== 'Intern'">
                             <label class="form-label">Annual Leave (Days)</label>
                             <p-select v-model="form.annualLeaveDays" :options="annualLeaveDays" placeholder="Select days" style="width: 100%;"></p-select>
                         </div>
@@ -541,7 +602,13 @@ const AddEmployeeComponent = {
                             </div>
                             <div class="form-group">
                                 <label class="form-label">IBAN Attachment</label>
-                                <p-fileupload mode="basic" accept="image/*,application/pdf" :maxFileSize="5000000" chooseLabel="Upload IBAN"></p-fileupload>
+                                <label class="file-upload-area">
+                                    <input type="file" accept="image/*,application/pdf" hidden>
+                                    <div class="file-upload-content">
+                                        <i class="pi pi-cloud-upload"></i>
+                                        <span>Click to upload or drag and drop</span>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -555,22 +622,17 @@ const AddEmployeeComponent = {
                     </div>
                     <div class="step-subtitle">Work schedule configuration based on contract type</div>
                     
-                    <div v-if="form.contractType === 'Intern'" class="empty-state" style="padding: 3rem;">
-                        <i class="pi pi-info-circle" style="font-size: 3rem; color: var(--primary-color);"></i>
-                        <h3>No Attendance Required</h3>
-                        <p>Interns are not required to track attendance</p>
+                    <div v-if="!form.contractType" class="empty-state" style="padding: 3rem;">
+                        <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #f59e0b;"></i>
+                        <h3>Select Contract Type First</h3>
+                        <p>Please select a contract type in Step 4 to configure attendance settings</p>
                     </div>
 
-                    <div v-else-if="form.contractType === 'Full-time' || form.contractType === 'Part-time'">
-                        <div class="form-section-title">Office & Schedule</div>
+                    <div v-else>
+                        <div class="form-section-title">Schedule Configuration</div>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Office <span class="required">*</span></label>
-                                <p-select v-model="form.office" :options="offices" optionLabel="name" optionValue="id" 
-                                          placeholder="Select office" style="width: 100%;"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Schedule Type <span class="required">*</span></label>
+                                <label class="form-label">Schedule Type <span class="required" v-if="form.contractType !== 'Intern'">*</span></label>
                                 <p-select v-model="form.scheduleType" :options="scheduleTypes" placeholder="Select type" style="width: 100%;"></p-select>
                             </div>
                         </div>
@@ -578,18 +640,65 @@ const AddEmployeeComponent = {
                         <!-- Fixed Schedule Options -->
                         <div v-if="form.scheduleType === 'Fixed Schedule'" class="form-grid" style="margin-top: 1rem;">
                             <div class="form-group">
-                                <label class="form-label">Work Week Template <span class="required">*</span></label>
+                                <label class="form-label">Work Week Template <span class="required" v-if="form.contractType !== 'Intern'">*</span></label>
                                 <p-select v-model="form.workWeek" :options="workWeeks" optionLabel="name" optionValue="id" 
-                                          placeholder="Select work week" style="width: 100%;"></p-select>
+                                          placeholder="Select work week" style="width: 100%;" class="workweek-dropdown">
+                                    <template #value="slotProps">
+                                        <div v-if="slotProps.value" class="workweek-select-value">
+                                            <span class="workweek-name">{{ getWorkWeekById(slotProps.value)?.name }}</span>
+                                            <span class="workweek-days-count">{{ getWorkWeekById(slotProps.value)?.totalDays }} days</span>
+                                        </div>
+                                        <span v-else>Select work week</span>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <div class="workweek-option">
+                                            <div class="workweek-option-header">
+                                                <span class="workweek-name">{{ slotProps.option.name }}</span>
+                                                <span class="workweek-status" :class="{ active: slotProps.option.active }">{{ slotProps.option.active ? 'Active' : 'Inactive' }}</span>
+                                            </div>
+                                            <div class="workweek-option-days">
+                                                <span v-for="(active, day) in slotProps.option.days" :key="day" 
+                                                      class="day-badge" :class="{ active: active }">
+                                                    {{ day.substring(0, 3).toUpperCase() }}
+                                                </span>
+                                            </div>
+                                            <div class="workweek-option-footer">
+                                                <i class="pi pi-calendar"></i>
+                                                <span>{{ slotProps.option.totalDays }} working days</span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </p-select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Shift</label>
                                 <p-select v-model="form.shift" :options="shiftTemplates" optionLabel="name" optionValue="id" 
-                                          placeholder="Select shift" style="width: 100%;"></p-select>
+                                          placeholder="Select shift" style="width: 100%;" class="shift-dropdown">
+                                    <template #value="slotProps">
+                                        <div v-if="slotProps.value" class="shift-select-value">
+                                            <span class="shift-color-dot" :style="{ backgroundColor: getShiftById(slotProps.value)?.color }"></span>
+                                            <span class="shift-name">{{ getShiftById(slotProps.value)?.name }}</span>
+                                            <span class="shift-time">{{ getShiftById(slotProps.value)?.startTime }} - {{ getShiftById(slotProps.value)?.endTime }}</span>
+                                        </div>
+                                        <span v-else>Select shift</span>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <div class="shift-option">
+                                            <span class="shift-color-dot" :style="{ backgroundColor: slotProps.option.color }"></span>
+                                            <div class="shift-option-details">
+                                                <div class="shift-name">{{ slotProps.option.name }}</div>
+                                                <div class="shift-meta">
+                                                    <span class="shift-time">{{ slotProps.option.startTime }} - {{ slotProps.option.endTime }}</span>
+                                                    <span class="shift-hours"><i class="pi pi-clock"></i> {{ slotProps.option.workingHours }} hrs</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </p-select>
                             </div>
                         </div>
 
-                        <!-- Variable Schedule: No working days or shift selection -->
+                        <!-- Variable Schedule Info -->
                         <div v-if="form.scheduleType === 'Variable Schedule'" class="card" style="margin-top: 1rem; background: var(--surface-ground);">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
                                 <i class="pi pi-info-circle" style="color: var(--primary-color); font-size: 1.25rem;"></i>
@@ -601,50 +710,71 @@ const AddEmployeeComponent = {
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div v-else-if="form.contractType === 'Full-time Remote' || form.contractType === 'Part-time Remote'">
-                        <div class="form-section-title">Remote Work Settings</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">System Login Time</label>
-                                <p-datepicker v-model="form.systemLoginTime" timeOnly placeholder="Select time" style="width: 100%;"></p-datepicker>
+                        <!-- Attendance Record Method -->
+                        <div class="form-section-title" style="margin-top: 1.5rem;">Attendance Record Method</div>
+                        <div class="form-group">
+                            <div class="attendance-method-options">
+                                <div class="attendance-method-option" :class="{ active: form.attendanceMethod === 'office' }" @click="form.attendanceMethod = 'office'">
+                                    <p-radiobutton v-model="form.attendanceMethod" value="office" inputId="methodOffice"></p-radiobutton>
+                                    <label for="methodOffice">
+                                        <i class="pi pi-building"></i>
+                                        <span>Office</span>
+                                    </label>
+                                </div>
+                                <div class="attendance-method-option" :class="{ active: form.attendanceMethod === 'system' }" @click="form.attendanceMethod = 'system'">
+                                    <p-radiobutton v-model="form.attendanceMethod" value="system" inputId="methodSystem"></p-radiobutton>
+                                    <label for="methodSystem">
+                                        <i class="pi pi-desktop"></i>
+                                        <span>From System</span>
+                                    </label>
+                                </div>
+                                <div class="attendance-method-option" :class="{ active: form.attendanceMethod === 'not_required' }" @click="form.attendanceMethod = 'not_required'">
+                                    <p-radiobutton v-model="form.attendanceMethod" value="not_required" inputId="methodNotRequired"></p-radiobutton>
+                                    <label for="methodNotRequired">
+                                        <i class="pi pi-times-circle"></i>
+                                        <span>Not Required</span>
+                                    </label>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- Office Selection (when office method selected) -->
+                        <div v-if="form.attendanceMethod === 'office'" class="form-grid" style="margin-top: 1rem;">
                             <div class="form-group">
-                                <label class="form-label">System Logout Time</label>
-                                <p-datepicker v-model="form.systemLogoutTime" timeOnly placeholder="Select time" style="width: 100%;"></p-datepicker>
+                                <label class="form-label">Office <span class="required" v-if="form.contractType !== 'Intern'">*</span></label>
+                                <p-select v-model="form.office" :options="offices" optionLabel="name" optionValue="id" 
+                                          placeholder="Select office" style="width: 100%;"></p-select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Schedule Type <span class="required">*</span></label>
-                                <p-select v-model="form.scheduleType" :options="scheduleTypes" placeholder="Select type" style="width: 100%;"></p-select>
-                            </div>
-                            <div class="form-group" v-if="form.scheduleType === 'Fixed Schedule'">
-                                <label class="form-label">Work Week Template</label>
-                                <p-select v-model="form.workWeek" :options="workWeeks" optionLabel="name" optionValue="id" 
-                                          placeholder="Select work week" style="width: 100%;"></p-select>
+                        </div>
+
+                        <!-- Intern Note -->
+                        <div v-if="form.contractType === 'Intern'" class="card" style="margin-top: 1.5rem; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="pi pi-info-circle" style="color: #22c55e; font-size: 1.25rem;"></i>
+                                <div>
+                                    <div style="font-weight: 600; color: #22c55e;">Intern - Optional Fields</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-color-secondary);">
+                                        Attendance configuration is optional for interns
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div v-else class="empty-state" style="padding: 3rem;">
-                        <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #f59e0b;"></i>
-                        <h3>Select Contract Type First</h3>
-                        <p>Please select a contract type in Step 4 to configure attendance settings</p>
-                    </div>
                 </div>
 
-                <!-- Step 6: Iqama Details (Saudi Arabia) -->
+                <!-- Step 6: Iqama Details (Non-Saudi Nationals) -->
                 <div v-show="currentStep === 5" class="step-panel">
                     <div class="step-title">
                         <i class="pi pi-id-card"></i>
                         Iqama Details
                     </div>
-                    <div class="step-subtitle">Residency permit information (Saudi Arabia)</div>
+                    <div class="step-subtitle">Residency permit information for non-Saudi nationals</div>
                     
-                    <div v-if="form.countryOfWork !== 'Saudi Arabia'" class="empty-state" style="padding: 3rem;">
+                    <div v-if="form.nationality === 'Saudi Arabia'" class="empty-state" style="padding: 3rem;">
                         <i class="pi pi-info-circle" style="font-size: 3rem; color: var(--primary-color);"></i>
                         <h3>Not Applicable</h3>
-                        <p>Iqama details are only required for employees working in Saudi Arabia</p>
+                        <p>Iqama details are not required for Saudi nationals</p>
                     </div>
 
                     <div v-else>
@@ -673,7 +803,13 @@ const AddEmployeeComponent = {
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Iqama Document</label>
-                                <p-fileupload mode="basic" accept="image/*,application/pdf" :maxFileSize="5000000" chooseLabel="Upload Iqama"></p-fileupload>
+                                <label class="file-upload-area">
+                                    <input type="file" accept="image/*,application/pdf" hidden>
+                                    <div class="file-upload-content">
+                                        <i class="pi pi-cloud-upload"></i>
+                                        <span>Click to upload or drag and drop</span>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -803,7 +939,8 @@ const AddEmployeeComponent = {
             secondName: '',
             familyName: '',
             dutyName: '',
-            mobile: '',
+            mobileCountry: null,
+            mobileNumber: '',
             personalEmail: '',
             nationality: null,
             countryOfWork: null,
@@ -854,12 +991,11 @@ const AddEmployeeComponent = {
             isRegisteredInGosi: false,
             isRegisteredInNosi: false,
             // Step 5
-            office: null,
             scheduleType: null,
             workWeek: null,
             shift: null,
-            systemLoginTime: null,
-            systemLogoutTime: null,
+            attendanceMethod: null,
+            office: null,
             // Step 6
             hasIqama: false,
             iqamaNumber: '',
@@ -884,6 +1020,7 @@ const AddEmployeeComponent = {
 
         // Static data references
         const entities = ref([...StaticData.entities]);
+        const countryPhoneCodes = ref([...StaticData.countryPhoneCodes]);
         const nationalities = ref([...StaticData.nationalities]);
         const countriesOfWork = ref([...StaticData.countriesOfWork]);
         const allCountries = ref([...StaticData.allCountries]);
@@ -922,6 +1059,15 @@ const AddEmployeeComponent = {
             const completedItems = Object.values(checklist).filter(v => v === true).length;
             return Math.round((completedItems / totalItems) * 100);
         });
+
+        // Helper functions for dropdown templates
+        const getWorkWeekById = (id) => {
+            return workWeeks.value.find(w => w.id === id);
+        };
+
+        const getShiftById = (id) => {
+            return shiftTemplates.value.find(s => s.id === id);
+        };
 
         // Computed filtered options
         const filteredSections = computed(() => {
@@ -1023,7 +1169,7 @@ const AddEmployeeComponent = {
         };
 
         const onPictureSelect = (event) => {
-            const file = event.files[0];
+            const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -1051,7 +1197,7 @@ const AddEmployeeComponent = {
                 familyName: form.value.familyName,
                 avatar: form.value.picturePreview || 'https://i.pravatar.cc/40?img=' + (StaticData.employees.length + 20),
                 email: form.value.workEmail,
-                mobile: form.value.mobile,
+                mobile: form.value.mobileCountry ? `${form.value.mobileCountry.dialCode} ${form.value.mobileNumber}` : form.value.mobileNumber,
                 nationality: form.value.nationality,
                 entity: form.value.entity,
                 countryOfWork: form.value.countryOfWork,
@@ -1060,7 +1206,7 @@ const AddEmployeeComponent = {
                 mainGrade: mainGradeName,
                 subGrade: subGradeName,
                 jobTitle: jobTitleName,
-                status: 'Complete',
+                status: 'Active',
                 dateOfHiring: form.value.dateOfHiring ? form.value.dateOfHiring.toLocaleDateString('en-GB') : '',
                 contractType: form.value.contractType,
                 completedSteps: 7,
@@ -1079,6 +1225,7 @@ const AddEmployeeComponent = {
             currentStep,
             form,
             entities,
+            countryPhoneCodes,
             nationalities,
             countriesOfWork,
             allCountries,
@@ -1119,6 +1266,8 @@ const AddEmployeeComponent = {
             nosiEmployeeAmount,
             nosiCompanyAmount,
             formatCurrency,
+            getWorkWeekById,
+            getShiftById,
             goToStep,
             nextStep,
             prevStep,

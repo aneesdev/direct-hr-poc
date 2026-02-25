@@ -254,7 +254,7 @@ const CompanyNewsComponent = {
                     <span>Are you sure you want to delete this post? This action cannot be undone.</span>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showDeleteDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showDeleteDialog = false"></p-button>
                     <p-button label="Delete" severity="danger" @click="deletePost"></p-button>
                 </template>
             </p-dialog>
@@ -295,7 +295,7 @@ const CompanyNewsComponent = {
                     </div>
                     
                     <div class="schedule-actions">
-                        <p-button label="Cancel" text severity="secondary" @click="showScheduleDialog = false"></p-button>
+                        <p-button label="Cancel" severity="danger" outlined @click="showScheduleDialog = false"></p-button>
                         <p-button label="Schedule Post" icon="pi pi-check" :disabled="!scheduleDate" @click="schedulePost"></p-button>
                     </div>
                 </div>

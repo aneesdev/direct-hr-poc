@@ -77,7 +77,7 @@ const TrainingPathsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showDialog = false"></p-button>
                     <p-button :label="editingPath ? 'Update Path' : 'Create Path'" 
                               @click="savePath" :disabled="!form.name"></p-button>
                 </template>
@@ -90,7 +90,7 @@ const TrainingPathsComponent = {
                     <span>Are you sure you want to delete <strong>{{ pathToDelete?.name }}</strong>? This action cannot be undone.</span>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showDeleteDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showDeleteDialog = false"></p-button>
                     <p-button label="Delete" severity="danger" @click="deletePath"></p-button>
                 </template>
             </p-dialog>

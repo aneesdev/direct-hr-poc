@@ -1,7 +1,7 @@
 /**
  * Employees Component
  * Handles employee listing and management
- * Updated: New statuses (Draft, Active, Complete, Non-active), SLA tracking, termination flow
+ * Statuses: Draft (steps 1-4), Onboarding (steps 5-6), Active (step 7), Non-active (terminated)
  */
 
 const EmployeesComponent = {
@@ -14,8 +14,26 @@ const EmployeesComponent = {
                         <i class="pi pi-users"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ activeEmployeeCount }}</div>
+                        <div class="stat-value">{{ totalEmployeeCount }}</div>
                         <div class="stat-label">Total Employees</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="pi pi-file-edit"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ draftCount }}</div>
+                        <div class="stat-label">Draft</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon cyan">
+                        <i class="pi pi-sync"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ onboardingStatusCount }}</div>
+                        <div class="stat-label">Onboarding</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -23,17 +41,17 @@ const EmployeesComponent = {
                         <i class="pi pi-check-circle"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ completeCount }}</div>
-                        <div class="stat-label">Complete</div>
+                        <div class="stat-value">{{ activeCount }}</div>
+                        <div class="stat-label">Active</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="pi pi-clock"></i>
+                    <div class="stat-icon gray">
+                        <i class="pi pi-ban"></i>
                     </div>
                     <div>
-                        <div class="stat-value">{{ draftCount }}</div>
-                        <div class="stat-label">Draft</div>
+                        <div class="stat-value">{{ nonActiveCount }}</div>
+                        <div class="stat-label">Non-active</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -132,7 +150,7 @@ const EmployeesComponent = {
                             <span v-if="slotProps.data.slaDays" class="sla-days-badge">
                                 {{ slotProps.data.slaDays }}d
                             </span>
-                            <span v-else class="sla-tag pending">Pending</span>
+                            <span v-else class="sla-na">N/A</span>
                         </template>
                     </p-column>
                     <p-column header="Status" sortable>
@@ -150,14 +168,14 @@ const EmployeesComponent = {
                                     <button class="action-btn edit" title="Edit" @click="$emit('add-employee', slotProps.data)"><i class="pi pi-pencil"></i></button>
                                     <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
                                 </template>
-                                <!-- Active: Edit, View, Terminate -->
-                                <template v-else-if="slotProps.data.status === 'Active'">
+                                <!-- Onboarding: Edit, View, Terminate -->
+                                <template v-else-if="slotProps.data.status === 'Onboarding'">
                                     <button class="action-btn edit" title="Edit" @click="$emit('add-employee', slotProps.data)"><i class="pi pi-pencil"></i></button>
                                     <button class="action-btn" title="View Profile"><i class="pi pi-eye"></i></button>
                                     <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
                                 </template>
-                                <!-- Complete: View, Terminate -->
-                                <template v-else-if="slotProps.data.status === 'Complete'">
+                                <!-- Active: View, Terminate -->
+                                <template v-else-if="slotProps.data.status === 'Active'">
                                     <button class="action-btn" title="View Profile"><i class="pi pi-eye"></i></button>
                                     <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
                                 </template>
@@ -210,7 +228,7 @@ const EmployeesComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showTerminateDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showTerminateDialog = false"></p-button>
                     <p-button label="Confirm Termination" severity="danger" 
                               :disabled="!canTerminate" @click="confirmTermination"></p-button>
                 </template>
@@ -248,14 +266,15 @@ const EmployeesComponent = {
         // Options
         const departmentOptions = computed(() => StaticData.departments.map(d => d.name));
         const entityOptions = computed(() => StaticData.entities.map(e => e.name));
-        const statusOptions = ref(['Draft', 'Active', 'Complete', 'Non-active']);
+        const statusOptions = ref(['Draft', 'Onboarding', 'Active', 'Non-active']);
 
-        // Computed counts (excluding Non-active)
-        const activeEmployeeCount = computed(() => employees.value.filter(e => e.status !== 'Non-active').length);
-        const completeCount = computed(() => employees.value.filter(e => e.status === 'Complete').length);
+        // Computed counts
+        const totalEmployeeCount = computed(() => employees.value.filter(e => e.status !== 'Non-active').length);
         const draftCount = computed(() => employees.value.filter(e => e.status === 'Draft').length);
+        const onboardingStatusCount = computed(() => employees.value.filter(e => e.status === 'Onboarding').length);
         const activeCount = computed(() => employees.value.filter(e => e.status === 'Active').length);
         const nonActiveCount = computed(() => employees.value.filter(e => e.status === 'Non-active').length);
+        const onboardingCount = computed(() => employees.value.filter(e => e.status === 'Draft' || e.status === 'Onboarding').length);
 
         // Average SLA calculation
         const averageSla = computed(() => {
@@ -333,15 +352,15 @@ const EmployeesComponent = {
         const getStatusClass = (status) => {
             const classes = {
                 'Draft': 'draft',
+                'Onboarding': 'onboarding',
                 'Active': 'active',
-                'Complete': 'complete',
                 'Non-active': 'inactive'
             };
             return classes[status] || '';
         };
 
         const getProgressClass = (employee) => {
-            if (employee.status === 'Complete') return 'completed';
+            if (employee.status === 'Active') return 'completed';
             if (employee.status === 'Non-active') return 'inactive';
             if (employee.slaStatus === 'overdue') return 'overdue';
             return 'pending';
@@ -392,11 +411,12 @@ const EmployeesComponent = {
             departmentOptions,
             entityOptions,
             statusOptions,
-            activeEmployeeCount,
-            completeCount,
+            totalEmployeeCount,
             draftCount,
+            onboardingStatusCount,
             activeCount,
             nonActiveCount,
+            onboardingCount,
             averageSla,
             getStepCount,
             clearFilters,

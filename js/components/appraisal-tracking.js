@@ -305,7 +305,7 @@ const AppraisalTrackingComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" icon="pi pi-times" text @click="showSelfEvalModal = false"></p-button>
+                    <p-button label="Cancel" icon="pi pi-times" severity="danger" outlined @click="showSelfEvalModal = false"></p-button>
                     <p-button label="Submit Evaluation" icon="pi pi-check" @click="submitSelfEvaluation"></p-button>
                 </template>
             </p-dialog>
@@ -463,7 +463,7 @@ const AppraisalTrackingComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" icon="pi pi-times" text @click="showCommitteeModal = false"></p-button>
+                    <p-button label="Cancel" icon="pi pi-times" severity="danger" outlined @click="showCommitteeModal = false"></p-button>
                     <p-button label="Final Approval" icon="pi pi-check" severity="success" @click="submitCommitteeEvaluation"></p-button>
                 </template>
             </p-dialog>

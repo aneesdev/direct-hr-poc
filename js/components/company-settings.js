@@ -631,7 +631,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" icon="pi pi-times" text @click="showCountryDialog = false"></p-button>
+                    <p-button label="Cancel" icon="pi pi-times" severity="danger" outlined @click="showCountryDialog = false"></p-button>
                     <p-button label="Add" icon="pi pi-check" @click="addCountry"></p-button>
                 </template>
             </p-dialog>
@@ -659,7 +659,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" icon="pi pi-times" text @click="showHolidayDialog = false"></p-button>
+                    <p-button label="Cancel" icon="pi pi-times" severity="danger" outlined @click="showHolidayDialog = false"></p-button>
                     <p-button :label="editingHoliday ? 'Update' : 'Save'" icon="pi pi-check" @click="saveHoliday"></p-button>
                 </template>
             </p-dialog>
@@ -685,7 +685,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showOrgDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showOrgDialog = false"></p-button>
                     <p-button :label="editingOrg ? 'Update' : 'Save'" @click="saveOrg"></p-button>
                 </template>
             </p-dialog>
@@ -707,7 +707,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showGradeDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showGradeDialog = false"></p-button>
                     <p-button :label="editingGrade ? 'Update' : 'Save'" @click="saveGrade"></p-button>
                 </template>
             </p-dialog>
@@ -735,7 +735,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showOfficeDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showOfficeDialog = false"></p-button>
                     <p-button :label="editingOffice ? 'Update' : 'Save'" @click="saveOffice"></p-button>
                 </template>
             </p-dialog>
@@ -759,7 +759,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showCostCenterDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showCostCenterDialog = false"></p-button>
                     <p-button :label="editingCostCenter ? 'Update' : 'Save'" @click="saveCostCenter"></p-button>
                 </template>
             </p-dialog>
@@ -790,7 +790,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showWorkWeekDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showWorkWeekDialog = false"></p-button>
                     <p-button :label="editingWorkWeek ? 'Update' : 'Save'" @click="saveWorkWeek"></p-button>
                 </template>
             </p-dialog>
@@ -823,7 +823,7 @@ const CompanySettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showAddDocDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showAddDocDialog = false"></p-button>
                     <p-button label="Save" @click="saveDocument"></p-button>
                 </template>
             </p-dialog>
@@ -835,7 +835,7 @@ const CompanySettingsComponent = {
                     <p-datepicker v-model="updateExpiryForm.expiryDate" dateFormat="dd/mm/yy" style="width: 100%;"></p-datepicker>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showUpdateExpiryDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showUpdateExpiryDialog = false"></p-button>
                     <p-button label="Update" @click="saveExpiryUpdate"></p-button>
                 </template>
             </p-dialog>

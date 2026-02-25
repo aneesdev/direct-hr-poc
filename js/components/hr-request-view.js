@@ -184,7 +184,7 @@ const HrRequestViewComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showRejectDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showRejectDialog = false"></p-button>
                     <p-button label="Reject" severity="danger" @click="rejectRequest"></p-button>
                 </template>
             </p-dialog>

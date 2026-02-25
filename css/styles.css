@@ -234,17 +234,16 @@ img {
 /* Floating Action Button */
 .fab-button {
     position: fixed;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    width: 28px;
-    height: 28px;
-    border-radius: 6px 0 0 6px;
-    background: var(--primary-color);
+    bottom: 1rem;
+    right: 1rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #374151;
     color: white;
     border: none;
     cursor: pointer;
-    box-shadow: -2px 2px 8px rgba(249, 115, 22, 0.3);
+    box-shadow: 0 4px 12px rgba(55, 65, 81, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -253,16 +252,17 @@ img {
 }
 
 .fab-button:hover {
-    transform: translateY(-50%);
-    box-shadow: -2px 2px 12px rgba(249, 115, 22, 0.5);
+    box-shadow: 0 6px 20px rgba(55, 65, 81, 0.5);
+    background: #1f2937;
 }
 
 .fab-button:active {
-    transform: translateY(-50%);
+    transform: scale(0.95);
 }
 
 .fab-button i {
-    font-size: 0.85rem;
+    font-size: 1rem;
+    color: white;
 }
 
 /* ==========================================================================
@@ -550,6 +550,16 @@ img {
     color: #a855f7;
 }
 
+.stat-icon.gray {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+}
+
+.stat-icon.cyan {
+    background: rgba(6, 182, 212, 0.15);
+    color: #06b6d4;
+}
+
 .stat-value {
     font-size: 1.5rem;
     font-weight: 700;
@@ -611,9 +621,9 @@ img {
     color: #f97316;
 }
 
-.status-tag.complete {
-    background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
+.status-tag.onboarding {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
 }
 
 /* SLA Days Badge */
@@ -624,6 +634,11 @@ img {
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
+}
+
+.sla-na {
+    color: var(--text-color-secondary);
+    font-size: 0.85rem;
 }
 
 /* Termination Dialog */
@@ -992,6 +1007,29 @@ img {
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
+.p-dialog .p-dialog-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.p-dialog .p-dialog-header-actions button,
+.p-dialog .p-dialog-close-button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-color-secondary) !important;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.p-dialog .p-dialog-header-actions button:hover,
+.p-dialog .p-dialog-close-button:hover {
+    background: var(--surface-ground) !important;
+    color: var(--text-color) !important;
+}
+
 .p-dialog .p-dialog-content {
     padding: 1.5rem;
 }
@@ -1182,7 +1220,7 @@ img {
     justify-content: center;
     gap: 0.5rem;
     margin-bottom: 2rem;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     background: var(--surface-card);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
@@ -1193,52 +1231,72 @@ img {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
+    padding: 0.625rem 1rem;
     border-radius: 30px;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
+    border: 1px solid var(--primary-color);
 }
 
 .wizard-step:hover {
-    background: var(--surface-ground);
+    background: rgba(var(--primary-color-rgb, 249, 115, 22), 0.05);
 }
 
 .wizard-step.active {
     background: var(--primary-color);
+    border-color: var(--primary-color);
     color: #fff;
 }
 
 .wizard-step.completed {
-    background: rgba(34, 197, 94, 0.15);
+    background: rgba(34, 197, 94, 0.1);
+    border-color: #22c55e;
     color: #22c55e;
 }
 
-.step-number {
-    width: 28px;
-    height: 28px;
+.wizard-step .step-number {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
     border-radius: 50%;
     background: var(--surface-ground);
+    border: 2px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    flex-shrink: 0;
 }
 
 .wizard-step.active .step-number {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
     color: #fff;
 }
 
 .wizard-step.completed .step-number {
     background: #22c55e;
+    border-color: #22c55e;
     color: #fff;
 }
 
-.step-label {
+.wizard-step .step-label {
     font-weight: 500;
     font-size: 0.875rem;
+    line-height: 26px;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.wizard-step.active .step-label {
+    color: #fff;
+}
+
+.wizard-step.completed .step-label {
+    color: #22c55e;
 }
 
 .wizard-content {
@@ -5968,6 +6026,369 @@ img {
     height: 16px;
     object-fit: cover;
     border-radius: 2px;
+}
+
+/* ==========================================================================
+   Phone Input with Country Code
+   ========================================================================== */
+.phone-input-container {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.phone-country-select {
+    width: 110px !important;
+    min-width: 110px !important;
+    flex-shrink: 0;
+}
+
+.phone-number-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.phone-country-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.phone-country-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.phone-flag {
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.phone-dial-code {
+    margin-left: auto;
+    color: var(--text-color-secondary);
+    font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   File Upload Area - Custom Styled Upload
+   ========================================================================== */
+.file-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    background: var(--surface-ground);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 100px;
+}
+
+.file-upload-area:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb, 249, 115, 22), 0.04);
+}
+
+.file-upload-area.has-file {
+    border-style: solid;
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb, 249, 115, 22), 0.04);
+    padding: 0.5rem;
+}
+
+.file-upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.file-upload-content i {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+}
+
+.file-upload-content span {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+}
+
+.file-upload-content small {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    opacity: 0.8;
+}
+
+/* ==========================================================================
+   Attendance Method Options
+   ========================================================================== */
+.attendance-method-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.attendance-method-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 150px;
+}
+
+.attendance-method-option:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb, 249, 115, 22), 0.04);
+}
+
+.attendance-method-option.active {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb, 249, 115, 22), 0.08);
+}
+
+.attendance-method-option label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.attendance-method-option label i {
+    font-size: 1.1rem;
+    color: var(--text-color-secondary);
+}
+
+.attendance-method-option.active label i {
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   Work Week Dropdown Templates (Employee Add)
+   ========================================================================== */
+.workweek-select-value {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.workweek-select-value .workweek-name {
+    font-weight: 500;
+}
+
+.workweek-select-value .workweek-days-count {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.workweek-option {
+    padding: 0.5rem 0;
+}
+
+.workweek-option-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.workweek-option .workweek-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.workweek-option .workweek-status {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 10px;
+    font-weight: 600;
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+}
+
+.workweek-option .workweek-status.active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.workweek-option-days {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.workweek-option-days .day-badge {
+    padding: 0.2rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+}
+
+.workweek-option-days .day-badge.active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.workweek-option-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.workweek-option-footer i {
+    font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   Shift Dropdown Templates (Employee Add)
+   ========================================================================== */
+.shift-select-value {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.shift-select-value .shift-name {
+    font-weight: 500;
+}
+
+.shift-select-value .shift-time {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.shift-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.shift-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.35rem 0;
+}
+
+.shift-option .shift-color-dot {
+    margin-top: 0.35rem;
+}
+
+.shift-option-details {
+    flex: 1;
+}
+
+.shift-option .shift-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.shift-option .shift-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.shift-option .shift-time {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.shift-option .shift-hours {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.shift-option .shift-hours i {
+    font-size: 0.7rem;
+}
+
+.file-preview-image {
+    width: 100%;
+    max-width: 150px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.file-preview-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Picture Upload Section */
+.picture-upload-section {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.picture-upload-section .form-group {
+    flex: 0 0 auto;
+    width: 200px;
+}
+
+.picture-upload-section .file-upload-area {
+    min-height: 150px;
+}
+
+.picture-guidelines-card {
+    flex: 1;
+    background: var(--surface-ground);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+}
+
+.picture-guidelines-card h4 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 0.75rem 0;
+}
+
+.picture-guidelines-card ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem 2rem;
+}
+
+.picture-guidelines-card li {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    line-height: 1.4;
 }
 
 /* ==========================================================================
@@ -16184,6 +16605,12 @@ img {
     flex: 1;
 }
 
+.profile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
 .profile-name {
     font-size: 1.5rem;
     font-weight: 700;
@@ -16609,6 +17036,393 @@ img {
 .verification-note i {
     color: #16a34a;
     font-size: 1.1rem;
+}
+
+/* Orders Sub-tabs */
+.orders-sub-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.orders-sub-tabs .sub-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface-ground);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.orders-sub-tabs .sub-tab:hover {
+    background: #fff;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.orders-sub-tabs .sub-tab.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.orders-sub-tabs .sub-tab.active i {
+    color: #fff;
+}
+
+/* Clickable Row */
+.clickable-row {
+    cursor: pointer;
+}
+
+/* Order View Modal */
+.order-view-content {
+    padding: 0.5rem 0;
+}
+
+.order-header-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.order-header-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+}
+
+.order-header-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.order-header-info .status-tag {
+    margin-left: auto;
+}
+
+.order-type-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.order-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+}
+
+.order-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.order-detail-item label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-detail-item span {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+/* Priority Tags */
+.priority-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.priority-tag.high {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.priority-tag.medium {
+    background: rgba(249, 115, 22, 0.1);
+    color: #ea580c;
+}
+
+.priority-tag.low {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+/* Employee Detail Wizard (Read-only Modal) */
+.employee-detail-wizard {
+    padding: 1rem 0;
+}
+
+.detail-wizard-steps {
+    display: flex;
+    gap: 0.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+}
+
+.detail-wizard-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--surface-ground);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.detail-wizard-step:hover {
+    background: #fff;
+    border-color: var(--primary-color);
+}
+
+.detail-wizard-step.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.detail-wizard-step.active .step-number {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.detail-wizard-step .step-number {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-ground);
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.detail-wizard-step .step-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.detail-step-content {
+    min-height: 300px;
+}
+
+.detail-section {
+    margin-bottom: 1.5rem;
+}
+
+.detail-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.detail-item label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-item span {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.detail-item span.doc-link {
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.detail-item span.doc-link i {
+    margin-right: 0.5rem;
+}
+
+.checklist-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.checklist-summary .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+}
+
+.checklist-summary .checklist-item.completed i {
+    color: #16a34a;
+}
+
+.detail-wizard-footer {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 1.5rem;
+}
+
+/* Appraisal View Modal */
+.appraisal-view-content {
+    padding: 0.5rem 0;
+}
+
+.appraisal-header-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.appraisal-header-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+}
+
+.appraisal-header-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.appraisal-header-info .appraisal-status-btn {
+    margin-left: auto;
+}
+
+.appraisal-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.appraisal-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.appraisal-detail-item label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.appraisal-detail-item span {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.appraisal-reviewers {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.appraisal-reviewers label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+}
+
+.appraisal-reviewers .reviewer-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.appraisal-reviewers .reviewer-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3b82f6;
+}
+
+/* Splits Table Deduction Columns */
+.splits-table .deduction-col {
+    background: rgba(239, 68, 68, 0.03);
+}
+
+.splits-table .deduction-col .deduction-value {
+    color: #dc2626;
+    font-size: 0.85rem;
+}
+
+.splits-table .deduction-col .deduction-value.total {
+    font-weight: 600;
+}
+
+.splits-table .total-col {
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.splits-table .total-col .net-pay-value {
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.splits-table .addition-col {
+    background: rgba(249, 115, 22, 0.03);
+}
+
+.splits-table .gross-col {
+    background: rgba(59, 130, 246, 0.03);
+    font-weight: 600;
 }
 
 /* Splits Table */

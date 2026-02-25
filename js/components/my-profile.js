@@ -20,8 +20,242 @@ const MyProfileComponent = {
                             <span class="profile-meta-item"><i class="pi pi-user"></i> Manager: {{ employee.manager }}</span>
                         </div>
                     </div>
+                    <div class="profile-header-actions">
+                        <p-button label="View More Details" icon="pi pi-eye" outlined @click="showEmployeeDetailModal = true"></p-button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Employee Detail Modal (Read-only Add Employee View) -->
+            <p-dialog v-model:visible="showEmployeeDetailModal" header="Employee Details" :style="{ width: '90vw', maxWidth: '1200px' }" modal :closable="true">
+                <div class="employee-detail-wizard">
+                    <div class="detail-wizard-steps">
+                        <div v-for="(step, index) in detailSteps" :key="index"
+                            class="detail-wizard-step"
+                            :class="{ active: detailCurrentStep === index }"
+                            @click="detailCurrentStep = index">
+                            <div class="step-number">{{ index + 1 }}</div>
+                            <div class="step-label">{{ step.label }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Basic Info Step -->
+                    <div v-show="detailCurrentStep === 0" class="detail-step-content">
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Personal Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Full Name (English)</label>
+                                    <span>{{ employee.name }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Full Name (Arabic)</label>
+                                    <span>{{ employee.nameAr || 'N/A' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Gender</label>
+                                    <span>{{ employee.gender || 'Male' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Marital Status</label>
+                                    <span>{{ employee.maritalStatus || 'Single' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Nationality</label>
+                                    <span>{{ employee.nationality || 'Egyptian' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>National ID</label>
+                                    <span>{{ employee.nationalId || 'N/A' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Contact Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Email</label>
+                                    <span>{{ employee.email }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Mobile</label>
+                                    <span>{{ employee.mobile || '+20 123 456 7890' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents Step -->
+                    <div v-show="detailCurrentStep === 1" class="detail-step-content">
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Identity Documents</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>CV</label>
+                                    <span class="doc-link"><i class="pi pi-file-pdf"></i> cv_document.pdf</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>National ID</label>
+                                    <span class="doc-link"><i class="pi pi-file-pdf"></i> national_id.pdf</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Date of Birth</label>
+                                    <span>{{ employee.dateOfBirth || '15/03/1990' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Work Access Step -->
+                    <div v-show="detailCurrentStep === 2" class="detail-step-content">
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Organization</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Department</label>
+                                    <span>{{ employee.department }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Section</label>
+                                    <span>{{ employee.section || 'Development' }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Job Title</label>
+                                    <span>{{ employee.position }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Line Manager</label>
+                                    <span>{{ employee.manager }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contract & Salary Step -->
+                    <div v-show="detailCurrentStep === 3" class="detail-step-content">
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Contract Details</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Contract Type</label>
+                                    <span>Full-time</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Contract Classification</label>
+                                    <span>Undefined Period</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Probation Period</label>
+                                    <span>90 Days</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Annual Leave</label>
+                                    <span>21 Days</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Salary Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Gross Salary</label>
+                                    <span>{{ formatCurrency(employee.grossSalary || 15000) }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Basic Salary</label>
+                                    <span>{{ formatCurrency(employee.basicSalary || 9000) }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Housing Allowance</label>
+                                    <span>{{ formatCurrency(employee.houseAllowance || 3750) }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Transportation Allowance</label>
+                                    <span>{{ formatCurrency(employee.transportAllowance || 1500) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Step -->
+                    <div v-show="detailCurrentStep === 4" class="detail-step-content">
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Schedule Configuration</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Schedule Type</label>
+                                    <span>Fixed Schedule</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Work Week</label>
+                                    <span>Standard Week (Sun-Thu)</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Shift</label>
+                                    <span>Morning Shift (08:00 - 16:00)</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Attendance Method</label>
+                                    <span>Office</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Iqama Step -->
+                    <div v-show="detailCurrentStep === 5" class="detail-step-content">
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Iqama Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Has Iqama</label>
+                                    <span>Yes</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Iqama Number</label>
+                                    <span>2123456789</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Expiry Date</label>
+                                    <span>15/12/2026</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist Step -->
+                    <div v-show="detailCurrentStep === 6" class="detail-step-content">
+                        <div class="detail-section">
+                            <h4 class="detail-section-title">Onboarding Checklist</h4>
+                            <div class="checklist-summary">
+                                <div class="checklist-item completed">
+                                    <i class="pi pi-check-circle"></i>
+                                    <span>All documentation verified</span>
+                                </div>
+                                <div class="checklist-item completed">
+                                    <i class="pi pi-check-circle"></i>
+                                    <span>System access configured</span>
+                                </div>
+                                <div class="checklist-item completed">
+                                    <i class="pi pi-check-circle"></i>
+                                    <span>Equipment assigned</span>
+                                </div>
+                                <div class="checklist-item completed">
+                                    <i class="pi pi-check-circle"></i>
+                                    <span>Orientation completed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step Navigation -->
+                    <div class="detail-wizard-footer">
+                        <p-button v-if="detailCurrentStep > 0" label="Previous" icon="pi pi-arrow-left" outlined @click="detailCurrentStep--"></p-button>
+                        <div style="flex: 1;"></div>
+                        <p-button v-if="detailCurrentStep < 6" label="Next" icon="pi pi-arrow-right" iconPos="right" @click="detailCurrentStep++"></p-button>
+                    </div>
+                </div>
+            </p-dialog>
 
             <!-- Profile Tabs -->
             <div class="profile-tabs-container">
@@ -50,8 +284,8 @@ const MyProfileComponent = {
                     <button class="profile-tab" :class="{ active: activeTab === 'training' }" @click="activeTab = 'training'">
                         <i class="pi pi-book"></i> Training
                     </button>
-                    <button class="profile-tab" :class="{ active: activeTab === 'kpi' }" @click="activeTab = 'kpi'">
-                        <i class="pi pi-chart-line"></i> KPI
+                    <button class="profile-tab" :class="{ active: activeTab === 'performance' }" @click="activeTab = 'performance'">
+                        <i class="pi pi-chart-line"></i> Performance
                     </button>
                 </div>
             </div>
@@ -316,139 +550,290 @@ const MyProfileComponent = {
                         </div>
                     </div>
 
-                    <!-- Verification Note -->
-                    <div class="verification-note">
-                        <i class="pi pi-check-circle"></i>
-                        <span>This job profile and organizational mapping was last verified on {{ jobInfo.lastVerified }}. Updates require departmental head approval.</span>
-                    </div>
                 </div>
 
                 <!-- Orders Tab -->
                 <div v-if="activeTab === 'orders'" class="tab-panel">
-                    <!-- Stats Cards -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon blue">
-                                <i class="pi pi-list"></i>
-                            </div>
-                            <div>
-                                <div class="stat-value">{{ orders.length }}</div>
-                                <div class="stat-label">Total Requests</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon orange">
-                                <i class="pi pi-clock"></i>
-                            </div>
-                            <div>
-                                <div class="stat-value">{{ ordersPending }}</div>
-                                <div class="stat-label">Pending</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon green">
-                                <i class="pi pi-check-circle"></i>
-                            </div>
-                            <div>
-                                <div class="stat-value">{{ ordersApproved }}</div>
-                                <div class="stat-label">Approved</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon purple">
-                                <i class="pi pi-eye"></i>
-                            </div>
-                            <div>
-                                <div class="stat-value">{{ ordersInReview }}</div>
-                                <div class="stat-label">In Review</div>
-                            </div>
-                        </div>
+                    <!-- Sub-tabs for Orders and HR Help Desk -->
+                    <div class="orders-sub-tabs">
+                        <button class="sub-tab" :class="{ active: ordersSubTab === 'orders' }" @click="ordersSubTab = 'orders'">
+                            <i class="pi pi-inbox"></i> My Orders
+                        </button>
+                        <button class="sub-tab" :class="{ active: ordersSubTab === 'hrdesk' }" @click="ordersSubTab = 'hrdesk'">
+                            <i class="pi pi-headphones"></i> HR Help Desk
+                        </button>
                     </div>
 
-                    <!-- Orders Table -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">
-                                    <i class="pi pi-inbox"></i>
-                                    All Requests
+                    <!-- My Orders Sub-tab -->
+                    <div v-if="ordersSubTab === 'orders'">
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon blue">
+                                    <i class="pi pi-list"></i>
                                 </div>
-                                <div class="card-subtitle">View and manage all submitted requests</div>
+                                <div>
+                                    <div class="stat-value">{{ orders.length }}</div>
+                                    <div class="stat-label">Total Requests</div>
+                                </div>
                             </div>
-                            <p-button label="New Request" icon="pi pi-plus"></p-button>
+                            <div class="stat-card">
+                                <div class="stat-icon orange">
+                                    <i class="pi pi-clock"></i>
+                                </div>
+                                <div>
+                                    <div class="stat-value">{{ ordersPending }}</div>
+                                    <div class="stat-label">Pending</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon green">
+                                    <i class="pi pi-check-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="stat-value">{{ ordersApproved }}</div>
+                                    <div class="stat-label">Approved</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon purple">
+                                    <i class="pi pi-eye"></i>
+                                </div>
+                                <div>
+                                    <div class="stat-value">{{ ordersInReview }}</div>
+                                    <div class="stat-label">In Review</div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Filters -->
-                        <div class="request-filters">
-                            <div class="filter-tabs">
-                                <button class="filter-tab" :class="{ active: ordersFilter === null }" @click="ordersFilter = null">
-                                    All <span class="filter-count">{{ orders.length }}</span>
-                                </button>
-                                <button class="filter-tab" :class="{ active: ordersFilter === 'pending' }" @click="ordersFilter = 'pending'">
-                                    Pending <span class="filter-count">{{ ordersPending }}</span>
-                                </button>
-                                <button class="filter-tab" :class="{ active: ordersFilter === 'in_review' }" @click="ordersFilter = 'in_review'">
-                                    In Review <span class="filter-count">{{ ordersInReview }}</span>
-                                </button>
-                                <button class="filter-tab" :class="{ active: ordersFilter === 'approved' }" @click="ordersFilter = 'approved'">
-                                    Approved <span class="filter-count">{{ ordersApproved }}</span>
-                                </button>
-                                <button class="filter-tab" :class="{ active: ordersFilter === 'rejected' }" @click="ordersFilter = 'rejected'">
-                                    Rejected <span class="filter-count">{{ ordersRejected }}</span>
-                                </button>
+                        <!-- Orders Table -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">
+                                        <i class="pi pi-inbox"></i>
+                                        All Requests
+                                    </div>
+                                    <div class="card-subtitle">View and manage all submitted requests</div>
+                                </div>
+                                <p-button label="New Request" icon="pi pi-plus"></p-button>
                             </div>
-                        </div>
 
-                        <p-datatable :value="filteredOrders" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20]">
-                            <p-column header="Request" sortable>
-                                <template #body="slotProps">
-                                    <div class="request-cell">
-                                        <div class="request-type-badge" :style="{ background: slotProps.data.color + '15', color: slotProps.data.color }">
-                                            <i :class="'pi ' + slotProps.data.icon"></i>
+                            <!-- Filters -->
+                            <div class="request-filters">
+                                <div class="filter-tabs">
+                                    <button class="filter-tab" :class="{ active: ordersFilter === null }" @click="ordersFilter = null">
+                                        All <span class="filter-count">{{ orders.length }}</span>
+                                    </button>
+                                    <button class="filter-tab" :class="{ active: ordersFilter === 'pending' }" @click="ordersFilter = 'pending'">
+                                        Pending <span class="filter-count">{{ ordersPending }}</span>
+                                    </button>
+                                    <button class="filter-tab" :class="{ active: ordersFilter === 'in_review' }" @click="ordersFilter = 'in_review'">
+                                        In Review <span class="filter-count">{{ ordersInReview }}</span>
+                                    </button>
+                                    <button class="filter-tab" :class="{ active: ordersFilter === 'approved' }" @click="ordersFilter = 'approved'">
+                                        Approved <span class="filter-count">{{ ordersApproved }}</span>
+                                    </button>
+                                    <button class="filter-tab" :class="{ active: ordersFilter === 'rejected' }" @click="ordersFilter = 'rejected'">
+                                        Rejected <span class="filter-count">{{ ordersRejected }}</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <p-datatable :value="filteredOrders" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20]"
+                                         selectionMode="single" @row-click="viewOrder($event.data)">
+                                <p-column header="Request" sortable>
+                                    <template #body="slotProps">
+                                        <div class="request-cell clickable-row">
+                                            <div class="request-type-badge" :style="{ background: slotProps.data.color + '15', color: slotProps.data.color }">
+                                                <i :class="'pi ' + slotProps.data.icon"></i>
+                                            </div>
+                                            <div>
+                                                <div class="request-type-name">{{ slotProps.data.typeName }}</div>
+                                                <div class="request-id">{{ slotProps.data.id }}</div>
+                                            </div>
                                         </div>
+                                    </template>
+                                </p-column>
+                                <p-column field="submitted" header="Submitted" sortable>
+                                    <template #body="slotProps">
                                         <div>
-                                            <div class="request-type-name">{{ slotProps.data.typeName }}</div>
-                                            <div class="request-id">{{ slotProps.data.id }}</div>
+                                            <div>{{ slotProps.data.submitted }}</div>
+                                            <div class="text-muted">{{ slotProps.data.submittedAgo }}</div>
                                         </div>
-                                    </div>
-                                </template>
-                            </p-column>
-                            <p-column header="Employee" sortable>
-                                <template #body="slotProps">
-                                    <div class="employee-cell-small">
-                                        <img :src="slotProps.data.employeeAvatar" class="emp-avatar-sm">
-                                        <div>
-                                            <div class="emp-name-sm">{{ slotProps.data.employeeName }}</div>
-                                            <div class="emp-dept-sm">{{ slotProps.data.employeeDept }}</div>
+                                    </template>
+                                </p-column>
+                                <p-column header="Current Step">
+                                    <template #body="slotProps">
+                                        <div class="step-info">
+                                            <i class="pi pi-user"></i>
+                                            <span>{{ slotProps.data.currentStep }}</span>
                                         </div>
-                                    </div>
-                                </template>
-                            </p-column>
-                            <p-column field="submitted" header="Submitted" sortable>
-                                <template #body="slotProps">
-                                    <div>
-                                        <div>{{ slotProps.data.submitted }}</div>
-                                        <div class="text-muted">{{ slotProps.data.submittedAgo }}</div>
-                                    </div>
-                                </template>
-                            </p-column>
-                            <p-column header="Current Step">
-                                <template #body="slotProps">
-                                    <div class="step-info">
-                                        <i class="pi pi-user"></i>
-                                        <span>{{ slotProps.data.currentStep }}</span>
-                                    </div>
-                                </template>
-                            </p-column>
-                            <p-column header="Status" sortable>
-                                <template #body="slotProps">
-                                    <span class="status-tag" :class="slotProps.data.status.toLowerCase().replace(' ', '-')">
-                                        {{ slotProps.data.status }}
-                                    </span>
-                                </template>
-                            </p-column>
-                        </p-datatable>
+                                    </template>
+                                </p-column>
+                                <p-column header="Status" sortable>
+                                    <template #body="slotProps">
+                                        <span class="status-tag" :class="slotProps.data.status.toLowerCase().replace(' ', '-')">
+                                            {{ slotProps.data.status }}
+                                        </span>
+                                    </template>
+                                </p-column>
+                                <p-column header="Action" style="width: 80px;">
+                                    <template #body="slotProps">
+                                        <p-button icon="pi pi-eye" severity="info" text rounded @click.stop="viewOrder(slotProps.data)"></p-button>
+                                    </template>
+                                </p-column>
+                            </p-datatable>
+                        </div>
                     </div>
+
+                    <!-- HR Help Desk Sub-tab -->
+                    <div v-if="ordersSubTab === 'hrdesk'">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon blue">
+                                    <i class="pi pi-list"></i>
+                                </div>
+                                <div>
+                                    <div class="stat-value">{{ hrDeskRequests.length }}</div>
+                                    <div class="stat-label">Total Requests</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon orange">
+                                    <i class="pi pi-clock"></i>
+                                </div>
+                                <div>
+                                    <div class="stat-value">{{ hrDeskPending }}</div>
+                                    <div class="stat-label">Pending</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon green">
+                                    <i class="pi pi-check-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="stat-value">{{ hrDeskApproved }}</div>
+                                    <div class="stat-label">Approved</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon red">
+                                    <i class="pi pi-times-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="stat-value">{{ hrDeskRejected }}</div>
+                                    <div class="stat-label">Rejected</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">
+                                        <i class="pi pi-list-check"></i>
+                                        HR Requests
+                                    </div>
+                                    <div class="card-subtitle">Track and manage all HR change requests</div>
+                                </div>
+                                <div class="header-actions">
+                                    <p-select v-model="hrDeskStatusFilter" :options="hrDeskStatusOptions" placeholder="All Statuses" showClear style="width: 180px;"></p-select>
+                                </div>
+                            </div>
+
+                            <p-datatable :value="filteredHrDeskRequests" stripedRows paginator :rows="10" 
+                                         :rowsPerPageOptions="[10, 25, 50]" selectionMode="single" @row-click="viewHrDeskRequest($event.data)">
+                                <p-column header="Type of Request" sortable field="type">
+                                    <template #body="slotProps">
+                                        <div class="request-type-cell clickable-row">
+                                            <div class="request-type-icon" :style="{ background: slotProps.data.color + '15', color: slotProps.data.color }">
+                                                <i :class="'pi ' + slotProps.data.icon"></i>
+                                            </div>
+                                            <div class="request-type-info">
+                                                <div class="request-type-name">{{ slotProps.data.type }}</div>
+                                                <div class="request-type-id">#{{ slotProps.data.trackingId }}</div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </p-column>
+                                <p-column header="Employee Details" sortable field="employeeName">
+                                    <template #body="slotProps">
+                                        <div class="employee-cell">
+                                            <img :src="slotProps.data.employeeAvatar" :alt="slotProps.data.employeeName" class="employee-avatar-sm">
+                                            <div class="employee-info">
+                                                <div class="employee-name">{{ slotProps.data.employeeName }}</div>
+                                                <div class="employee-details">{{ slotProps.data.employeeId }} • {{ slotProps.data.employeeDepartment }}</div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </p-column>
+                                <p-column header="HR User" sortable field="hrUserName">
+                                    <template #body="slotProps">
+                                        <div class="hr-user-cell">
+                                            <div class="hr-user-name">{{ slotProps.data.hrUserName }}</div>
+                                            <div class="hr-user-role">{{ slotProps.data.hrUserRole }}</div>
+                                        </div>
+                                    </template>
+                                </p-column>
+                                <p-column header="Date of Action" sortable field="dateOfAction">
+                                    <template #body="slotProps">
+                                        <div class="date-cell">
+                                            <i class="pi pi-calendar"></i>
+                                            <span>{{ formatHrDeskDate(slotProps.data.dateOfAction) }}</span>
+                                        </div>
+                                    </template>
+                                </p-column>
+                                <p-column header="Status" sortable field="status">
+                                    <template #body="slotProps">
+                                        <span class="status-badge" :class="getHrDeskStatusClass(slotProps.data.status)">
+                                            {{ slotProps.data.status }}
+                                        </span>
+                                    </template>
+                                </p-column>
+                                <p-column header="Summary" style="width: 80px; text-align: center;">
+                                    <template #body="slotProps">
+                                        <button class="view-btn" @click.stop="viewHrDeskRequest(slotProps.data)" v-tooltip="'View Details'">
+                                            <i class="pi pi-eye"></i>
+                                        </button>
+                                    </template>
+                                </p-column>
+                            </p-datatable>
+                        </div>
+                    </div>
+
+                    <!-- Order View Modal -->
+                    <p-dialog v-model:visible="showOrderModal" :header="'Order Details - ' + (selectedOrder?.id || '')" :style="{ width: '700px' }" modal>
+                        <div v-if="selectedOrder" class="order-view-content">
+                            <div class="order-header-info">
+                                <div class="order-type-badge" :style="{ background: selectedOrder.color + '15', color: selectedOrder.color }">
+                                    <i :class="'pi ' + selectedOrder.icon"></i>
+                                </div>
+                                <div>
+                                    <h3>{{ selectedOrder.typeName }}</h3>
+                                    <p>Submitted: {{ selectedOrder.submitted }}</p>
+                                </div>
+                                <span class="status-tag" :class="selectedOrder.status.toLowerCase().replace(' ', '-')">{{ selectedOrder.status }}</span>
+                            </div>
+                            <div class="order-details-grid">
+                                <div class="order-detail-item">
+                                    <label>Request ID</label>
+                                    <span>{{ selectedOrder.id }}</span>
+                                </div>
+                                <div class="order-detail-item">
+                                    <label>Current Step</label>
+                                    <span>{{ selectedOrder.currentStep }}</span>
+                                </div>
+                                <div class="order-detail-item">
+                                    <label>Submitted</label>
+                                    <span>{{ selectedOrder.submitted }} ({{ selectedOrder.submittedAgo }})</span>
+                                </div>
+                            </div>
+                        </div>
+                        <template #footer>
+                            <p-button label="Close" severity="secondary" @click="showOrderModal = false"></p-button>
+                        </template>
+                    </p-dialog>
                 </div>
 
                 <!-- Splits Tab -->
@@ -466,46 +851,67 @@ const MyProfileComponent = {
                             <table class="splits-table">
                                 <thead>
                                     <tr>
-                                        <th>MONTH & PAYMENT DATE</th>
+                                        <th>MONTH</th>
                                         <th>BASIC SALARY</th>
                                         <th>ACCOMMODATION</th>
                                         <th>TRANSPORTATION</th>
                                         <th>OTHER ALLOWANCE</th>
-                                        <th class="highlight-col">COMMISSION</th>
-                                        <th class="highlight-col">OVERTIME</th>
-                                        <th class="highlight-col">OTHERS ADDITION</th>
-                                        <th>GROSS PAY</th>
+                                        <th class="addition-col">COMMISSION</th>
+                                        <th class="addition-col">OVERTIME</th>
+                                        <th class="addition-col">OTHERS ADD.</th>
+                                        <th class="gross-col">GROSS PAY</th>
+                                        <th class="deduction-col">ATTEND. DED.</th>
+                                        <th class="deduction-col">LOAN</th>
+                                        <th class="deduction-col">ABSENT W/O</th>
+                                        <th class="deduction-col">OTHER DED.</th>
+                                        <th class="deduction-col">GOSI</th>
+                                        <th class="deduction-col">NET DED.</th>
+                                        <th class="total-col">NET PAY</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="split in payrollSplits" :key="split.month">
                                         <td class="month-cell">
                                             <div class="month-name">{{ split.month }}</div>
-                                            <div class="payment-date">Paid: {{ split.paymentDate }}</div>
-                                            <span class="paid-badge">PAID</span>
                                         </td>
                                         <td>{{ formatCurrency(split.basicSalary) }}</td>
                                         <td>{{ formatCurrency(split.accommodation) }}</td>
                                         <td>{{ formatCurrency(split.transportation) }}</td>
                                         <td>{{ formatCurrency(split.otherAllowance) }}</td>
-                                        <td class="highlight-col">
+                                        <td class="addition-col">
                                             <span class="addition-value" :class="{ 'has-value': split.commission > 0 }">{{ formatCurrency(split.commission) }}</span>
                                         </td>
-                                        <td class="highlight-col">
+                                        <td class="addition-col">
                                             <span class="addition-value" :class="{ 'has-value': split.overtime > 0 }">{{ formatCurrency(split.overtime) }}</span>
                                         </td>
-                                        <td class="highlight-col">
+                                        <td class="addition-col">
                                             <span class="addition-value" :class="{ 'has-value': split.othersAddition > 0 }">{{ formatCurrency(split.othersAddition) }}</span>
                                         </td>
-                                        <td class="gross-pay">{{ formatCurrency(split.grossPay) }}</td>
+                                        <td class="gross-col">{{ formatCurrency(split.grossPay) }}</td>
+                                        <td class="deduction-col">
+                                            <span class="deduction-value">{{ formatCurrency(split.attendanceDed || 0) }}</span>
+                                        </td>
+                                        <td class="deduction-col">
+                                            <span class="deduction-value">{{ formatCurrency(split.loanRepayment || 0) }}</span>
+                                        </td>
+                                        <td class="deduction-col">
+                                            <span class="deduction-value">{{ formatCurrency(split.absentWithoutLeave || 0) }}</span>
+                                        </td>
+                                        <td class="deduction-col">
+                                            <span class="deduction-value">{{ formatCurrency(split.otherDeductions || 0) }}</span>
+                                        </td>
+                                        <td class="deduction-col">
+                                            <span class="deduction-value">{{ formatCurrency(split.gosi || 0) }}</span>
+                                        </td>
+                                        <td class="deduction-col">
+                                            <span class="deduction-value total">{{ formatCurrency(split.netDeductions || 0) }}</span>
+                                        </td>
+                                        <td class="total-col">
+                                            <span class="net-pay-value">{{ formatCurrency(split.netPay || split.grossPay) }}</span>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-
-                        <!-- Progress Bar -->
-                        <div class="salary-progress-bar">
-                            <div class="progress-fill" style="width: 75%;"></div>
                         </div>
                     </div>
                 </div>
@@ -741,7 +1147,7 @@ const MyProfileComponent = {
 
                     <!-- This Year Table (Same as appraisal-tracking) -->
                     <div v-if="appraisalYear === 'current'" class="card">
-                        <p-datatable :value="myAppraisals" stripedRows>
+                        <p-datatable :value="myAppraisals" stripedRows selectionMode="single" @row-click="viewAppraisal($event.data)">
                             <p-column header="Employee Info" sortable>
                                 <template #body="slotProps">
                                     <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -783,11 +1189,16 @@ const MyProfileComponent = {
                                     </div>
                                 </template>
                             </p-column>
-                            <p-column header="Status" style="width: 260px;">
+                            <p-column header="Status" style="width: 200px;">
                                 <template #body="slotProps">
                                     <span class="appraisal-status-btn" :class="slotProps.data.statusClass">
                                         {{ slotProps.data.status }}
                                     </span>
+                                </template>
+                            </p-column>
+                            <p-column header="Action" style="width: 80px;">
+                                <template #body="slotProps">
+                                    <p-button icon="pi pi-eye" severity="info" text rounded @click.stop="viewAppraisal(slotProps.data)"></p-button>
                                 </template>
                             </p-column>
                         </p-datatable>
@@ -795,7 +1206,7 @@ const MyProfileComponent = {
 
                     <!-- Previous Years Table (Same as appraisal-results) -->
                     <div v-if="appraisalYear === 'previous'" class="card">
-                        <p-datatable :value="previousAppraisals" stripedRows>
+                        <p-datatable :value="previousAppraisals" stripedRows selectionMode="single" @row-click="viewAppraisal($event.data)">
                             <p-column header="Employee" sortable>
                                 <template #body="slotProps">
                                     <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -834,11 +1245,61 @@ const MyProfileComponent = {
                             </p-column>
                             <p-column header="Action" style="width: 80px; text-align: center;">
                                 <template #body="slotProps">
-                                    <p-button icon="pi pi-file" severity="warning" text rounded></p-button>
+                                    <p-button icon="pi pi-eye" severity="info" text rounded @click.stop="viewAppraisal(slotProps.data)"></p-button>
                                 </template>
                             </p-column>
                         </p-datatable>
                     </div>
+
+                    <!-- Appraisal View Modal -->
+                    <p-dialog v-model:visible="showAppraisalModal" :header="'Appraisal Details'" :style="{ width: '700px' }" modal>
+                        <div v-if="selectedAppraisal" class="appraisal-view-content">
+                            <div class="appraisal-header-info">
+                                <img :src="selectedAppraisal.avatar" style="width: 60px; height: 60px; border-radius: 50%;">
+                                <div>
+                                    <h3>{{ selectedAppraisal.name }}</h3>
+                                    <p>{{ selectedAppraisal.empId }} • {{ selectedAppraisal.department || 'N/A' }}</p>
+                                </div>
+                                <span class="appraisal-status-btn" :class="selectedAppraisal.statusClass">{{ selectedAppraisal.status }}</span>
+                            </div>
+                            <div class="appraisal-details-grid">
+                                <div class="appraisal-detail-item">
+                                    <label>Appraisal Cycle</label>
+                                    <span>{{ selectedAppraisal.cycle }}</span>
+                                </div>
+                                <div class="appraisal-detail-item" v-if="selectedAppraisal.grade">
+                                    <label>Grade</label>
+                                    <span>{{ selectedAppraisal.grade }}</span>
+                                </div>
+                                <div class="appraisal-detail-item" v-if="selectedAppraisal.selfScore">
+                                    <label>Self Score</label>
+                                    <span>{{ selectedAppraisal.selfScore }}%</span>
+                                </div>
+                                <div class="appraisal-detail-item" v-if="selectedAppraisal.finalScore">
+                                    <label>Final Score</label>
+                                    <span class="final-score-badge">{{ selectedAppraisal.finalScore }}%</span>
+                                </div>
+                                <div class="appraisal-detail-item" v-if="selectedAppraisal.rating">
+                                    <label>Performance Rating</label>
+                                    <span class="performance-tag" :class="selectedAppraisal.ratingClass">{{ selectedAppraisal.rating }}</span>
+                                </div>
+                                <div class="appraisal-detail-item" v-if="selectedAppraisal.evaluator">
+                                    <label>Evaluator</label>
+                                    <span>{{ selectedAppraisal.evaluator }}</span>
+                                </div>
+                            </div>
+                            <div v-if="selectedAppraisal.reviewers" class="appraisal-reviewers">
+                                <label>Reviewers</label>
+                                <div v-for="reviewer in selectedAppraisal.reviewers" :key="reviewer" class="reviewer-item">
+                                    <span class="reviewer-dot"></span>
+                                    <span>{{ reviewer }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <template #footer>
+                            <p-button label="Close" severity="secondary" @click="showAppraisalModal = false"></p-button>
+                        </template>
+                    </p-dialog>
                 </div>
 
                 <!-- Training Tab -->
@@ -892,8 +1353,8 @@ const MyProfileComponent = {
                     </div>
                 </div>
 
-                <!-- KPI Tab -->
-                <div v-if="activeTab === 'kpi'" class="tab-panel">
+                <!-- Performance Tab -->
+                <div v-if="activeTab === 'performance'" class="tab-panel">
                     <div class="coming-soon-container">
                         <div class="coming-soon-icon">
                             <i class="pi pi-clock"></i>
@@ -914,6 +1375,163 @@ const MyProfileComponent = {
         const appraisalYear = ref('current');
         const shiftWeekOffset = ref(0);
         const attendanceWeekOffset = ref(0);
+
+        // Employee Detail Modal
+        const showEmployeeDetailModal = ref(false);
+        const detailCurrentStep = ref(0);
+        const detailSteps = ref([
+            { label: 'Basic Info' },
+            { label: 'Documents' },
+            { label: 'Work Access' },
+            { label: 'Contract & Salary' },
+            { label: 'Attendance' },
+            { label: 'Iqama' },
+            { label: 'Checklist' }
+        ]);
+
+        // Orders Sub-tabs
+        const ordersSubTab = ref('orders');
+        const showOrderModal = ref(false);
+        const selectedOrder = ref(null);
+
+        const viewOrder = (order) => {
+            selectedOrder.value = order;
+            showOrderModal.value = true;
+        };
+
+        // HR Desk Requests (matching hr-requests-tracking.js structure)
+        const hrDeskStatusFilter = ref(null);
+        const hrDeskStatusOptions = ref(['Pending', 'Approved', 'Processing', 'Rejected']);
+
+        const hrDeskRequests = ref([
+            {
+                id: 1,
+                trackingId: 'TRK-2024-001',
+                type: 'Employee Promotion',
+                icon: 'pi-arrow-up-right',
+                color: '#f97316',
+                employeeName: 'Mohammed Soliman Alsoliman',
+                employeeId: 'EMP-005',
+                employeeDepartment: 'Engineering',
+                employeeAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                hrUserName: 'Amal Al-Sayed',
+                hrUserRole: 'HR Manager',
+                dateOfAction: '2024-03-15',
+                status: 'Pending'
+            },
+            {
+                id: 2,
+                trackingId: 'TRK-2024-002',
+                type: 'Salary Adjustment',
+                icon: 'pi-money-bill',
+                color: '#10b981',
+                employeeName: 'Mohammed Soliman Alsoliman',
+                employeeId: 'EMP-005',
+                employeeDepartment: 'Engineering',
+                employeeAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                hrUserName: 'John Smith',
+                hrUserRole: 'HR Coordinator',
+                dateOfAction: '2024-03-14',
+                status: 'Approved'
+            },
+            {
+                id: 3,
+                trackingId: 'TRK-2024-003',
+                type: 'Attendance Adjustment',
+                icon: 'pi-clock',
+                color: '#ec4899',
+                employeeName: 'Mohammed Soliman Alsoliman',
+                employeeId: 'EMP-005',
+                employeeDepartment: 'Engineering',
+                employeeAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                hrUserName: 'Amal Al-Sayed',
+                hrUserRole: 'HR Manager',
+                dateOfAction: '2024-03-12',
+                status: 'Processing'
+            },
+            {
+                id: 4,
+                trackingId: 'TRK-2024-004',
+                type: 'Change Contract Type',
+                icon: 'pi-file-edit',
+                color: '#f59e0b',
+                employeeName: 'Mohammed Soliman Alsoliman',
+                employeeId: 'EMP-005',
+                employeeDepartment: 'Engineering',
+                employeeAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                hrUserName: 'Fahad Al-Otaibi',
+                hrUserRole: 'HR Director',
+                dateOfAction: '2024-03-10',
+                status: 'Rejected'
+            },
+            {
+                id: 5,
+                trackingId: 'TRK-2024-005',
+                type: 'Employee Transfer',
+                icon: 'pi-arrow-right-arrow-left',
+                color: '#6366f1',
+                employeeName: 'Mohammed Soliman Alsoliman',
+                employeeId: 'EMP-005',
+                employeeDepartment: 'Engineering',
+                employeeAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                hrUserName: 'John Smith',
+                hrUserRole: 'HR Coordinator',
+                dateOfAction: '2024-03-09',
+                status: 'Approved'
+            },
+            {
+                id: 6,
+                trackingId: 'TRK-2024-006',
+                type: 'Disciplinary Action',
+                icon: 'pi-exclamation-triangle',
+                color: '#eab308',
+                employeeName: 'Mohammed Soliman Alsoliman',
+                employeeId: 'EMP-005',
+                employeeDepartment: 'Engineering',
+                employeeAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                hrUserName: 'Amal Al-Sayed',
+                hrUserRole: 'HR Manager',
+                dateOfAction: '2024-03-08',
+                status: 'Pending'
+            }
+        ]);
+
+        const hrDeskPending = computed(() => hrDeskRequests.value.filter(r => r.status === 'Pending').length);
+        const hrDeskApproved = computed(() => hrDeskRequests.value.filter(r => r.status === 'Approved').length);
+        const hrDeskRejected = computed(() => hrDeskRequests.value.filter(r => r.status === 'Rejected').length);
+
+        const filteredHrDeskRequests = computed(() => {
+            if (!hrDeskStatusFilter.value) return hrDeskRequests.value;
+            return hrDeskRequests.value.filter(r => r.status === hrDeskStatusFilter.value);
+        });
+
+        const getHrDeskStatusClass = (status) => {
+            const classes = {
+                'Pending': 'pending',
+                'Approved': 'approved',
+                'Processing': 'processing',
+                'Rejected': 'rejected'
+            };
+            return classes[status] || 'pending';
+        };
+
+        const formatHrDeskDate = (dateStr) => {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+        };
+
+        const viewHrDeskRequest = (request) => {
+            console.log('View HR Desk Request:', request);
+        };
+
+        // Appraisal Modal
+        const showAppraisalModal = ref(false);
+        const selectedAppraisal = ref(null);
+
+        const viewAppraisal = (appraisal) => {
+            selectedAppraisal.value = appraisal;
+            showAppraisalModal.value = true;
+        };
 
         // Employee Data
         const employee = ref({
@@ -997,9 +1615,9 @@ const MyProfileComponent = {
 
         // Payroll Splits
         const payrollSplits = ref([
-            { month: 'January 2024', paymentDate: '31 Jan 2024', basicSalary: 15000, accommodation: 4000, transportation: 1000, otherAllowance: 0, commission: 500, overtime: 200, othersAddition: 0, grossPay: 20700 },
-            { month: 'February 2024', paymentDate: '29 Feb 2024', basicSalary: 15000, accommodation: 4000, transportation: 1000, otherAllowance: 0, commission: 0, overtime: 0, othersAddition: 0, grossPay: 20000 },
-            { month: 'March 2024', paymentDate: '31 Mar 2024', basicSalary: 15000, accommodation: 4000, transportation: 1000, otherAllowance: 0, commission: 1200, overtime: 450, othersAddition: 100, grossPay: 21750 }
+            { month: 'January 2024', basicSalary: 15000, accommodation: 4000, transportation: 1000, otherAllowance: 0, commission: 500, overtime: 200, othersAddition: 0, grossPay: 20700, attendanceDed: 0, loanRepayment: 500, absentWithoutLeave: 0, otherDeductions: 0, gosi: 1350, netDeductions: 1850, netPay: 18850 },
+            { month: 'February 2024', basicSalary: 15000, accommodation: 4000, transportation: 1000, otherAllowance: 0, commission: 0, overtime: 0, othersAddition: 0, grossPay: 20000, attendanceDed: 150, loanRepayment: 500, absentWithoutLeave: 0, otherDeductions: 0, gosi: 1350, netDeductions: 2000, netPay: 18000 },
+            { month: 'March 2024', basicSalary: 15000, accommodation: 4000, transportation: 1000, otherAllowance: 0, commission: 1200, overtime: 450, othersAddition: 100, grossPay: 21750, attendanceDed: 0, loanRepayment: 500, absentWithoutLeave: 0, otherDeductions: 200, gosi: 1350, netDeductions: 2050, netPay: 19700 }
         ]);
 
         const formatCurrency = (value) => {
@@ -1216,7 +1834,27 @@ const MyProfileComponent = {
             previousAppraisals,
             myTrainings,
             getTrainingStatusSeverity,
-            getTrainingProgressColor
+            getTrainingProgressColor,
+            showEmployeeDetailModal,
+            detailCurrentStep,
+            detailSteps,
+            ordersSubTab,
+            showOrderModal,
+            selectedOrder,
+            viewOrder,
+            hrDeskRequests,
+            hrDeskStatusFilter,
+            hrDeskStatusOptions,
+            hrDeskPending,
+            hrDeskApproved,
+            hrDeskRejected,
+            filteredHrDeskRequests,
+            getHrDeskStatusClass,
+            formatHrDeskDate,
+            viewHrDeskRequest,
+            showAppraisalModal,
+            selectedAppraisal,
+            viewAppraisal
         };
     }
 };

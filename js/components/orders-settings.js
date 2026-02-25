@@ -201,7 +201,7 @@ const OrdersSettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showCategoryDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showCategoryDialog = false"></p-button>
                     <p-button :label="editingCategory ? 'Update' : 'Save'" @click="saveCategory"></p-button>
                 </template>
             </p-dialog>
@@ -379,7 +379,7 @@ const OrdersSettingsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Cancel" text @click="showTypeDialog = false"></p-button>
+                    <p-button label="Cancel" severity="danger" outlined @click="showTypeDialog = false"></p-button>
                     <p-button :label="editingType ? 'Update' : 'Save'" @click="saveType"></p-button>
                 </template>
             </p-dialog>

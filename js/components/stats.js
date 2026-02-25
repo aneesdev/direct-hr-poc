@@ -840,7 +840,8 @@ const StatsComponent = {
         'directory-static-insights': DirectoryStaticInsights,
         'directory-dynamic-insights': DirectoryDynamicInsights,
         'settings-static-insights': SettingsStaticInsights,
-        'appraisals-insights': AppraisalsInsights
+        'appraisals-insights': AppraisalsInsights,
+        'training-insights': window.TrainingInsightsComponent
     },
     template: `
         <div class="stats-page">
@@ -1082,7 +1083,8 @@ const StatsComponent = {
             hrdesk: createModuleState(),
             directory: createModuleState(),
             settings: createModuleState(),
-            appraisals: { ...createModuleState(), selectedCycle: null, cycleApplied: false }
+            appraisals: { ...createModuleState(), selectedCycle: null, cycleApplied: false },
+            training: createModuleState()
         });
 
         // Computed properties that reference current module's state
