@@ -14112,7 +14112,10 @@ img {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     padding: 0.4rem 0.85rem;
     border-radius: 20px;
     font-size: 0.65rem;
@@ -14165,16 +14168,38 @@ img {
 
 /* Mood Selector */
 .mood-selector {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius-lg);
     padding: 1rem 1.5rem;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.mood-selector.mood-submitted {
+    background: rgba(255, 255, 255, 0.4);
+    padding: 1rem 2rem;
 }
 
 .mood-title {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
     text-align: center;
+}
+
+.mood-title.mood-thanks {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.mood-title.mood-thanks .pi {
+    color: #4ade80;
 }
 
 .mood-options {
@@ -14195,16 +14220,49 @@ img {
 
 .mood-option:hover,
 .mood-option.active {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.mood-option.mood-animating {
+    animation: moodPop 0.6s ease forwards;
+}
+
+@keyframes moodPop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.3); }
+    50% { transform: scale(1.1); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); background: rgba(255, 255, 255, 0.5); }
 }
 
 .mood-icon {
     font-size: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.mood-option:hover .mood-icon {
+    transform: scale(1.1);
 }
 
 .mood-label {
     font-size: 0.65rem;
     font-weight: 500;
+}
+
+.mood-selected-display {
+    display: flex;
+    justify-content: center;
+}
+
+.selected-mood-icon {
+    font-size: 2.5rem;
+    animation: selectedMoodBounce 0.5s ease;
+}
+
+@keyframes selectedMoodBounce {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 /* Home Content Grid */
@@ -14299,7 +14357,9 @@ img {
     padding: 0.85rem 1.25rem;
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    margin-left: -3px;
 }
 
 .document-item:last-child {
@@ -14307,7 +14367,17 @@ img {
 }
 
 .document-item:hover {
-    background: var(--surface-ground);
+    background: rgba(249, 115, 22, 0.06);
+    border-left-color: var(--primary-color);
+    transform: translateX(3px);
+}
+
+.document-item:hover .document-icon {
+    transform: scale(1.1);
+}
+
+.document-item:hover .document-name {
+    color: var(--primary-color);
 }
 
 .document-icon {
@@ -14319,6 +14389,7 @@ img {
     justify-content: center;
     font-size: 0.9rem;
     flex-shrink: 0;
+    transition: transform 0.2s ease;
 }
 
 .document-icon.pdf {
@@ -14373,6 +14444,7 @@ img {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.2s ease;
 }
 
 .document-name-ar {
@@ -14477,6 +14549,10 @@ img {
     margin-bottom: 1rem;
 }
 
+.action-btn-wrapper {
+    position: relative;
+}
+
 .action-btn {
     display: flex;
     align-items: center;
@@ -14487,11 +14563,114 @@ img {
     font-size: 0.8rem;
     cursor: pointer;
     padding: 0;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .action-btn:hover {
     color: var(--primary-color);
+}
+
+.action-btn.liked {
+    color: #ef4444;
+}
+
+.action-btn.liked .pi-heart-fill {
+    animation: heartBeat 0.4s ease;
+}
+
+.action-btn.like-animating .pi-heart-fill {
+    animation: likePopBurst 0.4s ease;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes likePopBurst {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.5); }
+    50% { transform: scale(0.9); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Social Tooltip */
+.social-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    background: #1f2937;
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.social-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 16px;
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+}
+
+.action-btn-wrapper:hover .social-tooltip,
+.stat-item-wrapper:hover .social-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-2px);
+}
+
+.tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.tooltip-content span {
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.tooltip-more {
+    color: #9ca3af;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* Stat item wrapper for tooltips */
+.stat-item-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.stat-item.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.stat-item.clickable:hover {
+    color: var(--primary-color);
+}
+
+.stat-item.clickable .pi-heart-fill.liked {
+    color: #ef4444;
+}
+
+.stat-item.like-animating .pi {
+    animation: likePopBurst 0.4s ease;
 }
 
 .comment-input {
@@ -14657,8 +14836,37 @@ img {
     background: rgba(255, 110, 5, 0.05);
 }
 
+.reaction-btn.active {
+    border-color: var(--primary-color);
+    color: #fff;
+    background: var(--primary-color);
+}
+
+.reaction-btn.reaction-animating {
+    animation: reactionPop 0.4s ease;
+}
+
+@keyframes reactionPop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.15); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
 .reaction-btn i {
     font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.reaction-btn.active i {
+    animation: reactionIconPop 0.4s ease;
+}
+
+@keyframes reactionIconPop {
+    0% { transform: scale(1) rotate(0deg); }
+    30% { transform: scale(1.3) rotate(-10deg); }
+    60% { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
 }
 
 /* Workforce Stats */
@@ -15182,6 +15390,15 @@ img {
     text-align: center;
 }
 
+.birthday-day.anniversary-years {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--radius-md);
+    min-width: auto;
+}
+
 .birthday-modal-avatar {
     width: 48px;
     height: 48px;
@@ -15205,6 +15422,57 @@ img {
     font-weight: 600;
     color: var(--text-color-secondary);
     letter-spacing: 0.3px;
+}
+
+/* Past item styling */
+.birthday-modal-item.past-item {
+    opacity: 0.7;
+    background: var(--surface-ground);
+}
+
+.birthday-modal-item.past-item:hover {
+    opacity: 1;
+}
+
+/* Stats badges for past items */
+.birthday-modal-stats {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.35rem;
+}
+
+.birthday-modal-stats .stat-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    color: var(--text-color-secondary);
+}
+
+.birthday-modal-stats .stat-badge .pi-heart-fill {
+    color: #ef4444;
+    font-size: 0.65rem;
+}
+
+.birthday-modal-stats .stat-badge .pi-comment {
+    color: var(--primary-color);
+    font-size: 0.65rem;
+}
+
+/* Upcoming badge */
+.upcoming-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* Anniversary header */
+.birthday-modal-header.anniversary-header {
+    background: linear-gradient(135deg, #f97316, #ea580c);
 }
 
 /* Wall of Fame Modal */
@@ -20158,35 +20426,108 @@ img {
     max-width: 800px;
 }
 
-/* File Upload Zone */
-.file-upload-zone {
-    border: 2px dashed var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    text-align: center;
-    background: var(--surface-ground);
-    transition: border-color 0.2s, background 0.2s;
+/* Document Type Options */
+.doc-type-options {
+    display: flex;
+    gap: 1rem;
 }
 
-.file-upload-zone:hover {
+.doc-type-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.doc-type-option:hover {
     border-color: var(--primary-color);
     background: rgba(249, 115, 22, 0.02);
 }
 
-.file-upload-zone .upload-info {
-    margin-top: 0.75rem;
+.doc-type-option.active {
+    border-color: var(--primary-color);
+    background: rgba(249, 115, 22, 0.08);
+    color: var(--primary-color);
+}
+
+.doc-type-option i {
+    font-size: 1.25rem;
+}
+
+.doc-type-option span {
+    font-weight: 500;
+}
+
+/* File Upload Area (add-employee style) */
+.file-upload-area {
+    display: block;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.file-upload-area:hover {
+    border-color: var(--primary-color);
+    background: rgba(249, 115, 22, 0.02);
+}
+
+.file-upload-content {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--text-color-secondary);
-    font-size: 0.85rem;
 }
 
-.file-upload-zone .file-types {
-    font-size: 0.75rem;
+.file-upload-content i {
+    font-size: 1.75rem;
+    color: var(--primary-color);
 }
 
-/* Selected File Display */
+.file-upload-content span {
+    font-size: 0.875rem;
+}
+
+.file-upload-content.selected {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.file-upload-content.selected i {
+    font-size: 1.25rem;
+}
+
+.file-upload-content.selected span {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.remove-file-btn {
+    background: none;
+    border: none;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color 0.2s;
+}
+
+.remove-file-btn:hover {
+    color: var(--red-500);
+}
+
+/* Selected File Display (legacy) */
 .selected-file {
     display: flex;
     align-items: center;

@@ -218,48 +218,44 @@ const CompanyDocumentsComponent = {
                                 </div>
                             </div>
 
+                            <!-- Document Type Selection -->
                             <div class="form-group" style="margin-top: 1.5rem;">
+                                <label class="form-label">Document Type <span class="required">*</span></label>
+                                <div class="doc-type-options">
+                                    <label class="doc-type-option" :class="{ active: docForm.docType === 'upload' }">
+                                        <input type="radio" v-model="docForm.docType" value="upload" hidden>
+                                        <i class="pi pi-upload"></i>
+                                        <span>Upload File</span>
+                                    </label>
+                                    <label class="doc-type-option" :class="{ active: docForm.docType === 'url' }">
+                                        <input type="radio" v-model="docForm.docType" value="url" hidden>
+                                        <i class="pi pi-link"></i>
+                                        <span>URL Link</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Upload File Section -->
+                            <div class="form-group" style="margin-top: 1rem;" v-if="docForm.docType === 'upload'">
                                 <label class="form-label">Upload Document <span class="required">*</span></label>
-                                <div class="file-upload-zone">
-                                    <p-fileupload mode="basic" 
-                                                 accept=".pdf,.doc,.docx,.xls,.xlsx"
-                                                 :maxFileSize="10000000"
-                                                 chooseLabel="Choose File"
-                                                 @select="onFileSelect">
-                                    </p-fileupload>
-                                    <div class="upload-info">
-                                        <span>or drag and drop</span>
-                                        <span class="file-types">PDF, DOC, DOCX, XLS, XLSX (max 10MB)</span>
+                                <label class="file-upload-area" @click="triggerFileInput">
+                                    <input type="file" ref="fileInput" accept=".pdf,.doc,.docx,.xls,.xlsx" hidden @change="onFileSelect">
+                                    <div class="file-upload-content" v-if="!docForm.fileName">
+                                        <i class="pi pi-cloud-upload"></i>
+                                        <span>Click to upload or drag and drop</span>
                                     </div>
-                                </div>
-                                <div v-if="docForm.fileName" class="selected-file">
-                                    <i class="pi pi-file"></i>
-                                    <span>{{ docForm.fileName }}</span>
-                                    <button @click="docForm.fileName = null"><i class="pi pi-times"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Visibility Settings -->
-                        <div class="card" style="margin-top: 1.5rem;">
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <i class="pi pi-eye"></i>
-                                    Visibility Settings
-                                </div>
+                                    <div class="file-upload-content selected" v-else>
+                                        <i class="pi pi-file"></i>
+                                        <span>{{ docForm.fileName }}</span>
+                                        <button type="button" class="remove-file-btn" @click.stop="removeFile"><i class="pi pi-times"></i></button>
+                                    </div>
+                                </label>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Visible To</label>
-                                <p-multiselect v-model="docForm.visibleTo" :options="visibilityOptions" optionLabel="name" optionValue="id" 
-                                              placeholder="Select who can view this document" style="width: 100%;" display="chip"></p-multiselect>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 1rem;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <p-checkbox v-model="docForm.requireAcknowledgment" :binary="true" inputId="ack"></p-checkbox>
-                                    <label for="ack" style="cursor: pointer;">Require employee acknowledgment</label>
-                                </div>
+                            <!-- URL Link Section -->
+                            <div class="form-group" style="margin-top: 1rem;" v-if="docForm.docType === 'url'">
+                                <label class="form-label">Document URL <span class="required">*</span></label>
+                                <p-inputtext v-model="docForm.url" placeholder="https://example.com/document.pdf" style="width: 100%;"></p-inputtext>
                             </div>
                         </div>
                     </div>
@@ -316,10 +312,12 @@ const CompanyDocumentsComponent = {
             icon: 'pi-file-pdf',
             iconClass: 'pdf',
             status: 'active',
+            docType: 'upload',
             fileName: null,
-            visibleTo: ['all'],
-            requireAcknowledgment: false
+            url: ''
         });
+        
+        const fileInput = ref(null);
 
         // Options
         const categoryOptions = ref([
@@ -352,7 +350,7 @@ const CompanyDocumentsComponent = {
             { id: 'remote', name: 'Indigo' }
         ]);
 
-        const statusOptions = ref(['active', 'draft', 'archived']);
+        const statusOptions = ref(['active', 'archived']);
 
         const visibilityOptions = ref([
             { id: 'all', name: 'All Employees' },
@@ -403,7 +401,9 @@ const CompanyDocumentsComponent = {
                 docForm.icon = doc.icon;
                 docForm.iconClass = doc.iconClass;
                 docForm.status = doc.status;
-                docForm.fileName = doc.name + '.' + doc.fileType;
+                docForm.docType = doc.docType || 'upload';
+                docForm.fileName = doc.docType === 'upload' ? (doc.name + '.' + doc.fileType) : null;
+                docForm.url = doc.url || '';
             } else {
                 editingDoc.value = null;
                 docForm.name = '';
@@ -413,16 +413,30 @@ const CompanyDocumentsComponent = {
                 docForm.icon = 'pi-file-pdf';
                 docForm.iconClass = 'pdf';
                 docForm.status = 'active';
+                docForm.docType = 'upload';
                 docForm.fileName = null;
-                docForm.visibleTo = ['all'];
-                docForm.requireAcknowledgment = false;
+                docForm.url = '';
             }
             currentView.value = 'form';
         };
 
+        const triggerFileInput = () => {
+            if (fileInput.value) {
+                fileInput.value.click();
+            }
+        };
+        
         const onFileSelect = (event) => {
-            if (event.files && event.files[0]) {
-                docForm.fileName = event.files[0].name;
+            const file = event.target?.files?.[0];
+            if (file) {
+                docForm.fileName = file.name;
+            }
+        };
+        
+        const removeFile = () => {
+            docForm.fileName = null;
+            if (fileInput.value) {
+                fileInput.value.value = '';
             }
         };
 
@@ -488,11 +502,11 @@ const CompanyDocumentsComponent = {
             docToDelete,
             documentsList,
             docForm,
+            fileInput,
             categoryOptions,
             iconOptions,
             colorOptions,
             statusOptions,
-            visibilityOptions,
             policyCount,
             guideCount,
             regulationCount,
@@ -502,7 +516,9 @@ const CompanyDocumentsComponent = {
             formatTimeAgo,
             formatCategory,
             openForm,
+            triggerFileInput,
             onFileSelect,
+            removeFile,
             saveDocument,
             confirmDelete,
             deleteDocument
