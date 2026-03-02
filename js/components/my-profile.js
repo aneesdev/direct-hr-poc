@@ -284,6 +284,9 @@ const MyProfileComponent = {
                     <button class="profile-tab" :class="{ active: activeTab === 'training' }" @click="activeTab = 'training'">
                         <i class="pi pi-book"></i> Training
                     </button>
+                    <button class="profile-tab" :class="{ active: activeTab === 'linemanagers' }" @click="activeTab = 'linemanagers'">
+                        <i class="pi pi-sitemap"></i> Line Managers
+                    </button>
                     <button class="profile-tab" :class="{ active: activeTab === 'performance' }" @click="activeTab = 'performance'">
                         <i class="pi pi-chart-line"></i> Performance
                     </button>
@@ -1353,6 +1356,39 @@ const MyProfileComponent = {
                     </div>
                 </div>
 
+                <!-- Line Managers Tab -->
+                <div v-if="activeTab === 'linemanagers'" class="tab-panel">
+                    <div class="info-section">
+                        <div class="section-header">
+                            <i class="pi pi-sitemap"></i>
+                            <span>Reporting Hierarchy</span>
+                        </div>
+                        <div class="line-managers-timeline">
+                            <p-timeline :value="lineManagerHierarchy" align="left" class="manager-timeline">
+                                <template #marker="slotProps">
+                                    <span class="timeline-marker" :class="slotProps.item.level">
+                                        <img :src="slotProps.item.avatar" :alt="slotProps.item.name" class="timeline-avatar">
+                                    </span>
+                                </template>
+                                <template #content="slotProps">
+                                    <div class="timeline-card" :class="{ 'current-user': slotProps.item.isCurrent }">
+                                        <div class="timeline-card-header">
+                                            <span class="timeline-level-badge" :class="slotProps.item.level">{{ slotProps.item.levelLabel }}</span>
+                                            <span class="timeline-current-badge" v-if="slotProps.item.isCurrent">You</span>
+                                        </div>
+                                        <h4 class="timeline-name">{{ slotProps.item.name }}</h4>
+                                        <p class="timeline-position">{{ slotProps.item.position }}</p>
+                                        <div class="timeline-details">
+                                            <span><i class="pi pi-building"></i> {{ slotProps.item.department }}</span>
+                                            <span><i class="pi pi-envelope"></i> {{ slotProps.item.email }}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </p-timeline>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Performance Tab -->
                 <div v-if="activeTab === 'performance'" class="tab-panel">
                     <div class="coming-soon-container">
@@ -1398,6 +1434,65 @@ const MyProfileComponent = {
             selectedOrder.value = order;
             showOrderModal.value = true;
         };
+
+        // Line Manager Hierarchy (from top to current employee)
+        const lineManagerHierarchy = ref([
+            {
+                id: 1,
+                name: 'Abdullah Al-Rashid',
+                position: 'Chief Executive Officer',
+                department: 'Executive Office',
+                email: 'a.rashid@direct.sa',
+                avatar: 'https://i.pravatar.cc/80?img=68',
+                level: 'executive',
+                levelLabel: 'CEO',
+                isCurrent: false
+            },
+            {
+                id: 2,
+                name: 'Fatima Al-Zahrani',
+                position: 'Chief Technology Officer',
+                department: 'Technology',
+                email: 'f.zahrani@direct.sa',
+                avatar: 'https://i.pravatar.cc/80?img=47',
+                level: 'executive',
+                levelLabel: 'CTO',
+                isCurrent: false
+            },
+            {
+                id: 3,
+                name: 'Khalid Al-Otaibi',
+                position: 'Engineering Director',
+                department: 'Product Engineering',
+                email: 'k.otaibi@direct.sa',
+                avatar: 'https://i.pravatar.cc/80?img=52',
+                level: 'management',
+                levelLabel: 'Director',
+                isCurrent: false
+            },
+            {
+                id: 4,
+                name: 'Sarah Jenkins',
+                position: 'Engineering Manager',
+                department: 'Product Engineering',
+                email: 's.jenkins@direct.sa',
+                avatar: 'https://i.pravatar.cc/80?img=32',
+                level: 'supervisor',
+                levelLabel: 'Manager',
+                isCurrent: false
+            },
+            {
+                id: 5,
+                name: 'Mohammed Soliman Alsoliman',
+                position: 'Senior Software Engineer',
+                department: 'Product Engineering',
+                email: 'm.alsoliman@direct.sa',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                level: 'professional',
+                levelLabel: 'Employee',
+                isCurrent: true
+            }
+        ]);
 
         // HR Desk Requests (matching hr-requests-tracking.js structure)
         const hrDeskStatusFilter = ref(null);
@@ -1854,7 +1949,8 @@ const MyProfileComponent = {
             viewHrDeskRequest,
             showAppraisalModal,
             selectedAppraisal,
-            viewAppraisal
+            viewAppraisal,
+            lineManagerHierarchy
         };
     }
 };

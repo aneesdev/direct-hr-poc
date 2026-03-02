@@ -447,6 +447,14 @@ const CompanySettingsComponent = {
                             <p-datatable :value="costCenters" striped-rows>
                                 <p-column field="code" header="Code"></p-column>
                                 <p-column field="name" header="Name"></p-column>
+                                <p-column header="Tag">
+                                    <template #body="slotProps">
+                                        <span v-if="slotProps.data.tag" class="cost-center-type-tag" :class="slotProps.data.tag">
+                                            {{ getCostCenterTagLabel(slotProps.data.tag) }}
+                                        </span>
+                                        <span v-else class="text-muted">—</span>
+                                    </template>
+                                </p-column>
                                 <p-column header="Head Count">
                                     <template #body="slotProps">
                                         <p-tag :value="slotProps.data.headCount + ' employees'" :severity="slotProps.data.headCount > 0 ? 'info' : 'secondary'"></p-tag>
@@ -752,6 +760,10 @@ const CompanySettingsComponent = {
                         <p-inputtext v-model="costCenterForm.name" placeholder="Enter cost center name" style="width: 100%;"></p-inputtext>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Tag</label>
+                        <p-select v-model="costCenterForm.tag" :options="costCenterTagOptions" optionLabel="label" optionValue="value" placeholder="Select tag" style="width: 100%;"></p-select>
+                    </div>
+                    <div class="form-group">
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                             <p-toggleswitch v-model="costCenterForm.active"></p-toggleswitch>
                             <label class="form-label" style="margin: 0;">Active</label>
@@ -931,7 +943,12 @@ const CompanySettingsComponent = {
         const orgForm = ref({ name: '', parentId: null });
         const gradeForm = ref({ name: '', description: '', parentId: null });
         const officeForm = ref({ name: '', country: null, googleMapsLink: '', active: true });
-        const costCenterForm = ref({ code: '', name: '', active: true });
+        const costCenterForm = ref({ code: '', name: '', tag: null, active: true });
+        const costCenterTagOptions = ref([
+            { label: 'COGS', value: 'cogs' },
+            { label: 'G&A', value: 'ga' },
+            { label: 'Intangible Assets', value: 'intangible' }
+        ]);
         const workWeekForm = ref({ 
             name: '', 
             days: { Sunday: false, Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false },
@@ -1138,13 +1155,13 @@ const CompanySettingsComponent = {
         // Cost Center methods
         const openCostCenterDialog = () => {
             editingCostCenter.value = null;
-            costCenterForm.value = { code: '', name: '', active: true };
+            costCenterForm.value = { code: '', name: '', tag: null, active: true };
             showCostCenterDialog.value = true;
         };
 
         const editCostCenter = (cc) => {
             editingCostCenter.value = cc;
-            costCenterForm.value = { code: cc.code, name: cc.name, active: cc.active };
+            costCenterForm.value = { code: cc.code, name: cc.name, tag: cc.tag || null, active: cc.active };
             showCostCenterDialog.value = true;
         };
 
@@ -1161,6 +1178,11 @@ const CompanySettingsComponent = {
 
         const deleteCostCenter = (id) => {
             costCenters.value = costCenters.value.filter(c => c.id !== id);
+        };
+
+        const getCostCenterTagLabel = (tag) => {
+            const tagMap = { cogs: 'COGS', ga: 'G&A', intangible: 'Intangible Assets' };
+            return tagMap[tag] || tag;
         };
 
         // Work Week methods
@@ -1252,9 +1274,10 @@ const CompanySettingsComponent = {
             // Counts
             validDocsCount, expiredDocsCount,
             // Forms
-            newCountry, holidayForm, orgForm, gradeForm, officeForm, costCenterForm,
+            newCountry, holidayForm, orgForm, gradeForm, officeForm, costCenterForm, costCenterTagOptions,
             workWeekForm, addDocForm, updateExpiryForm,
             // Helpers
+            getCostCenterTagLabel,
             getDepartmentName, getSectionName, getUnitName, getMainGradeName, getSubGradeName,
             getSectionCount, getUnitCount, getTeamCount, getSubGradeCount, getJobTitleCount,
             // Dialog titles

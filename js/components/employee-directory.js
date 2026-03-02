@@ -17,33 +17,44 @@ const EmployeeDirectoryComponent = {
                 </div>
                 <div class="directory-view-toggle">
                     <button class="view-btn" :class="{ active: currentView === 'grid' }" @click="currentView = 'grid'">
-                        <i class="pi pi-th-large"></i> Grid
+                        <i class="pi pi-table"></i> Grid
                     </button>
                     <button class="view-btn" :class="{ active: currentView === 'list' }" @click="currentView = 'list'">
-                        <i class="pi pi-list"></i> List
+                        <i class="pi pi-bars"></i> List
                     </button>
                     <button class="view-btn" :class="{ active: currentView === 'regional' }" @click="currentView = 'regional'">
-                        <i class="pi pi-globe"></i> Regional
+                        <i class="pi pi-sitemap"></i> Regional
                     </button>
                 </div>
             </div>
 
             <!-- Search & Filters -->
             <div class="card" style="margin-bottom: 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                    <span class="p-input-icon-left" style="min-width: 250px; flex: 1;">
-                        <i class="pi pi-search"></i>
-                        <p-inputtext v-model="searchQuery" placeholder="Search by ID, Name, Role, Office, or Nationality..." style="width: 100%;"></p-inputtext>
-                    </span>
-                    <p-select v-model="selectedGrade" :options="gradeOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Grade Level" showClear style="width: 160px;"></p-select>
-                    <p-select v-model="selectedLocation" :options="locationOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Office Location" showClear style="width: 170px;"></p-select>
-                    <p-select v-model="selectedDepartment" :options="departmentOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Department" showClear style="width: 150px;"></p-select>
-                    <p-select v-model="selectedStatus" :options="statusOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Status" showClear style="width: 130px;"></p-select>
-                    <p-button label="Clear All" icon="pi pi-times" text severity="danger" @click="clearFilters"></p-button>
+                <div class="directory-filters-grid">
+                    <div class="filter-row">
+                        <span class="p-input-icon-left" style="width: 180px;">
+                            <i class="pi pi-search"></i>
+                            <p-inputtext v-model="searchQuery" placeholder="Search..." style="width: 100%;"></p-inputtext>
+                        </span>
+                        <p-select v-model="selectedEntity" :options="entityOptions" optionLabel="name" optionValue="value" 
+                                  placeholder="Entity" showClear style="width: 120px;"></p-select>
+                        <p-select v-model="selectedGrade" :options="gradeOptions" optionLabel="name" optionValue="value" 
+                                  placeholder="Grade" showClear style="width: 120px;"></p-select>
+                        <p-select v-model="selectedLocation" :options="locationOptions" optionLabel="name" optionValue="value" 
+                                  placeholder="Location" showClear style="width: 130px;"></p-select>
+                        <p-select v-model="selectedDepartment" :options="departmentOptions" optionLabel="name" optionValue="value" 
+                                  placeholder="Department" showClear style="width: 140px;" @change="onDepartmentChange"></p-select>
+                        <p-select v-model="selectedSection" :options="filteredSections" optionLabel="name" optionValue="id" 
+                                  placeholder="Section" showClear style="width: 130px;" :disabled="!selectedDepartment" @change="onSectionChange"></p-select>
+                        <p-select v-model="selectedUnit" :options="filteredUnits" optionLabel="name" optionValue="id" 
+                                  placeholder="Unit" showClear style="width: 120px;" :disabled="!selectedSection" @change="onUnitChange"></p-select>
+                        <p-select v-model="selectedTeam" :options="filteredTeams" optionLabel="name" optionValue="id" 
+                                  placeholder="Team" showClear style="width: 120px;" :disabled="!selectedUnit"></p-select>
+                    </div>
+                    <div class="filter-row filter-actions-row">
+                        <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                        <p-button label="Reset" icon="pi pi-refresh" outlined @click="clearFilters" size="small" v-if="hasActiveFilters"></p-button>
+                    </div>
                 </div>
             </div>
 
@@ -67,12 +78,10 @@ const EmployeeDirectoryComponent = {
                             <div class="emp-detail-row">
                                 <i class="pi pi-building"></i>
                                 <span>{{ emp.department }}</span>
-                                <span class="emp-nationality"><i class="pi pi-flag"></i> {{ emp.nationality }}</span>
                             </div>
                             <div class="emp-detail-row">
                                 <i class="pi pi-map-marker"></i>
                                 <span>{{ emp.branch }}</span>
-                                <span class="branch-tag">BRANCH</span>
                             </div>
                             <div class="emp-detail-row">
                                 <i class="pi pi-envelope"></i>
@@ -80,7 +89,7 @@ const EmployeeDirectoryComponent = {
                             </div>
                             <div class="emp-detail-row">
                                 <i class="pi pi-phone"></i>
-                                <span>Ext: {{ emp.extension }}</span>
+                                <span>{{ emp.extension }}</span>
                             </div>
                         </div>
                     </div>
@@ -98,7 +107,7 @@ const EmployeeDirectoryComponent = {
                         <tr>
                             <th>ID / EMPLOYEE</th>
                             <th>GRADE/DEPT</th>
-                            <th>BRANCH / NAT.</th>
+                            <th>BRANCH</th>
                             <th>CONTACT INFO</th>
                             <th>ACTIONS</th>
                         </tr>
@@ -124,13 +133,12 @@ const EmployeeDirectoryComponent = {
                             <td>
                                 <div class="list-branch">
                                     <div><i class="pi pi-map-marker"></i> {{ emp.branch }}</div>
-                                    <div class="list-nationality"><i class="pi pi-flag"></i> {{ emp.nationality }}</div>
                                 </div>
                             </td>
                             <td>
                                 <div class="list-contact">
                                     <div><i class="pi pi-envelope"></i> {{ emp.email }}</div>
-                                    <div><i class="pi pi-phone"></i> Ext: {{ emp.extension }}</div>
+                                    <div><i class="pi pi-phone"></i> {{ emp.extension }}</div>
                                 </div>
                             </td>
                             <td>
@@ -165,9 +173,6 @@ const EmployeeDirectoryComponent = {
                                 <div class="region-emp-details">
                                     {{ emp.grade }} • {{ emp.branch }}
                                 </div>
-                                <div class="region-emp-nationality">
-                                    <i class="pi pi-flag"></i> {{ emp.nationality }}
-                                </div>
                             </div>
                             <span class="region-emp-status" :class="emp.status"></span>
                         </div>
@@ -182,13 +187,22 @@ const EmployeeDirectoryComponent = {
 
         const currentView = ref('grid');
         const searchQuery = ref('');
+        const selectedEntity = ref(null);
         const selectedGrade = ref(null);
         const selectedLocation = ref(null);
         const selectedDepartment = ref(null);
-        const selectedStatus = ref(null);
+        const selectedSection = ref(null);
+        const selectedUnit = ref(null);
+        const selectedTeam = ref(null);
+
+        // Entity options
+        const entityOptions = ref([
+            { name: 'Direct', value: 'direct' },
+            { name: 'Techtic', value: 'techtic' }
+        ]);
 
         const gradeOptions = ref([
-            { name: 'All Grades', value: 'all' },
+            { name: 'Default', value: 'all' },
             { name: 'Professional', value: 'professional' },
             { name: 'Supervisor', value: 'supervisor' },
             { name: 'Management', value: 'management' },
@@ -202,26 +216,107 @@ const EmployeeDirectoryComponent = {
             { name: 'Pakistan', value: 'pakistan' }
         ]);
 
-        const departmentOptions = ref([
-            { name: 'All Departments', value: 'all' },
-            { name: 'Technology', value: 'Technology' },
-            { name: 'HR', value: 'HR' },
-            { name: 'Marketing', value: 'Marketing' },
-            { name: 'BI', value: 'BI' }
-        ]);
+        // Organization structure from StaticData
+        const departments = ref([...StaticData.departments]);
+        const sections = ref([...StaticData.sections]);
+        const units = ref([...StaticData.units]);
+        const teams = ref([...StaticData.teams]);
 
-        const statusOptions = ref([
-            { name: 'All Status', value: 'all' },
-            { name: 'Online Now', value: 'online' },
-            { name: 'In Office', value: 'in-office' }
-        ]);
+        // Department options for dropdown
+        const departmentOptions = computed(() => {
+            return departments.value.map(d => ({ name: d.name, value: d.id }));
+        });
+
+        // Filtered sections based on selected department
+        const filteredSections = computed(() => {
+            if (!selectedDepartment.value) return [];
+            return sections.value.filter(s => s.departmentId === selectedDepartment.value);
+        });
+
+        // Filtered units based on selected section
+        const filteredUnits = computed(() => {
+            if (!selectedSection.value) return [];
+            return units.value.filter(u => u.sectionId === selectedSection.value);
+        });
+
+        // Filtered teams based on selected unit
+        const filteredTeams = computed(() => {
+            if (!selectedUnit.value) return [];
+            return teams.value.filter(t => t.unitId === selectedUnit.value);
+        });
+
+        // Cascade handlers
+        const onDepartmentChange = () => {
+            selectedSection.value = null;
+            selectedUnit.value = null;
+            selectedTeam.value = null;
+        };
+
+        const onSectionChange = () => {
+            selectedUnit.value = null;
+            selectedTeam.value = null;
+        };
+
+        const onUnitChange = () => {
+            selectedTeam.value = null;
+        };
+
+        // Check if any filters are active
+        const hasActiveFilters = computed(() => {
+            return searchQuery.value || 
+                   selectedEntity.value || 
+                   selectedGrade.value || 
+                   selectedLocation.value || 
+                   selectedDepartment.value || 
+                   selectedSection.value || 
+                   selectedUnit.value || 
+                   selectedTeam.value;
+        });
+
+        // Applied filter values (only update when Apply is clicked)
+        const appliedFilters = ref({
+            searchQuery: '',
+            entity: null,
+            grade: null,
+            location: null,
+            department: null,
+            section: null,
+            unit: null,
+            team: null
+        });
+
+        const applyFilters = () => {
+            appliedFilters.value = {
+                searchQuery: searchQuery.value,
+                entity: selectedEntity.value,
+                grade: selectedGrade.value,
+                location: selectedLocation.value,
+                department: selectedDepartment.value,
+                section: selectedSection.value,
+                unit: selectedUnit.value,
+                team: selectedTeam.value
+            };
+        };
 
         const clearFilters = () => {
             searchQuery.value = '';
+            selectedEntity.value = null;
             selectedGrade.value = null;
             selectedLocation.value = null;
             selectedDepartment.value = null;
-            selectedStatus.value = null;
+            selectedSection.value = null;
+            selectedUnit.value = null;
+            selectedTeam.value = null;
+            appliedFilters.value = {
+                searchQuery: '',
+                entity: null,
+                grade: null,
+                location: null,
+                department: null,
+                section: null,
+                unit: null,
+                team: null
+            };
         };
 
         const employees = ref([
@@ -318,29 +413,30 @@ const EmployeeDirectoryComponent = {
         ]);
 
         const filteredEmployees = computed(() => {
+            const filters = appliedFilters.value;
             return employees.value.filter(emp => {
-                const matchesSearch = searchQuery.value === '' || 
-                    emp.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                    emp.id.includes(searchQuery.value) ||
-                    emp.position.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                    emp.department.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                    emp.nationality.toLowerCase().includes(searchQuery.value.toLowerCase());
+                const matchesSearch = !filters.searchQuery || 
+                    emp.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+                    emp.id.includes(filters.searchQuery) ||
+                    emp.position.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+                    emp.department.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+                    emp.nationality.toLowerCase().includes(filters.searchQuery.toLowerCase());
                 
-                const matchesGrade = !selectedGrade.value || selectedGrade.value === 'all' || 
-                    emp.gradeClass === selectedGrade.value;
+                const matchesGrade = !filters.grade || filters.grade === 'all' || 
+                    emp.gradeClass === filters.grade;
                 
-                const matchesDepartment = !selectedDepartment.value || selectedDepartment.value === 'all' ||
-                    emp.department === selectedDepartment.value;
+                const matchesDepartment = !filters.department ||
+                    departments.value.find(d => d.id === filters.department)?.name === emp.department;
                 
-                const matchesStatus = !selectedStatus.value || selectedStatus.value === 'all' ||
-                    emp.status === selectedStatus.value;
+                const matchesEntity = !filters.entity ||
+                    emp.entity === filters.entity;
                 
-                const matchesLocation = !selectedLocation.value || selectedLocation.value === 'all' ||
-                    (selectedLocation.value === 'saudi' && emp.region === 'Saudi Arabia') ||
-                    (selectedLocation.value === 'egypt' && emp.region === 'Egypt') ||
-                    (selectedLocation.value === 'pakistan' && emp.region === 'Pakistan');
+                const matchesLocation = !filters.location || filters.location === 'all' ||
+                    (filters.location === 'saudi' && emp.region === 'Saudi Arabia') ||
+                    (filters.location === 'egypt' && emp.region === 'Egypt') ||
+                    (filters.location === 'pakistan' && emp.region === 'Pakistan');
                 
-                return matchesSearch && matchesGrade && matchesLocation && matchesDepartment && matchesStatus;
+                return matchesSearch && matchesGrade && matchesLocation && matchesDepartment && matchesEntity;
             });
         });
 
@@ -362,14 +458,25 @@ const EmployeeDirectoryComponent = {
         return {
             currentView,
             searchQuery,
+            selectedEntity,
             selectedGrade,
             selectedLocation,
             selectedDepartment,
-            selectedStatus,
+            selectedSection,
+            selectedUnit,
+            selectedTeam,
+            entityOptions,
             gradeOptions,
             locationOptions,
             departmentOptions,
-            statusOptions,
+            filteredSections,
+            filteredUnits,
+            filteredTeams,
+            hasActiveFilters,
+            onDepartmentChange,
+            onSectionChange,
+            onUnitChange,
+            applyFilters,
             clearFilters,
             employees,
             filteredEmployees,

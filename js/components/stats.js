@@ -3,6 +3,41 @@
  * Comprehensive analytics dashboard with Static & Dynamic insights
  */
 
+// ApexCharts default options for PrimeVue styling
+const apexDefaultOptions = {
+    chart: {
+        fontFamily: 'Inter, sans-serif',
+        toolbar: { show: false },
+        zoom: { enabled: false }
+    },
+    colors: ['#f97316', '#16a34a', '#3b82f6', '#8b5cf6', '#ef4444', '#ec4899'],
+    stroke: { curve: 'smooth', width: 2 },
+    grid: {
+        borderColor: '#e5e7eb',
+        strokeDashArray: 4
+    },
+    xaxis: {
+        labels: { style: { colors: '#6b7280', fontSize: '11px' } },
+        axisBorder: { color: '#e5e7eb' },
+        axisTicks: { color: '#e5e7eb' }
+    },
+    yaxis: {
+        labels: { style: { colors: '#6b7280', fontSize: '11px' } }
+    },
+    legend: {
+        position: 'bottom',
+        fontSize: '12px',
+        fontWeight: 500,
+        labels: { colors: '#374151' },
+        markers: { radius: 3 }
+    },
+    tooltip: {
+        theme: 'light',
+        style: { fontSize: '12px' }
+    },
+    dataLabels: { enabled: false }
+};
+
 // ATTENDANCE STATIC INSIGHTS
 const AttendanceStaticInsights = {
     props: ['dateRange', 'customRangeApplied', 'customRangeDates'],
@@ -216,36 +251,36 @@ const AttendanceStaticInsights = {
     }
 };
 
-// ATTENDANCE DYNAMIC INSIGHTS with real Chart.js
+// ATTENDANCE DYNAMIC INSIGHTS with ApexCharts
 const AttendanceDynamicInsights = {
     template: `
         <div class="dynamic-insights-content">
             <div class="chart-card full-width">
                 <div class="chart-header"><h3>1. Attendance Status</h3></div>
-                <div class="chart-container"><canvas ref="attendanceStatusChart"></canvas></div>
+                <div class="chart-container" ref="attendanceStatusChart"></div>
             </div>
             <div class="chart-card full-width">
                 <div class="chart-header"><h3><i class="pi pi-clock"></i> Total Working Hours Trend</h3></div>
-                <div class="chart-container"><canvas ref="workingHoursChart"></canvas></div>
+                <div class="chart-container" ref="workingHoursChart"></div>
             </div>
             <div class="charts-row">
                 <div class="chart-card">
                     <div class="chart-header"><h3>2. Vacation Status</h3></div>
-                    <div class="chart-container small"><canvas ref="vacationChart"></canvas></div>
+                    <div class="chart-container small" ref="vacationChart"></div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header"><h3>3. Punch Flag</h3></div>
-                    <div class="chart-container small"><canvas ref="punchFlagChart"></canvas></div>
+                    <div class="chart-container small" ref="punchFlagChart"></div>
                 </div>
             </div>
             <div class="charts-row">
                 <div class="chart-card">
                     <div class="chart-header"><h3>4. Violation Analysis</h3></div>
-                    <div class="chart-container small"><canvas ref="violationChart"></canvas></div>
+                    <div class="chart-container small" ref="violationChart"></div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header"><h3>5. Performance Rates (%)</h3></div>
-                    <div class="chart-container small"><canvas ref="performanceChart"></canvas></div>
+                    <div class="chart-container small" ref="performanceChart"></div>
                 </div>
             </div>
         </div>
@@ -264,84 +299,95 @@ const AttendanceDynamicInsights = {
 
         const initCharts = () => {
             if (attendanceStatusChart.value) {
-                charts.push(new Chart(attendanceStatusChart.value.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            { label: 'Present', data: [380, 390, 395, 400, 405, 410, 415, 420, 425, 430, 435, 440], borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.4 },
-                            { label: 'Absent', data: [20, 18, 15, 12, 10, 8, 6, 5, 4, 3, 2, 2], borderColor: '#ef4444', backgroundColor: 'transparent', tension: 0.4 },
-                            { label: 'Business Trip', data: [5, 8, 10, 12, 15, 18, 20, 22, 18, 15, 12, 10], borderColor: '#3b82f6', backgroundColor: 'transparent', tension: 0.4 },
-                            { label: 'WFH', data: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65], borderColor: '#8b5cf6', backgroundColor: 'transparent', tension: 0.4 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
-                }));
+                const chart1 = new ApexCharts(attendanceStatusChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'area', height: 320 },
+                    colors: ['#16a34a', '#ef4444', '#3b82f6', '#8b5cf6'],
+                    series: [
+                        { name: 'Present', data: [380, 390, 395, 400, 405, 410, 415, 420, 425, 430, 435, 440] },
+                        { name: 'Absent', data: [20, 18, 15, 12, 10, 8, 6, 5, 4, 3, 2, 2] },
+                        { name: 'Business Trip', data: [5, 8, 10, 12, 15, 18, 20, 22, 18, 15, 12, 10] },
+                        { name: 'WFH', data: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } }
+                });
+                chart1.render();
+                charts.push(chart1);
             }
             if (workingHoursChart.value) {
-                charts.push(new Chart(workingHoursChart.value.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: months,
-                        datasets: [{ label: 'Working Hours', data: [72000, 75000, 78000, 80000, 82000, 85000, 88000, 90000, 87000, 85000, 83000, 80000], backgroundColor: 'rgba(249,115,22,0.7)', borderRadius: 6 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-                }));
+                const chart2 = new ApexCharts(workingHoursChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'bar', height: 320 },
+                    colors: ['#f97316'],
+                    series: [{ name: 'Working Hours', data: [72000, 75000, 78000, 80000, 82000, 85000, 88000, 90000, 87000, 85000, 83000, 80000] }],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } },
+                    legend: { show: false }
+                });
+                chart2.render();
+                charts.push(chart2);
             }
             if (vacationChart.value) {
-                charts.push(new Chart(vacationChart.value.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            { label: 'Annual Vacation', data: [45, 50, 55, 60, 80, 120, 150, 100, 70, 55, 50, 45], borderColor: '#f97316', tension: 0.4 },
-                            { label: 'Others', data: [5, 8, 10, 12, 15, 20, 25, 18, 12, 8, 6, 5], borderColor: '#8b5cf6', tension: 0.4 },
-                            { label: 'Day Off', data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100], borderColor: '#9ca3af', tension: 0.4 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-                }));
+                const chart3 = new ApexCharts(vacationChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 },
+                    colors: ['#f97316', '#8b5cf6', '#9ca3af'],
+                    series: [
+                        { name: 'Annual Vacation', data: [45, 50, 55, 60, 80, 120, 150, 100, 70, 55, 50, 45] },
+                        { name: 'Others', data: [5, 8, 10, 12, 15, 20, 25, 18, 12, 8, 6, 5] },
+                        { name: 'Day Off', data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months }
+                });
+                chart3.render();
+                charts.push(chart3);
             }
             if (punchFlagChart.value) {
-                charts.push(new Chart(punchFlagChart.value.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            { label: 'Missing Clock In', data: [25, 22, 20, 18, 15, 12, 10, 8, 6, 5, 4, 3], borderColor: '#ef4444', tension: 0.4 },
-                            { label: 'Missing Clock Out', data: [30, 28, 25, 22, 20, 18, 15, 12, 10, 8, 6, 5], borderColor: '#f97316', tension: 0.4 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-                }));
+                const chart4 = new ApexCharts(punchFlagChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 },
+                    colors: ['#ef4444', '#f97316'],
+                    series: [
+                        { name: 'Missing Clock In', data: [25, 22, 20, 18, 15, 12, 10, 8, 6, 5, 4, 3] },
+                        { name: 'Missing Clock Out', data: [30, 28, 25, 22, 20, 18, 15, 12, 10, 8, 6, 5] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months }
+                });
+                chart4.render();
+                charts.push(chart4);
             }
             if (violationChart.value) {
-                charts.push(new Chart(violationChart.value.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            { label: 'Late In', data: [80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25], backgroundColor: '#f97316' },
-                            { label: 'Early Out', data: [40, 38, 35, 32, 30, 28, 25, 22, 20, 18, 15, 12], backgroundColor: '#ef4444' },
-                            { label: 'Less Effort', data: [20, 18, 16, 14, 12, 10, 8, 6, 5, 4, 3, 2], backgroundColor: '#8b5cf6' }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true } } }
-                }));
+                const chart5 = new ApexCharts(violationChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true },
+                    colors: ['#f97316', '#ef4444', '#8b5cf6'],
+                    series: [
+                        { name: 'Late In', data: [80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25] },
+                        { name: 'Early Out', data: [40, 38, 35, 32, 30, 28, 25, 22, 20, 18, 15, 12] },
+                        { name: 'Less Effort', data: [20, 18, 16, 14, 12, 10, 8, 6, 5, 4, 3, 2] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } }
+                });
+                chart5.render();
+                charts.push(chart5);
             }
             if (performanceChart.value) {
-                charts.push(new Chart(performanceChart.value.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            { label: 'Attendance Rate', data: [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96], borderColor: '#16a34a', tension: 0.4 },
-                            { label: 'Absent Rate', data: [5, 4.5, 4, 3.5, 3, 2.5, 2, 1.8, 1.5, 1.2, 1, 0.8], borderColor: '#ef4444', tension: 0.4 },
-                            { label: 'Violation Rate', data: [12, 11, 10, 9, 8, 7, 6, 5.5, 5, 4.5, 4, 3.5], borderColor: '#f97316', tension: 0.4 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { max: 100 } } }
-                }));
+                const chart6 = new ApexCharts(performanceChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 },
+                    colors: ['#16a34a', '#ef4444', '#f97316'],
+                    series: [
+                        { name: 'Attendance Rate', data: [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96] },
+                        { name: 'Absent Rate', data: [5, 4.5, 4, 3.5, 3, 2.5, 2, 1.8, 1.5, 1.2, 1, 0.8] },
+                        { name: 'Violation Rate', data: [12, 11, 10, 9, 8, 7, 6, 5.5, 5, 4.5, 4, 3.5] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    yaxis: { ...apexDefaultOptions.yaxis, max: 100 }
+                });
+                chart6.render();
+                charts.push(chart6);
             }
         };
 
@@ -390,32 +436,32 @@ const PayrollStaticInsights = {
     }
 };
 
-// PAYROLL DYNAMIC INSIGHTS with Chart.js
+// PAYROLL DYNAMIC INSIGHTS with ApexCharts
 const PayrollDynamicInsights = {
     template: `
         <div class="dynamic-insights-content">
             <div class="chart-card full-width">
                 <div class="chart-header"><h3><i class="pi pi-dollar"></i> 1. Total Net Pay vs Commissions</h3></div>
-                <div class="chart-container"><canvas ref="netPayChart"></canvas></div>
+                <div class="chart-container" ref="netPayChart"></div>
             </div>
             <div class="charts-row">
                 <div class="chart-card">
                     <div class="chart-header"><h3><i class="pi pi-chart-bar"></i> 2. Deduction Analysis</h3></div>
-                    <div class="chart-container small"><canvas ref="deductionChart"></canvas></div>
+                    <div class="chart-container small" ref="deductionChart"></div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header"><h3><i class="pi pi-money-bill"></i> 3. Total Arrears Ded.</h3></div>
-                    <div class="chart-container small"><canvas ref="arrearsChart"></canvas></div>
+                    <div class="chart-container small" ref="arrearsChart"></div>
                 </div>
             </div>
             <div class="charts-row">
                 <div class="chart-card">
                     <div class="chart-header"><h3><i class="pi pi-users"></i> 4. Headcount Growth</h3></div>
-                    <div class="chart-container small"><canvas ref="headcountChart"></canvas></div>
+                    <div class="chart-container small" ref="headcountChart"></div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header"><h3><i class="pi pi-building"></i> 5. Company GOSI Contribution</h3></div>
-                    <div class="chart-container small"><canvas ref="gosiChart"></canvas></div>
+                    <div class="chart-container small" ref="gosiChart"></div>
                 </div>
             </div>
         </div>
@@ -432,52 +478,74 @@ const PayrollDynamicInsights = {
 
         const initCharts = () => {
             if (netPayChart.value) {
-                charts.push(new Chart(netPayChart.value.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            { label: 'Total Net Pay', data: [2100000, 2150000, 2180000, 2200000, 2220000, 2250000, 2280000, 2300000, 2320000, 2350000, 2380000, 2400000], borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.4 },
-                            { label: 'Total Commissions', data: [45000, 48000, 52000, 55000, 58000, 62000, 65000, 68000, 70000, 72000, 75000, 78000], borderColor: '#f97316', tension: 0.4 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-                }));
+                const chart1 = new ApexCharts(netPayChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'area', height: 320 },
+                    colors: ['#16a34a', '#f97316'],
+                    series: [
+                        { name: 'Total Net Pay', data: [2100000, 2150000, 2180000, 2200000, 2220000, 2250000, 2280000, 2300000, 2320000, 2350000, 2380000, 2400000] },
+                        { name: 'Total Commissions', data: [45000, 48000, 52000, 55000, 58000, 62000, 65000, 68000, 70000, 72000, 75000, 78000] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } }
+                });
+                chart1.render();
+                charts.push(chart1);
             }
             if (deductionChart.value) {
-                charts.push(new Chart(deductionChart.value.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            { label: 'Absent Adj.', data: [5000, 4800, 4500, 4200, 4000, 3800, 3500, 3200, 3000, 2800, 2500, 2200], backgroundColor: '#3b82f6' },
-                            { label: 'Attendance & Punch', data: [8000, 7500, 7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2500], backgroundColor: '#f97316' },
-                            { label: 'Others', data: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000, 800], backgroundColor: '#9ca3af' }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true } } }
-                }));
+                const chart2 = new ApexCharts(deductionChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true },
+                    colors: ['#3b82f6', '#f97316', '#9ca3af'],
+                    series: [
+                        { name: 'Absent Adj.', data: [5000, 4800, 4500, 4200, 4000, 3800, 3500, 3200, 3000, 2800, 2500, 2200] },
+                        { name: 'Attendance & Punch', data: [8000, 7500, 7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2500] },
+                        { name: 'Others', data: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000, 800] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } }
+                });
+                chart2.render();
+                charts.push(chart2);
             }
             if (arrearsChart.value) {
-                charts.push(new Chart(arrearsChart.value.getContext('2d'), {
-                    type: 'line',
-                    data: { labels: months, datasets: [{ label: 'Arrears Ded.', data: [52000, 48000, 45000, 42000, 40000, 38000, 35000, 32000, 30000, 28000, 25000, 22000], borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.1)', fill: true, tension: 0.4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                }));
+                const chart3 = new ApexCharts(arrearsChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 },
+                    colors: ['#f97316'],
+                    series: [{ name: 'Arrears Ded.', data: [52000, 48000, 45000, 42000, 40000, 38000, 35000, 32000, 30000, 28000, 25000, 22000] }],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    legend: { show: false },
+                    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } }
+                });
+                chart3.render();
+                charts.push(chart3);
             }
             if (headcountChart.value) {
-                charts.push(new Chart(headcountChart.value.getContext('2d'), {
-                    type: 'bar',
-                    data: { labels: months, datasets: [{ label: 'Headcount', data: [350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 405], backgroundColor: '#3b82f6', borderRadius: 6 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                }));
+                const chart4 = new ApexCharts(headcountChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 },
+                    colors: ['#3b82f6'],
+                    series: [{ name: 'Headcount', data: [350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 405] }],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } },
+                    legend: { show: false }
+                });
+                chart4.render();
+                charts.push(chart4);
             }
             if (gosiChart.value) {
-                charts.push(new Chart(gosiChart.value.getContext('2d'), {
-                    type: 'line',
-                    data: { labels: months, datasets: [{ label: 'GOSI', data: [120000, 122000, 125000, 128000, 130000, 132000, 135000, 138000, 140000, 142000, 145000, 148000], borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                }));
+                const chart5 = new ApexCharts(gosiChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 },
+                    colors: ['#16a34a'],
+                    series: [{ name: 'GOSI', data: [120000, 122000, 125000, 128000, 130000, 132000, 135000, 138000, 140000, 142000, 145000, 148000] }],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    legend: { show: false },
+                    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } }
+                });
+                chart5.render();
+                charts.push(chart5);
             }
         };
 
@@ -520,20 +588,20 @@ const RequestsStaticInsights = {
     }
 };
 
-// REQUESTS DYNAMIC INSIGHTS with Chart.js
+// REQUESTS DYNAMIC INSIGHTS with ApexCharts
 const RequestsDynamicInsights = {
     template: `
         <div class="dynamic-insights-content">
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> 1. Total Requests Volume</h3></div><div class="chart-container small"><canvas ref="volumeChart"></canvas></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-calendar"></i> 2. Total Leaves Trend</h3></div><div class="chart-container small"><canvas ref="leavesChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> 1. Total Requests Volume</h3></div><div class="chart-container small" ref="volumeChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-calendar"></i> 2. Total Leaves Trend</h3></div><div class="chart-container small" ref="leavesChart"></div></div>
             </div>
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-check-circle"></i> 3. Approved vs Rejected</h3></div><div class="chart-container small"><canvas ref="approvalChart"></canvas></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-clock"></i> 4. SLA in Days</h3></div><div class="chart-container small"><canvas ref="slaChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-check-circle"></i> 3. Approved vs Rejected</h3></div><div class="chart-container small" ref="approvalChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-clock"></i> 4. SLA in Days</h3></div><div class="chart-container small" ref="slaChart"></div></div>
             </div>
-            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> 5. Monthly Request Type Breakdown</h3></div><div class="chart-container"><canvas ref="breakdownChart"></canvas></div></div>
-            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-history"></i> 6. Monthly Request Status Lifecycle</h3></div><div class="chart-container"><canvas ref="lifecycleChart"></canvas></div></div>
+            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> 5. Monthly Request Type Breakdown</h3></div><div class="chart-container" ref="breakdownChart"></div></div>
+            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-history"></i> 6. Monthly Request Status Lifecycle</h3></div><div class="chart-container" ref="lifecycleChart"></div></div>
         </div>
     `,
     setup() {
@@ -544,12 +612,30 @@ const RequestsDynamicInsights = {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         const initCharts = () => {
-            if (volumeChart.value) { charts.push(new Chart(volumeChart.value.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Requests', data: [320, 350, 380, 420, 450, 480, 520, 550, 500, 480, 450, 420], backgroundColor: '#f97316', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (leavesChart.value) { charts.push(new Chart(leavesChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Leaves', data: [120, 140, 160, 180, 220, 280, 320, 250, 200, 180, 160, 140], borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (approvalChart.value) { charts.push(new Chart(approvalChart.value.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Approved', data: [280, 310, 340, 380, 410, 440, 480, 510, 460, 440, 410, 380], backgroundColor: '#16a34a' }, { label: 'Rejected', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40], backgroundColor: '#ef4444' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } })); }
-            if (slaChart.value) { charts.push(new Chart(slaChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'SLA Days', data: [2.5, 2.3, 2.1, 1.9, 1.7, 1.5, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8], borderColor: '#3b82f6', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (breakdownChart.value) { charts.push(new Chart(breakdownChart.value.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Attendance Adj.', data: [80, 90, 100, 110, 120, 130, 140, 150, 140, 130, 120, 110], backgroundColor: '#8b5cf6' }, { label: 'Business Trip', data: [30, 35, 40, 45, 50, 55, 60, 65, 60, 55, 50, 45], backgroundColor: '#f97316' }, { label: 'Leaves', data: [120, 140, 160, 180, 220, 280, 320, 250, 200, 180, 160, 140], backgroundColor: '#ef4444' }, { label: 'Letters', data: [50, 55, 60, 65, 70, 75, 80, 85, 80, 75, 70, 65], backgroundColor: '#16a34a' }, { label: 'Others', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40], backgroundColor: '#3b82f6' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true } } } })); }
-            if (lifecycleChart.value) { charts.push(new Chart(lifecycleChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Approved', data: [280, 310, 340, 380, 410, 440, 480, 510, 460, 440, 410, 380], borderColor: '#16a34a', tension: 0.4 }, { label: 'In Review', data: [20, 25, 30, 35, 40, 45, 50, 55, 50, 45, 40, 35], borderColor: '#8b5cf6', tension: 0.4 }, { label: 'Pending', data: [20, 15, 20, 25, 30, 35, 40, 35, 30, 25, 20, 15], borderColor: '#f97316', tension: 0.4 }, { label: 'Rejected', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40], borderColor: '#ef4444', tension: 0.4 }, { label: 'Total', data: [320, 350, 380, 420, 450, 480, 520, 550, 500, 480, 450, 420], borderColor: '#3b82f6', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } })); }
+            if (volumeChart.value) {
+                const c1 = new ApexCharts(volumeChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#f97316'], series: [{ name: 'Requests', data: [320, 350, 380, 420, 450, 480, 520, 550, 500, 480, 450, 420] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } }, legend: { show: false } });
+                c1.render(); charts.push(c1);
+            }
+            if (leavesChart.value) {
+                const c2 = new ApexCharts(leavesChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#16a34a'], series: [{ name: 'Leaves', data: [120, 140, 160, 180, 220, 280, 320, 250, 200, 180, 160, 140] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c2.render(); charts.push(c2);
+            }
+            if (approvalChart.value) {
+                const c3 = new ApexCharts(approvalChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#16a34a', '#ef4444'], series: [{ name: 'Approved', data: [280, 310, 340, 380, 410, 440, 480, 510, 460, 440, 410, 380] }, { name: 'Rejected', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                c3.render(); charts.push(c3);
+            }
+            if (slaChart.value) {
+                const c4 = new ApexCharts(slaChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#3b82f6'], series: [{ name: 'SLA Days', data: [2.5, 2.3, 2.1, 1.9, 1.7, 1.5, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false } });
+                c4.render(); charts.push(c4);
+            }
+            if (breakdownChart.value) {
+                const c5 = new ApexCharts(breakdownChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 320, stacked: true }, colors: ['#8b5cf6', '#f97316', '#ef4444', '#16a34a', '#3b82f6'], series: [{ name: 'Attendance Adj.', data: [80, 90, 100, 110, 120, 130, 140, 150, 140, 130, 120, 110] }, { name: 'Business Trip', data: [30, 35, 40, 45, 50, 55, 60, 65, 60, 55, 50, 45] }, { name: 'Leaves', data: [120, 140, 160, 180, 220, 280, 320, 250, 200, 180, 160, 140] }, { name: 'Letters', data: [50, 55, 60, 65, 70, 75, 80, 85, 80, 75, 70, 65] }, { name: 'Others', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                c5.render(); charts.push(c5);
+            }
+            if (lifecycleChart.value) {
+                const c6 = new ApexCharts(lifecycleChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 320 }, colors: ['#16a34a', '#8b5cf6', '#f97316', '#ef4444', '#3b82f6'], series: [{ name: 'Approved', data: [280, 310, 340, 380, 410, 440, 480, 510, 460, 440, 410, 380] }, { name: 'In Review', data: [20, 25, 30, 35, 40, 45, 50, 55, 50, 45, 40, 35] }, { name: 'Pending', data: [20, 15, 20, 25, 30, 35, 40, 35, 30, 25, 20, 15] }, { name: 'Rejected', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40] }, { name: 'Total', data: [320, 350, 380, 420, 450, 480, 520, 550, 500, 480, 450, 420] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months } });
+                c6.render(); charts.push(c6);
+            }
         };
 
         onMounted(() => { setTimeout(initCharts, 100); });
@@ -599,13 +685,13 @@ const DemographyStaticInsights = {
     }
 };
 
-// DEMOGRAPHY DYNAMIC INSIGHTS with Chart.js
+// DEMOGRAPHY DYNAMIC INSIGHTS with ApexCharts
 const DemographyDynamicInsights = {
     template: `
         <div class="dynamic-insights-content">
-            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-line"></i> Headcount Growth Trend</h3></div><div class="chart-container"><canvas ref="headcountChart"></canvas></div></div>
+            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-line"></i> Headcount Growth Trend</h3></div><div class="chart-container" ref="headcountChart"></div></div>
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-users"></i> New Hires vs Terminations</h3></div><div class="chart-container small"><canvas ref="hiresChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-users"></i> New Hires vs Terminations</h3></div><div class="chart-container small" ref="hiresChart"></div></div>
                 <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-percentage"></i> Retention Rate Analysis</h3></div><div class="retention-chart"><div class="retention-value">94.2%</div><div class="retention-label">AVERAGE ANNUAL RETENTION</div></div></div>
             </div>
         </div>
@@ -617,8 +703,14 @@ const DemographyDynamicInsights = {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
 
         const initCharts = () => {
-            if (headcountChart.value) { charts.push(new Chart(headcountChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Headcount', data: [420, 425, 430, 435, 440, 445, 450], borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (hiresChart.value) { charts.push(new Chart(hiresChart.value.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Hires', data: [12, 15, 10, 8, 14, 18, 12], backgroundColor: '#16a34a' }, { label: 'Terminations', data: [5, 3, 4, 2, 6, 4, 3], backgroundColor: '#ef4444' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } })); }
+            if (headcountChart.value) {
+                const c1 = new ApexCharts(headcountChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 320 }, colors: ['#f97316'], series: [{ name: 'Headcount', data: [420, 425, 430, 435, 440, 445, 450] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c1.render(); charts.push(c1);
+            }
+            if (hiresChart.value) {
+                const c2 = new ApexCharts(hiresChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#16a34a', '#ef4444'], series: [{ name: 'Hires', data: [12, 15, 10, 8, 14, 18, 12] }, { name: 'Terminations', data: [5, 3, 4, 2, 6, 4, 3] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                c2.render(); charts.push(c2);
+            }
         };
 
         onMounted(() => { setTimeout(initCharts, 100); });
@@ -656,17 +748,17 @@ const HrdeskStaticInsights = {
     }
 };
 
-// HR DESK DYNAMIC INSIGHTS with Chart.js
+// HR DESK DYNAMIC INSIGHTS with ApexCharts
 const HrdeskDynamicInsights = {
     template: `
         <div class="dynamic-insights-content">
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> Monthly Lifecycle Trends</h3></div><div class="chart-container small"><canvas ref="lifecycleChart"></canvas></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-sync"></i> Admin & Attendance Volume</h3></div><div class="chart-container small"><canvas ref="adminChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> Monthly Lifecycle Trends</h3></div><div class="chart-container small" ref="lifecycleChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-sync"></i> Admin & Attendance Volume</h3></div><div class="chart-container small" ref="adminChart"></div></div>
             </div>
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-dollar"></i> Salary & Benefits Trend</h3></div><div class="chart-container small"><canvas ref="salaryChart"></canvas></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-exclamation-triangle"></i> Disciplinary Warnings</h3></div><div class="chart-container small"><canvas ref="disciplinaryChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-dollar"></i> Salary & Benefits Trend</h3></div><div class="chart-container small" ref="salaryChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-exclamation-triangle"></i> Disciplinary Warnings</h3></div><div class="chart-container small" ref="disciplinaryChart"></div></div>
             </div>
         </div>
     `,
@@ -677,10 +769,22 @@ const HrdeskDynamicInsights = {
         const months = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
 
         const initCharts = () => {
-            if (lifecycleChart.value) { charts.push(new Chart(lifecycleChart.value.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Job Titles', data: [12, 15, 18, 22, 18, 14], backgroundColor: '#16a34a' }, { label: 'Promotions', data: [8, 10, 12, 15, 12, 9], backgroundColor: '#f97316' }, { label: 'Transfers', data: [3, 5, 6, 8, 6, 4], backgroundColor: '#ef4444' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true } } } })); }
-            if (adminChart.value) { charts.push(new Chart(adminChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Attendance Adj.', data: [55, 62, 70, 85, 78, 66], borderColor: '#3b82f6', tension: 0.4 }, { label: 'Document Updates', data: [30, 35, 40, 45, 38, 32], borderColor: '#f97316', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } })); }
-            if (salaryChart.value) { charts.push(new Chart(salaryChart.value.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Salary Changes', data: [18, 22, 28, 32, 25, 20], backgroundColor: '#f97316', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (disciplinaryChart.value) { charts.push(new Chart(disciplinaryChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Warnings', data: [2, 3, 4, 5, 4, 3], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
+            if (lifecycleChart.value) {
+                const c1 = new ApexCharts(lifecycleChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true }, colors: ['#16a34a', '#f97316', '#ef4444'], series: [{ name: 'Job Titles', data: [12, 15, 18, 22, 18, 14] }, { name: 'Promotions', data: [8, 10, 12, 15, 12, 9] }, { name: 'Transfers', data: [3, 5, 6, 8, 6, 4] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                c1.render(); charts.push(c1);
+            }
+            if (adminChart.value) {
+                const c2 = new ApexCharts(adminChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#3b82f6', '#f97316'], series: [{ name: 'Attendance Adj.', data: [55, 62, 70, 85, 78, 66] }, { name: 'Document Updates', data: [30, 35, 40, 45, 38, 32] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months } });
+                c2.render(); charts.push(c2);
+            }
+            if (salaryChart.value) {
+                const c3 = new ApexCharts(salaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#f97316'], series: [{ name: 'Salary Changes', data: [18, 22, 28, 32, 25, 20] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } }, legend: { show: false } });
+                c3.render(); charts.push(c3);
+            }
+            if (disciplinaryChart.value) {
+                const c4 = new ApexCharts(disciplinaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#ef4444'], series: [{ name: 'Warnings', data: [2, 3, 4, 5, 4, 3] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c4.render(); charts.push(c4);
+            }
         };
 
         onMounted(() => { setTimeout(initCharts, 100); });
@@ -704,23 +808,23 @@ const DirectoryStaticInsights = {
     `
 };
 
-// DIRECTORY DYNAMIC INSIGHTS with Chart.js
+// DIRECTORY DYNAMIC INSIGHTS with ApexCharts
 const DirectoryDynamicInsights = {
     template: `
         <div class="dynamic-insights-content">
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-clock"></i> SLA Onboarding in days</h3></div><div class="chart-container small"><canvas ref="slaChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-clock"></i> SLA Onboarding in days</h3></div><div class="chart-container small" ref="slaChart"></div></div>
                 <div class="chart-card feeling-card"><div class="chart-header"><h3>How are you feeling?</h3></div><div class="feeling-stats"><div class="feeling-item"><span class="emoji">😊</span><span class="feeling-label">Great</span><span class="feeling-count">245 ENTRIES</span></div><div class="feeling-item"><span class="emoji">😐</span><span class="feeling-label">Okay</span><span class="feeling-count">158 ENTRIES</span></div><div class="feeling-item"><span class="emoji">😴</span><span class="feeling-label">Tired</span><span class="feeling-count">86 ENTRIES</span></div><div class="feeling-item"><span class="emoji">😟</span><span class="feeling-label">Struggling</span><span class="feeling-count">32 ENTRIES</span></div></div></div>
             </div>
-            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> Feeling Insights</h3></div><div class="chart-container"><canvas ref="feelingChart"></canvas></div></div>
+            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> Feeling Insights</h3></div><div class="chart-container" ref="feelingChart"></div></div>
             <div class="section-title" style="margin-top: 2rem;"><i class="pi pi-heart"></i> SOCIAL ENGAGEMENT INSIGHTS (MONTHLY)</div>
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-heart"></i> Avg. Likes per HR Post</h3></div><div class="chart-container small"><canvas ref="hrLikesChart"></canvas></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-comment"></i> Avg. Comments per HR Post</h3></div><div class="chart-container small"><canvas ref="hrCommentsChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-heart"></i> Avg. Likes per HR Post</h3></div><div class="chart-container small" ref="hrLikesChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-comment"></i> Avg. Comments per HR Post</h3></div><div class="chart-container small" ref="hrCommentsChart"></div></div>
             </div>
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-heart"></i> Avg. Likes per BD Post</h3></div><div class="chart-container small"><canvas ref="bdLikesChart"></canvas></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-comment"></i> Avg. Comments per BD Post</h3></div><div class="chart-container small"><canvas ref="bdCommentsChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-heart"></i> Avg. Likes per BD Post</h3></div><div class="chart-container small" ref="bdLikesChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-comment"></i> Avg. Comments per BD Post</h3></div><div class="chart-container small" ref="bdCommentsChart"></div></div>
             </div>
         </div>
     `,
@@ -733,12 +837,30 @@ const DirectoryDynamicInsights = {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
 
         const initCharts = () => {
-            if (slaChart.value) { charts.push(new Chart(slaChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'SLA Days', data: [5, 4.5, 4, 3.5, 3, 2.8, 2.5], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (feelingChart.value) { charts.push(new Chart(feelingChart.value.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Great', data: [180, 190, 200, 220, 230, 240, 245], backgroundColor: '#16a34a' }, { label: 'Okay', data: [140, 145, 150, 155, 156, 158, 158], backgroundColor: '#3b82f6' }, { label: 'Tired', data: [70, 75, 80, 82, 84, 85, 86], backgroundColor: '#f97316' }, { label: 'Struggling', data: [25, 28, 30, 30, 31, 31, 32], backgroundColor: '#8b5cf6' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true } } } })); }
-            if (hrLikesChart.value) { charts.push(new Chart(hrLikesChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Likes', data: [45, 52, 58, 65, 72, 78, 85], borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (hrCommentsChart.value) { charts.push(new Chart(hrCommentsChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Comments', data: [12, 15, 18, 22, 25, 28, 32], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (bdLikesChart.value) { charts.push(new Chart(bdLikesChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Likes', data: [30, 35, 40, 42, 45, 48, 50], borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
-            if (bdCommentsChart.value) { charts.push(new Chart(bdCommentsChart.value.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Comments', data: [8, 10, 12, 14, 16, 18, 20], borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } })); }
+            if (slaChart.value) {
+                const c1 = new ApexCharts(slaChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#3b82f6'], series: [{ name: 'SLA Days', data: [5, 4.5, 4, 3.5, 3, 2.8, 2.5] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c1.render(); charts.push(c1);
+            }
+            if (feelingChart.value) {
+                const c2 = new ApexCharts(feelingChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 320, stacked: true }, colors: ['#16a34a', '#3b82f6', '#f97316', '#8b5cf6'], series: [{ name: 'Great', data: [180, 190, 200, 220, 230, 240, 245] }, { name: 'Okay', data: [140, 145, 150, 155, 156, 158, 158] }, { name: 'Tired', data: [70, 75, 80, 82, 84, 85, 86] }, { name: 'Struggling', data: [25, 28, 30, 30, 31, 31, 32] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                c2.render(); charts.push(c2);
+            }
+            if (hrLikesChart.value) {
+                const c3 = new ApexCharts(hrLikesChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#f97316'], series: [{ name: 'Likes', data: [45, 52, 58, 65, 72, 78, 85] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c3.render(); charts.push(c3);
+            }
+            if (hrCommentsChart.value) {
+                const c4 = new ApexCharts(hrCommentsChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#3b82f6'], series: [{ name: 'Comments', data: [12, 15, 18, 22, 25, 28, 32] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c4.render(); charts.push(c4);
+            }
+            if (bdLikesChart.value) {
+                const c5 = new ApexCharts(bdLikesChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#16a34a'], series: [{ name: 'Likes', data: [30, 35, 40, 42, 45, 48, 50] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c5.render(); charts.push(c5);
+            }
+            if (bdCommentsChart.value) {
+                const c6 = new ApexCharts(bdCommentsChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#8b5cf6'], series: [{ name: 'Comments', data: [8, 10, 12, 14, 16, 18, 20] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                c6.render(); charts.push(c6);
+            }
         };
 
         onMounted(() => { setTimeout(initCharts, 100); });

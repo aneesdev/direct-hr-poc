@@ -6,225 +6,19 @@
 const PayrollComponent = {
     template: `
         <div class="payroll-module">
-            <!-- Main View Toggle -->
-            <div class="payroll-view-toggle" v-if="!selectedCycle">
-                <div class="toggle-tabs">
-                    <button class="toggle-tab" :class="{ active: activeView === 'tracking' }" @click="activeView = 'tracking'">
-                        <i class="pi pi-list"></i> Payroll Tracking
-                    </button>
-                    <button class="toggle-tab" :class="{ active: activeView === 'stats' }" @click="activeView = 'stats'">
-                        <i class="pi pi-chart-bar"></i> Strategic Comparison
-                    </button>
-                </div>
-            </div>
-
-            <!-- Strategic Comparison Dashboard -->
-            <div v-if="activeView === 'stats' && !selectedCycle" class="strategic-dashboard">
-                <div class="dashboard-header">
-                    <div>
-                        <h2 class="dashboard-title">STRATEGIC COMPARISON</h2>
-                        <p class="dashboard-subtitle">Analyzing performance: <span class="highlight-primary">JANUARY 2025</span> vs <span class="highlight-secondary">MAY 2025</span></p>
-                    </div>
-                    <div class="dashboard-actions">
-                        <div class="period-toggle">
-                            <span class="period-label active">JAN</span>
-                            <span class="period-label">MAY</span>
-                        </div>
-                        <span class="audit-badge"><i class="pi pi-verified"></i> AUDIT VERIFIED</span>
-                    </div>
-                </div>
-
-                <!-- Comparison Stats Cards -->
-                <div class="comparison-stats-grid">
-                    <div class="comparison-stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">TOTAL NET DISBURSEMENT</span>
-                        </div>
-                        <div class="stat-comparison">
-                            <div class="stat-period">
-                                <span class="period-tag jan">JAN 25</span>
-                                <span class="period-value small">{{ formatCurrency(stats.jan2025.totalNetDisbursement) }}</span>
-                            </div>
-                            <div class="stat-period main">
-                                <span class="period-tag may">MAY 25</span>
-                                <span class="period-value large">{{ formatCurrency(stats.may2025.totalNetDisbursement) }} <span class="currency">SAR</span></span>
-                            </div>
-                        </div>
-                        <div class="stat-change negative">
-                            <i class="pi pi-arrow-down"></i> 23.5%
-                            <span class="change-label">FINAL EMPLOYEE PAYOUTS</span>
-                        </div>
-                    </div>
-
-                    <div class="comparison-stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">TOTAL GROSS LIABILITY</span>
-                        </div>
-                        <div class="stat-comparison">
-                            <div class="stat-period">
-                                <span class="period-tag jan">JAN 25</span>
-                                <span class="period-value small">{{ formatCurrency(stats.jan2025.totalGrossLiability) }}</span>
-                            </div>
-                            <div class="stat-period main">
-                                <span class="period-tag may">MAY 25</span>
-                                <span class="period-value large">{{ formatCurrency(stats.may2025.totalGrossLiability) }} <span class="currency">SAR</span></span>
-                            </div>
-                        </div>
-                        <div class="stat-change negative">
-                            <i class="pi pi-arrow-down"></i> 24.1%
-                            <span class="change-label">TOTAL COMPANY COST</span>
-                        </div>
-                    </div>
-
-                    <div class="comparison-stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">GLOBAL HEADCOUNT</span>
-                        </div>
-                        <div class="stat-comparison">
-                            <div class="stat-period">
-                                <span class="period-tag jan">JAN 25</span>
-                                <span class="period-value small">{{ stats.jan2025.globalHeadcount }}</span>
-                            </div>
-                            <div class="stat-period main">
-                                <span class="period-tag may">MAY 25</span>
-                                <span class="period-value large">{{ stats.may2025.globalHeadcount }} <span class="currency">EMP</span></span>
-                            </div>
-                        </div>
-                        <div class="stat-change negative">
-                            <i class="pi pi-arrow-down"></i> 34.5%
-                            <span class="change-label">ACTIVE STAFF IN CYCLE</span>
-                        </div>
-                    </div>
-
-                    <div class="comparison-stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">TOTAL COMMISSIONS</span>
-                        </div>
-                        <div class="stat-comparison">
-                            <div class="stat-period">
-                                <span class="period-tag jan">JAN 25</span>
-                                <span class="period-value small">{{ formatCurrency(stats.jan2025.totalCommissions) }}</span>
-                            </div>
-                            <div class="stat-period main">
-                                <span class="period-tag may">MAY 25</span>
-                                <span class="period-value large">{{ formatCurrency(stats.may2025.totalCommissions) }} <span class="currency">SAR</span></span>
-                            </div>
-                        </div>
-                        <div class="stat-change negative">
-                            <i class="pi pi-arrow-down"></i> 30.0%
-                            <span class="change-label">VARIABLE PERFORMANCE PAY</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Charts Section -->
-                <div class="charts-grid">
-                    <!-- Allocation Audit Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3>ALLOCATION AUDIT (MAY 2025)</h3>
-                            <p>Regional snapshot for May closed cycle</p>
-                        </div>
-                        <div class="chart-body">
-                            <div class="bar-chart">
-                                <div class="bar-item" v-for="dept in departmentAllocation" :key="dept.name">
-                                    <div class="bar-label">{{ dept.name }}</div>
-                                    <div class="bar-container">
-                                        <div class="bar-fill" :style="{ width: dept.value + '%', background: 'var(--primary-color)' }"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Regional Split Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3>REGIONAL SPLIT (MAY)</h3>
-                            <p>Staffing focus for closed period</p>
-                        </div>
-                        <div class="chart-body">
-                            <div class="donut-chart-container">
-                                <div class="donut-chart">
-                                    <svg viewBox="0 0 100 100" class="donut-svg">
-                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#06b6d4" stroke-width="20" stroke-dasharray="138 251" stroke-dashoffset="0"/>
-                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="20" stroke-dasharray="50 251" stroke-dashoffset="-138"/>
-                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#3b82f6" stroke-width="20" stroke-dasharray="38 251" stroke-dashoffset="-188"/>
-                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" stroke-width="20" stroke-dasharray="25 251" stroke-dashoffset="-226"/>
-                                    </svg>
-                                </div>
-                                <div class="donut-legend">
-                                    <div class="legend-item" v-for="region in regionalSplit" :key="region.name">
-                                        <span class="legend-dot" :style="{ background: region.color }"></span>
-                                        {{ region.name }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Timeline Variance Chart -->
-                <div class="chart-card full-width">
-                    <div class="chart-header">
-                        <h3>TIMELINE VARIANCE</h3>
-                        <p>Growth path including verified milestones</p>
-                    </div>
-                    <div class="chart-body">
-                        <div class="timeline-chart">
-                            <svg viewBox="0 0 800 200" class="timeline-svg">
-                                <!-- Grid lines -->
-                                <line x1="50" y1="180" x2="750" y2="180" stroke="#e2e8f0" stroke-width="1"/>
-                                <line x1="50" y1="140" x2="750" y2="140" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="5"/>
-                                <line x1="50" y1="100" x2="750" y2="100" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="5"/>
-                                <line x1="50" y1="60" x2="750" y2="60" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="5"/>
-                                
-                                <!-- Area fill -->
-                                <path d="M50 150 L150 140 L280 130 L400 100 L520 90 L650 70 L750 50 L750 180 L50 180 Z" fill="rgba(255, 110, 5, 0.1)"/>
-                                
-                                <!-- Line -->
-                                <path d="M50 150 L150 140 L280 130 L400 100 L520 90 L650 70 L750 50" fill="none" stroke="#ff6e05" stroke-width="3"/>
-                                
-                                <!-- Secondary line -->
-                                <path d="M50 170 L150 165 L280 160 L400 155 L520 150 L650 145 L750 140" fill="none" stroke="#06b6d4" stroke-width="2"/>
-                                
-                                <!-- Data points -->
-                                <circle cx="50" cy="150" r="4" fill="#ff6e05"/>
-                                <circle cx="150" cy="140" r="4" fill="#ff6e05"/>
-                                <circle cx="280" cy="130" r="4" fill="#ff6e05"/>
-                                <circle cx="400" cy="100" r="4" fill="#ff6e05"/>
-                                <circle cx="520" cy="90" r="4" fill="#ff6e05"/>
-                                <circle cx="650" cy="70" r="4" fill="#ff6e05"/>
-                                <circle cx="750" cy="50" r="4" fill="#ff6e05"/>
-                                
-                                <!-- X-axis labels -->
-                                <text x="150" y="198" text-anchor="middle" class="chart-label">Nov 24</text>
-                                <text x="280" y="198" text-anchor="middle" class="chart-label">Dec 24</text>
-                                <text x="400" y="198" text-anchor="middle" class="chart-label">Jan 25</text>
-                                <text x="520" y="198" text-anchor="middle" class="chart-label">Feb 25</text>
-                                <text x="650" y="198" text-anchor="middle" class="chart-label">Mar 25</text>
-                                <text x="750" y="198" text-anchor="middle" class="chart-label">May 25</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Global Payroll Tracking (Index Page) -->
-            <div v-if="activeView === 'tracking' && !selectedCycle" class="payroll-tracking">
+            <div v-if="!selectedCycle" class="payroll-tracking">
                 <div class="tracking-header">
                     <div>
                         <h2>Global Payroll Tracking</h2>
                         <p>Consolidated view of all regions and cost centers grouped by month</p>
                     </div>
-                    <div class="tracking-actions">
-                        <p-inputtext v-model="searchQuery" placeholder="Search cycles..." style="width: 200px;"></p-inputtext>
-                    </div>
+                    <p-button label="New Custom Cycle" icon="pi pi-plus" @click="createCustomCycle"></p-button>
                 </div>
 
                 <!-- Payroll Cycles List -->
                 <div class="cycles-list">
-                    <div v-for="cycle in filteredCycles" :key="cycle.id" class="cycle-card" :class="cycle.status">
+                    <div v-for="cycle in cycles" :key="cycle.id" class="cycle-card" :class="cycle.status">
                         <div class="cycle-header" @click="toggleCycleExpand(cycle.id)">
                             <div class="cycle-info">
                                 <div class="cycle-icon" :class="cycle.status">
@@ -235,14 +29,11 @@ const PayrollComponent = {
                                     <div class="cycle-status-row">
                                         <span class="status-label">MASTER STATUS:</span>
                                         <span class="status-badge" :class="cycle.status">{{ getStatusLabel(cycle.status) }}</span>
+                                        <span v-if="cycle.isCustom" class="custom-cycle-badge"><i class="pi pi-user"></i> Custom</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="cycle-summary">
-                                <div class="summary-item">
-                                    <span class="summary-label">ENTITIES</span>
-                                    <span class="summary-value">{{ cycle.entities }}</span>
-                                </div>
                                 <div class="summary-item">
                                     <span class="summary-label">HEADCOUNT</span>
                                     <span class="summary-value">{{ cycle.headcount }}</span>
@@ -287,9 +78,22 @@ const PayrollComponent = {
                                     <span class="fin-label">TOTAL ARREARS DED.</span>
                                     <span class="fin-value">{{ formatCurrency(cycle.totalArrearsDed) }}</span>
                                 </div>
+                                <div class="financial-divider"></div>
+                                <div class="cost-center-totals">
+                                    <div v-for="ccTotal in getCostCenterTotals(cycle.id)" :key="ccTotal.id" class="cc-total-item">
+                                        <span class="cc-total-tag" :style="{ background: ccTotal.color }">{{ ccTotal.name }}</span>
+                                        <span class="cc-total-value">{{ formatCurrency(ccTotal.total) }}</span>
+                                    </div>
+                                </div>
+                                <div class="financial-divider"></div>
+                                <div class="financial-item time-to-close">
+                                    <span class="fin-label">TIME TO CLOSE</span>
+                                    <span class="fin-value">{{ getTimeToClose(cycle) }} days</span>
+                                </div>
                             </div>
 
-                            <div class="sub-cycles-table-wrapper">
+                            <!-- Sub-cycles table for system cycles -->
+                            <div v-if="!cycle.isCustom" class="sub-cycles-table-wrapper">
                                 <table class="sub-cycles-table">
                                     <thead>
                                         <tr>
@@ -315,7 +119,7 @@ const PayrollComponent = {
                                             </td>
                                             <td>
                                                 <span class="cost-center-tag" :style="{ background: getCostCenter(sub.costCenterId)?.color }">
-                                                    {{ getCostCenter(sub.costCenterId)?.name }}
+                                                    {{ getCostCenter(sub.costCenterId)?.code }} / {{ getCostCenter(sub.costCenterId)?.name }} <span v-if="getCostCenter(sub.costCenterId)?.tag" class="cc-tag-separator">•</span> {{ getCostCenterTagLabel(getCostCenter(sub.costCenterId)?.tag) }}
                                                 </span>
                                             </td>
                                             <td class="request-id">{{ sub.requestId }}</td>
@@ -340,6 +144,25 @@ const PayrollComponent = {
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <!-- Custom cycle summary -->
+                            <div v-if="cycle.isCustom" class="custom-cycle-summary">
+                                <div class="custom-cycle-info">
+                                    <div class="custom-cycle-stat">
+                                        <i class="pi pi-users"></i>
+                                        <span>{{ cycle.headcount }} Employees</span>
+                                    </div>
+                                    <div class="custom-cycle-stat">
+                                        <i class="pi pi-calendar"></i>
+                                        <span>Created {{ cycle.createdAt }}</span>
+                                    </div>
+                                    <div class="custom-cycle-stat">
+                                        <i class="pi pi-user"></i>
+                                        <span>By {{ cycle.createdBy }}</span>
+                                    </div>
+                                </div>
+                                <p-button :label="cycle.isCustom ? 'Open Custom Cycle' : 'Open Cycle'" icon="pi pi-arrow-right" iconPos="right" @click="openCycle(cycle)"></p-button>
                             </div>
                         </div>
                     </div>
@@ -366,6 +189,48 @@ const PayrollComponent = {
                         </div>
                     </div>
                 </div>
+            </p-dialog>
+
+            <!-- Employee Selection Dialog -->
+            <p-dialog v-model:visible="showEmployeeSelectionDialog" header="Select Employees" modal :style="{ width: '700px', maxWidth: '95vw' }">
+                <div class="employee-selection-content">
+                    <div class="selection-header">
+                        <div class="search-box">
+                            <i class="pi pi-search"></i>
+                            <input type="text" v-model="empSelectionSearch" placeholder="Search ID, Name, Email...">
+                        </div>
+                        <p-select v-model="empSelectionDepartment" :options="departmentOptions" optionLabel="name" optionValue="id" 
+                                  placeholder="All Departments" style="width: 180px;"></p-select>
+                        <p-button label="Select Visible" outlined size="small" @click="selectAllVisibleEmployees" 
+                                  :badge="filteredSelectionEmployees.length.toString()"></p-button>
+                    </div>
+                    <div class="employees-selection-list">
+                        <div v-for="emp in filteredSelectionEmployees" :key="emp.id" 
+                             class="employee-selection-item" :class="{ selected: isEmployeeInCustomCycle(emp.id), 'already-added': isEmployeeAlreadyInPayroll(emp.id) }">
+                            <p-checkbox :modelValue="isEmployeeInCustomCycle(emp.id) || isEmployeeAlreadyInPayroll(emp.id)" :binary="true" 
+                                        :disabled="isEmployeeAlreadyInPayroll(emp.id)"
+                                        @change="toggleEmployeeInCustomCycle(emp)"></p-checkbox>
+                            <div class="emp-selection-info">
+                                <span class="emp-selection-name">{{ emp.name }}</span>
+                                <span class="emp-selection-id">{{ emp.employeeId }}</span>
+                                <span class="emp-selection-dept">{{ emp.department }} > {{ emp.section || 'N/A' }}</span>
+                            </div>
+                            <span class="emp-selection-grade">{{ emp.grade || 'N/A' }}</span>
+                            <span v-if="isEmployeeAlreadyInPayroll(emp.id)" class="already-added-badge">Added</span>
+                        </div>
+                        <div v-if="filteredSelectionEmployees.length === 0" class="no-employees-found">
+                            <i class="pi pi-inbox"></i>
+                            <p>No employees found</p>
+                        </div>
+                    </div>
+                    <div class="selection-footer">
+                        <span>{{ customCycleEmployees.length }} employee(s) selected</span>
+                    </div>
+                </div>
+                <template #footer>
+                    <p-button label="Cancel" severity="secondary" outlined @click="showEmployeeSelectionDialog = false"></p-button>
+                    <p-button label="Add Selected" @click="confirmEmployeeSelection" :disabled="customCycleEmployees.length === 0"></p-button>
+                </template>
             </p-dialog>
 
             <!-- Payroll Cycle Wizard -->
@@ -396,21 +261,20 @@ const PayrollComponent = {
                         </div>
                         
                         <div class="init-summary">
-                            <div class="init-stat">
+                            <div class="init-stat" v-if="!selectedCycle.isCustom">
                                 <span class="init-label">Cycle Period</span>
                                 <span class="init-value">{{ selectedCycle.month }} {{ selectedCycle.year }}</span>
                             </div>
-                            <div class="init-stat">
-                                <span class="init-label">Total Entities</span>
-                                <span class="init-value">{{ selectedCycle.entities }}</span>
+                            <div class="init-stat cycle-period-select" v-else>
+                                <span class="init-label">Cycle Period</span>
+                                <div class="period-selectors">
+                                    <p-select v-model="customCycleMonth" :options="monthOptions" optionLabel="label" optionValue="value" placeholder="Month" style="width: 150px;"></p-select>
+                                    <p-select v-model="customCycleYear" :options="yearOptions" optionLabel="label" optionValue="value" placeholder="Year" style="width: 120px;"></p-select>
+                                </div>
                             </div>
-                            <div class="init-stat">
+                            <div class="init-stat" v-if="!selectedCycle.isCustom">
                                 <span class="init-label">Total Headcount</span>
                                 <span class="init-value">{{ selectedCycle.headcount }}</span>
-                            </div>
-                            <div class="init-stat">
-                                <span class="init-label">Created By</span>
-                                <span class="init-value">{{ selectedCycle.createdBy }}</span>
                             </div>
                         </div>
 
@@ -425,7 +289,7 @@ const PayrollComponent = {
 
                     <div class="wizard-footer">
                         <p-button label="Back to Cycles" icon="pi pi-arrow-left" text @click="closeCycle"></p-button>
-                        <p-button label="Proceed to Variables" icon="pi pi-arrow-right" iconPos="right" @click="nextStep" :disabled="!allInitChecked"></p-button>
+                        <p-button label="Proceed to Variables" icon="pi pi-arrow-right" iconPos="right" @click="nextStep" :disabled="!allInitChecked || (selectedCycle.isCustom && (!customCycleMonth || !customCycleYear))"></p-button>
                     </div>
                 </div>
 
@@ -439,6 +303,7 @@ const PayrollComponent = {
                                 <p>Edit variable components and review full payroll structure</p>
                             </div>
                             <div class="step-actions">
+                                <p-button v-if="selectedCycle.isCustom" label="Add Employee" icon="pi pi-plus" outlined @click="showEmployeeSelectionDialog = true" style="margin-right: 0.5rem;"></p-button>
                                 <p-inputtext v-model="employeeSearch" placeholder="Search employee..." style="width: 200px;"></p-inputtext>
                             </div>
                         </div>
@@ -491,26 +356,89 @@ const PayrollComponent = {
                                         <td>{{ formatNumber(emp.transportationAllowance) }}</td>
                                         <td>{{ formatNumber(emp.otherAllowance || 0) }}</td>
                                         <td class="addition-cell">
-                                            <input type="text" v-model.number="emp.commission" class="inline-input addition-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'commission')" />
+                                            <div class="dual-currency-input">
+                                                <div class="currency-row">
+                                                    <input type="text" :value="emp.commission" class="inline-input addition-input" :disabled="emp.isStopped" @input="updateFromSAR($event, emp, 'commission')" />
+                                                    <span class="currency-label">SAR</span>
+                                                </div>
+                                                <div class="currency-row">
+                                                    <input type="text" :value="sarToUsd(emp.commission)" class="inline-input addition-input usd-input" :disabled="emp.isStopped" @input="updateFromUSD($event, emp, 'commission')" />
+                                                    <span class="currency-label">USD</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="addition-cell">
-                                            <input type="text" v-model.number="emp.overtime" class="inline-input addition-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'overtime')" />
+                                            <div class="dual-currency-input">
+                                                <div class="currency-row">
+                                                    <input type="text" :value="emp.overtime" class="inline-input addition-input" :disabled="emp.isStopped" @input="updateFromSAR($event, emp, 'overtime')" />
+                                                    <span class="currency-label">SAR</span>
+                                                </div>
+                                                <div class="currency-row">
+                                                    <input type="text" :value="sarToUsd(emp.overtime)" class="inline-input addition-input usd-input" :disabled="emp.isStopped" @input="updateFromUSD($event, emp, 'overtime')" />
+                                                    <span class="currency-label">USD</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="addition-cell">
-                                            <input type="text" v-model.number="emp.othersAddition" class="inline-input addition-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'othersAddition')" />
+                                            <div class="dual-currency-input">
+                                                <div class="currency-row">
+                                                    <input type="text" :value="emp.othersAddition" class="inline-input addition-input" :disabled="emp.isStopped" @input="updateFromSAR($event, emp, 'othersAddition')" />
+                                                    <span class="currency-label">SAR</span>
+                                                </div>
+                                                <div class="currency-row">
+                                                    <input type="text" :value="sarToUsd(emp.othersAddition)" class="inline-input addition-input usd-input" :disabled="emp.isStopped" @input="updateFromUSD($event, emp, 'othersAddition')" />
+                                                    <span class="currency-label">USD</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="gross-cell">{{ formatNumber(calculateGross(emp)) }}</td>
                                         <td class="deduction-cell">
-                                            <input type="text" v-model.number="emp.attendancePunchDed" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'attendancePunchDed')" />
+                                            <div class="dual-currency-input">
+                                                <div class="currency-row">
+                                                    <input type="text" :value="emp.attendancePunchDed" class="inline-input deduction-input" :disabled="emp.isStopped" @input="updateFromSAR($event, emp, 'attendancePunchDed')" />
+                                                    <span class="currency-label">SAR</span>
+                                                </div>
+                                                <div class="currency-row">
+                                                    <input type="text" :value="sarToUsd(emp.attendancePunchDed)" class="inline-input deduction-input usd-input" :disabled="emp.isStopped" @input="updateFromUSD($event, emp, 'attendancePunchDed')" />
+                                                    <span class="currency-label">USD</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="deduction-cell">
-                                            <input type="text" v-model.number="emp.loanRepayment" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'loanRepayment')" />
+                                            <div class="dual-currency-input">
+                                                <div class="currency-row">
+                                                    <input type="text" :value="emp.loanRepayment" class="inline-input deduction-input" :disabled="emp.isStopped" @input="updateFromSAR($event, emp, 'loanRepayment')" />
+                                                    <span class="currency-label">SAR</span>
+                                                </div>
+                                                <div class="currency-row">
+                                                    <input type="text" :value="sarToUsd(emp.loanRepayment)" class="inline-input deduction-input usd-input" :disabled="emp.isStopped" @input="updateFromUSD($event, emp, 'loanRepayment')" />
+                                                    <span class="currency-label">USD</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="deduction-cell">
-                                            <input type="text" v-model.number="emp.absentWithoutLeave" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'absentWithoutLeave')" />
+                                            <div class="dual-currency-input">
+                                                <div class="currency-row">
+                                                    <input type="text" :value="emp.absentWithoutLeave" class="inline-input deduction-input" :disabled="emp.isStopped" @input="updateFromSAR($event, emp, 'absentWithoutLeave')" />
+                                                    <span class="currency-label">SAR</span>
+                                                </div>
+                                                <div class="currency-row">
+                                                    <input type="text" :value="sarToUsd(emp.absentWithoutLeave)" class="inline-input deduction-input usd-input" :disabled="emp.isStopped" @input="updateFromUSD($event, emp, 'absentWithoutLeave')" />
+                                                    <span class="currency-label">USD</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="deduction-cell">
-                                            <input type="text" v-model.number="emp.othersDeduction" class="inline-input deduction-input" :disabled="emp.isStopped" @input="sanitizeNumber($event, emp, 'othersDeduction')" />
+                                            <div class="dual-currency-input">
+                                                <div class="currency-row">
+                                                    <input type="text" :value="emp.othersDeduction" class="inline-input deduction-input" :disabled="emp.isStopped" @input="updateFromSAR($event, emp, 'othersDeduction')" />
+                                                    <span class="currency-label">SAR</span>
+                                                </div>
+                                                <div class="currency-row">
+                                                    <input type="text" :value="sarToUsd(emp.othersDeduction)" class="inline-input deduction-input usd-input" :disabled="emp.isStopped" @input="updateFromUSD($event, emp, 'othersDeduction')" />
+                                                    <span class="currency-label">USD</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="gosi-cell" :class="{ muted: emp.isExempt || emp.isStopped }">
                                             {{ emp.isExempt ? '0.00' : formatNumber(emp.gosiEmployee) }}
@@ -1250,11 +1178,9 @@ const PayrollComponent = {
         const { ref, computed, reactive } = Vue;
 
         // View state
-        const activeView = ref('tracking');
         const selectedCycle = ref(null);
         const currentWizardStep = ref(1);
         const expandedCycles = ref([]);
-        const searchQuery = ref('');
         const employeeSearch = ref('');
         const selectedCostCenter = ref(null);
         const archivedView = ref('summary');
@@ -1273,6 +1199,38 @@ const PayrollComponent = {
         const showPaymentSummaryAudit = ref(false);
         const showActivityLogDialog = ref(false);
 
+        // Custom Cycle State
+        const showEmployeeSelectionDialog = ref(false);
+        const customCycleMonth = ref(null);
+        const customCycleYear = ref(null);
+        const customCycleEmployees = ref([]);
+        const empSelectionSearch = ref('');
+        const empSelectionDepartment = ref(null);
+
+        // Month and Year Options
+        const monthOptions = ref([
+            { label: 'January', value: 'January' },
+            { label: 'February', value: 'February' },
+            { label: 'March', value: 'March' },
+            { label: 'April', value: 'April' },
+            { label: 'May', value: 'May' },
+            { label: 'June', value: 'June' },
+            { label: 'July', value: 'July' },
+            { label: 'August', value: 'August' },
+            { label: 'September', value: 'September' },
+            { label: 'October', value: 'October' },
+            { label: 'November', value: 'November' },
+            { label: 'December', value: 'December' }
+        ]);
+
+        const yearOptions = computed(() => {
+            const currentYear = new Date().getFullYear();
+            return Array.from({ length: 5 }, (_, i) => ({
+                label: (currentYear - 2 + i).toString(),
+                value: currentYear - 2 + i
+            }));
+        });
+
         // Data
         const cycles = ref(StaticData.payrollCycles);
         const subCycles = ref(StaticData.payrollSubCycles);
@@ -1280,9 +1238,6 @@ const PayrollComponent = {
         const costCenters = ref(StaticData.payrollCostCenters);
         const payrollEmployees = ref(JSON.parse(JSON.stringify(StaticData.payrollEmployees)));
         const wizardSteps = ref(StaticData.payrollWizardSteps);
-        const stats = ref(StaticData.payrollStats);
-        const departmentAllocation = ref(StaticData.departmentAllocation);
-        const regionalSplit = ref(StaticData.regionalSplit);
         const actionLog = ref(StaticData.payrollActionLog);
 
         // Initialization checklist
@@ -1305,14 +1260,6 @@ const PayrollComponent = {
         ]);
 
         // Computed
-        const filteredCycles = computed(() => {
-            if (!searchQuery.value) return cycles.value;
-            const query = searchQuery.value.toLowerCase();
-            return cycles.value.filter(c =>
-                c.month.toLowerCase().includes(query) ||
-                c.year.toString().includes(query)
-            );
-        });
 
         const filteredPayrollEmployees = computed(() => {
             let result = payrollEmployees.value;
@@ -1358,6 +1305,48 @@ const PayrollComponent = {
             };
         });
 
+        // Department options for employee selection
+        const departments = ref([...StaticData.departments]);
+        const departmentOptions = computed(() => {
+            return [{ id: null, name: 'All Departments' }, ...departments.value];
+        });
+
+        // All employees for selection (from StaticData)
+        const allEmployeesForSelection = computed(() => {
+            return StaticData.employees.map(e => ({
+                id: e.id,
+                name: `${e.firstName} ${e.familyName}`,
+                employeeId: e.employeeNumber,
+                department: e.department || 'N/A',
+                section: e.section || '',
+                grade: e.grade || 'N/A',
+                departmentId: e.departmentId || null,
+                basicSalary: e.basicSalary || 10000,
+                accommodationAllowance: e.accommodationAllowance || 3000,
+                transportationAllowance: e.transportationAllowance || 1000
+            }));
+        });
+
+        // Filtered employees for selection dialog
+        const filteredSelectionEmployees = computed(() => {
+            let result = allEmployeesForSelection.value;
+            
+            if (empSelectionDepartment.value) {
+                result = result.filter(e => e.departmentId === empSelectionDepartment.value);
+            }
+            
+            if (empSelectionSearch.value) {
+                const search = empSelectionSearch.value.toLowerCase();
+                result = result.filter(e => 
+                    e.name.toLowerCase().includes(search) || 
+                    e.employeeId.toLowerCase().includes(search) ||
+                    e.department.toLowerCase().includes(search)
+                );
+            }
+            
+            return result;
+        });
+
         // Methods
         const formatCurrency = (value) => {
             if (value === undefined || value === null) return '0.00';
@@ -1396,6 +1385,30 @@ const PayrollComponent = {
             emp[field] = parseFloat(value) || 0;
         };
 
+        // Currency conversion constants and functions
+        const USD_TO_SAR_RATE = 3.75;
+
+        const sarToUsd = (sarAmount) => {
+            if (!sarAmount || sarAmount === 0) return '0.00';
+            return (sarAmount / USD_TO_SAR_RATE).toFixed(2);
+        };
+
+        const usdToSar = (usdAmount) => {
+            if (!usdAmount || usdAmount === 0) return 0;
+            return Math.round(usdAmount * USD_TO_SAR_RATE * 100) / 100;
+        };
+
+        const updateFromSAR = (event, emp, field) => {
+            let value = event.target.value.replace(/[^0-9.]/g, '');
+            emp[field] = parseFloat(value) || 0;
+        };
+
+        const updateFromUSD = (event, emp, field) => {
+            let value = event.target.value.replace(/[^0-9.]/g, '');
+            const usdAmount = parseFloat(value) || 0;
+            emp[field] = usdToSar(usdAmount);
+        };
+
         const getCycleIcon = (status) => {
             switch (status) {
                 case 'in_progress': return 'pi pi-spin pi-spinner';
@@ -1410,6 +1423,7 @@ const PayrollComponent = {
                 case 'in_progress': return 'IN PROGRESS';
                 case 'new': return 'NEW';
                 case 'closed': return 'CLOSED';
+                case 'custom': return 'CUSTOM';
                 default: return status.toUpperCase();
             }
         };
@@ -1417,6 +1431,41 @@ const PayrollComponent = {
         const getSubCycles = (cycleId) => subCycles.value.filter(s => s.cycleId === cycleId);
         const getRegion = (regionId) => regions.value.find(r => r.id === regionId);
         const getCostCenter = (costCenterId) => costCenters.value.find(c => c.id === costCenterId);
+        const getCostCenterTagLabel = (tag) => {
+            if (!tag) return '';
+            const tagMap = { cogs: 'COGS', ga: 'G&A', intangible: 'Intangible' };
+            return tagMap[tag] || tag;
+        };
+
+        const getCostCenterTotals = (cycleId) => {
+            const cycleSubCycles = subCycles.value.filter(s => s.cycleId === cycleId);
+            const totals = {};
+            cycleSubCycles.forEach(sub => {
+                const cc = getCostCenter(sub.costCenterId);
+                if (cc) {
+                    if (!totals[cc.id]) {
+                        totals[cc.id] = { id: cc.id, name: cc.name, color: cc.color, total: 0 };
+                    }
+                    totals[cc.id].total += (sub.netSalary || 0);
+                }
+            });
+            return Object.values(totals);
+        };
+
+        const getTimeToClose = (cycle) => {
+            if (!cycle.createdAt || !cycle.closedAt) {
+                const createdDate = new Date(cycle.createdAt || `${cycle.year}-01-01`);
+                const closedDate = cycle.closedAt ? new Date(cycle.closedAt) : new Date();
+                const diffTime = Math.abs(closedDate - createdDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays;
+            }
+            const createdDate = new Date(cycle.createdAt);
+            const closedDate = new Date(cycle.closedAt);
+            const diffTime = Math.abs(closedDate - createdDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        };
 
         const toggleCycleExpand = (cycleId) => {
             const idx = expandedCycles.value.indexOf(cycleId);
@@ -1433,11 +1482,120 @@ const PayrollComponent = {
             if (cycle.status === 'closed') {
                 currentWizardStep.value = 7;
             }
+            // For custom cycles, set month/year from the cycle data
+            if (cycle.isCustom) {
+                customCycleMonth.value = cycle.month;
+                customCycleYear.value = cycle.year;
+                // Reset payroll employees for fresh load (in real app, load from backend)
+                payrollEmployees.value = JSON.parse(JSON.stringify(StaticData.payrollEmployees)).slice(0, cycle.headcount);
+            } else {
+                payrollEmployees.value = JSON.parse(JSON.stringify(StaticData.payrollEmployees));
+            }
         };
 
         const closeCycle = () => {
             selectedCycle.value = null;
             currentWizardStep.value = 1;
+            // Reset custom cycle state
+            customCycleMonth.value = null;
+            customCycleYear.value = null;
+            customCycleEmployees.value = [];
+            empSelectionSearch.value = '';
+            empSelectionDepartment.value = null;
+        };
+
+        const createCustomCycle = () => {
+            // Create a new custom cycle
+            const newCycle = {
+                id: Date.now(),
+                month: '',
+                year: new Date().getFullYear(),
+                status: 'in_progress',
+                currentStep: 1,
+                entities: 0,
+                headcount: 0,
+                subCycles: 0,
+                totalNetValue: 0,
+                totalGross: 0,
+                totalCommissions: 0,
+                totalArrearsAdd: 0,
+                totalArrearsDed: 0,
+                totalGosi: 0,
+                createdAt: new Date().toISOString().split('T')[0],
+                createdBy: 'Current User',
+                isCustom: true
+            };
+            selectedCycle.value = newCycle;
+            currentWizardStep.value = 1;
+            customCycleMonth.value = null;
+            customCycleYear.value = new Date().getFullYear();
+            customCycleEmployees.value = [];
+            payrollEmployees.value = [];
+            initChecklist.value.forEach(item => item.checked = false);
+        };
+
+        const isEmployeeInCustomCycle = (empId) => {
+            return customCycleEmployees.value.some(e => e.id === empId);
+        };
+
+        const isEmployeeAlreadyInPayroll = (empId) => {
+            return payrollEmployees.value.some(e => e.id === empId);
+        };
+
+        const toggleEmployeeInCustomCycle = (emp) => {
+            const index = customCycleEmployees.value.findIndex(e => e.id === emp.id);
+            if (index > -1) {
+                customCycleEmployees.value.splice(index, 1);
+            } else {
+                customCycleEmployees.value.push(emp);
+            }
+        };
+
+        const selectAllVisibleEmployees = () => {
+            filteredSelectionEmployees.value.forEach(emp => {
+                if (!isEmployeeInCustomCycle(emp.id)) {
+                    customCycleEmployees.value.push(emp);
+                }
+            });
+        };
+
+        const confirmEmployeeSelection = () => {
+            // Filter out employees already in payroll
+            const newEmployees = customCycleEmployees.value.filter(emp => !isEmployeeAlreadyInPayroll(emp.id));
+            
+            // Convert selected employees to payroll employees format
+            const newPayrollEmployees = newEmployees.map(emp => ({
+                id: emp.id,
+                name: emp.name,
+                employeeId: emp.employeeId,
+                department: emp.department,
+                status: 'Active',
+                basicSalary: emp.basicSalary || 10000,
+                accommodationAllowance: emp.accommodationAllowance || 3000,
+                transportationAllowance: emp.transportationAllowance || 1000,
+                otherAllowance: 0,
+                commission: 0,
+                overtime: 0,
+                othersAddition: 0,
+                attendancePunchDed: 0,
+                loanRepayment: 0,
+                absentWithoutLeave: 0,
+                othersDeduction: 0,
+                gosiEmployee: Math.round((emp.basicSalary || 10000) * 0.1),
+                gosiCompany: Math.round((emp.basicSalary || 10000) * 0.12),
+                netPay: 0,
+                previousNetPay: 0,
+                isExempt: false,
+                isStopped: false,
+                isHeld: false
+            }));
+            
+            // Append to existing payroll employees instead of replacing
+            payrollEmployees.value = [...payrollEmployees.value, ...newPayrollEmployees];
+            
+            // Clear selection and close dialog
+            customCycleEmployees.value = [];
+            showEmployeeSelectionDialog.value = false;
         };
 
         const nextStep = () => {
@@ -1548,11 +1706,9 @@ const PayrollComponent = {
         }
 
         return {
-            activeView,
             selectedCycle,
             currentWizardStep,
             expandedCycles,
-            searchQuery,
             employeeSearch,
             archivedView,
             paymentAuthorized,
@@ -1566,20 +1722,26 @@ const PayrollComponent = {
             showApprovalLogAudit,
             showPaymentSummaryAudit,
             showActivityLogDialog,
+            showEmployeeSelectionDialog,
+            customCycleMonth,
+            customCycleYear,
+            customCycleEmployees,
+            empSelectionSearch,
+            empSelectionDepartment,
+            monthOptions,
+            yearOptions,
+            departmentOptions,
+            filteredSelectionEmployees,
             cycles,
             subCycles,
             regions,
             costCenters,
             payrollEmployees,
             wizardSteps,
-            stats,
-            departmentAllocation,
-            regionalSplit,
             actionLog,
             initChecklist,
             closingChecks,
             uploadedProofs,
-            filteredCycles,
             filteredPayrollEmployees,
             allInitChecked,
             allClosingChecked,
@@ -1608,14 +1770,27 @@ const PayrollComponent = {
             calculateNetDeductions,
             calculateNetPay,
             sanitizeNumber,
+            sarToUsd,
+            usdToSar,
+            updateFromSAR,
+            updateFromUSD,
             getCycleIcon,
             getStatusLabel,
             getSubCycles,
             getRegion,
             getCostCenter,
+            getCostCenterTagLabel,
+            getCostCenterTotals,
+            getTimeToClose,
             toggleCycleExpand,
             openCycle,
             closeCycle,
+            createCustomCycle,
+            isEmployeeInCustomCycle,
+            isEmployeeAlreadyInPayroll,
+            toggleEmployeeInCustomCycle,
+            selectAllVisibleEmployees,
+            confirmEmployeeSelection,
             nextStep,
             prevStep,
             getDeltaValue,

@@ -153,7 +153,7 @@ const TrainingInsightsComponent = {
                         <h3>Cycle Assignment Distribution</h3>
                     </div>
                     <div class="cycle-distribution-grid">
-                        <div class="cycle-card" v-for="cycle in cycleDistribution" :key="cycle.id">
+                        <div class="stats-cycle-card" v-for="cycle in cycleDistribution" :key="cycle.id">
                             <div class="cycle-value">{{ cycle.count }}</div>
                             <div class="cycle-label">{{ cycle.label }}</div>
                             <div class="cycle-sublabel">EMPLOYEES</div>

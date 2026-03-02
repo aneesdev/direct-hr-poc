@@ -131,7 +131,8 @@ const primeVueComponents = {
     'p-fileupload': PrimeVue.FileUpload,
     'p-multiselect': PrimeVue.MultiSelect,
     'p-autocomplete': PrimeVue.AutoComplete,
-    'p-menu': PrimeVue.Menu
+    'p-menu': PrimeVue.Menu,
+    'p-timeline': PrimeVue.Timeline
 };
 
 // Register all PrimeVue components

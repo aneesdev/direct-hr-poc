@@ -201,11 +201,11 @@ const StaticData = {
 
     // Cost Centers (with head count)
     costCenters: [
-        { id: 1, code: 'CC-001', name: 'Engineering Operations', headCount: 3, active: true },
-        { id: 2, code: 'CC-002', name: 'HR Administration', headCount: 1, active: true },
-        { id: 3, code: 'CC-003', name: 'Finance & Accounting', headCount: 1, active: true },
-        { id: 4, code: 'CC-004', name: 'Marketing & Sales', headCount: 0, active: false },
-        { id: 5, code: 'CC-005', name: 'IT Infrastructure', headCount: 0, active: true },
+        { id: 1, code: 'CC-001', name: 'Engineering Operations', tag: 'cogs', headCount: 3, active: true },
+        { id: 2, code: 'CC-002', name: 'HR Administration', tag: 'ga', headCount: 1, active: true },
+        { id: 3, code: 'CC-003', name: 'Finance & Accounting', tag: 'ga', headCount: 1, active: true },
+        { id: 4, code: 'CC-004', name: 'Marketing & Sales', tag: 'ga', headCount: 0, active: false },
+        { id: 5, code: 'CC-005', name: 'IT Infrastructure', tag: 'intangible', headCount: 0, active: true },
     ],
 
     // Document Types
@@ -992,12 +992,12 @@ const StaticData = {
 
     // Payroll Cost Centers (for grouping)
     payrollCostCenters: [
-        { id: 1, name: 'Engineering', color: '#8b5cf6' },
-        { id: 2, name: 'Sales', color: '#3b82f6' },
-        { id: 3, name: 'Operations', color: '#22c55e' },
-        { id: 4, name: 'Marketing', color: '#ec4899' },
-        { id: 5, name: 'Finance', color: '#f59e0b' },
-        { id: 6, name: 'HR', color: '#06b6d4' }
+        { id: 1, code: 'CC-ENG', name: 'Engineering', tag: 'cogs', color: '#8b5cf6' },
+        { id: 2, code: 'CC-SAL', name: 'Sales', tag: 'ga', color: '#16a34a' },
+        { id: 3, code: 'CC-OPS', name: 'Operations', tag: 'cogs', color: '#22c55e' },
+        { id: 4, code: 'CC-MKT', name: 'Marketing', tag: 'ga', color: '#ec4899' },
+        { id: 5, code: 'CC-FIN', name: 'Finance', tag: 'ga', color: '#f59e0b' },
+        { id: 6, code: 'CC-HR', name: 'HR', tag: 'ga', color: '#06b6d4' }
     ],
 
     // Payroll Cycles
@@ -1019,6 +1019,25 @@ const StaticData = {
             totalGosi: 45000.00,
             createdAt: '2026-01-01',
             createdBy: 'John Doe'
+        },
+        {
+            id: 100,
+            month: 'January',
+            year: 2026,
+            status: 'in_progress',
+            currentStep: 2,
+            entities: 0,
+            headcount: 5,
+            subCycles: 0,
+            totalNetValue: 75000.00,
+            totalGross: 85000.00,
+            totalCommissions: 2500.00,
+            totalArrearsAdd: 0,
+            totalArrearsDed: 0,
+            totalGosi: 3500.00,
+            createdAt: '2026-01-15',
+            createdBy: 'Sarah Finance',
+            isCustom: true
         },
         {
             id: 2,
