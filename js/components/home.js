@@ -21,26 +21,55 @@ const HomeComponent = {
                     <div class="mood-title mood-thanks" v-else>
                         <i class="pi pi-check-circle"></i> Thanks for sharing!
                     </div>
-                    <div class="mood-options" v-if="!moodSubmitted">
-                        <div class="mood-option" :class="{ active: selectedMood === 'great', 'mood-animating': animatingMood === 'great' }" @click="selectMood('great')">
+                    <div class="mood-options">
+                        <div class="mood-option" 
+                             :class="{ 
+                                 active: selectedMood === 'great' && !moodSubmitted, 
+                                 'mood-animating': animatingMood === 'great',
+                                 'selected-mood': moodSubmitted && selectedMood === 'great',
+                                 'disabled-mood': moodSubmitted && selectedMood !== 'great'
+                             }" 
+                             @click="selectMood('great')"
+                             v-tooltip.top="moodSubmitted && selectedMood !== 'great' ? 'You already shared your feeling for today' : ''">
                             <span class="mood-icon">😊</span>
                             <span class="mood-label">Great</span>
                         </div>
-                        <div class="mood-option" :class="{ active: selectedMood === 'okay', 'mood-animating': animatingMood === 'okay' }" @click="selectMood('okay')">
+                        <div class="mood-option" 
+                             :class="{ 
+                                 active: selectedMood === 'okay' && !moodSubmitted, 
+                                 'mood-animating': animatingMood === 'okay',
+                                 'selected-mood': moodSubmitted && selectedMood === 'okay',
+                                 'disabled-mood': moodSubmitted && selectedMood !== 'okay'
+                             }" 
+                             @click="selectMood('okay')"
+                             v-tooltip.top="moodSubmitted && selectedMood !== 'okay' ? 'You already shared your feeling for today' : ''">
                             <span class="mood-icon">😐</span>
                             <span class="mood-label">Okay</span>
                         </div>
-                        <div class="mood-option" :class="{ active: selectedMood === 'tired', 'mood-animating': animatingMood === 'tired' }" @click="selectMood('tired')">
+                        <div class="mood-option" 
+                             :class="{ 
+                                 active: selectedMood === 'tired' && !moodSubmitted, 
+                                 'mood-animating': animatingMood === 'tired',
+                                 'selected-mood': moodSubmitted && selectedMood === 'tired',
+                                 'disabled-mood': moodSubmitted && selectedMood !== 'tired'
+                             }" 
+                             @click="selectMood('tired')"
+                             v-tooltip.top="moodSubmitted && selectedMood !== 'tired' ? 'You already shared your feeling for today' : ''">
                             <span class="mood-icon">😴</span>
                             <span class="mood-label">Tired</span>
                         </div>
-                        <div class="mood-option" :class="{ active: selectedMood === 'struggling', 'mood-animating': animatingMood === 'struggling' }" @click="selectMood('struggling')">
+                        <div class="mood-option" 
+                             :class="{ 
+                                 active: selectedMood === 'struggling' && !moodSubmitted, 
+                                 'mood-animating': animatingMood === 'struggling',
+                                 'selected-mood': moodSubmitted && selectedMood === 'struggling',
+                                 'disabled-mood': moodSubmitted && selectedMood !== 'struggling'
+                             }" 
+                             @click="selectMood('struggling')"
+                             v-tooltip.top="moodSubmitted && selectedMood !== 'struggling' ? 'You already shared your feeling for today' : ''">
                             <span class="mood-icon">😟</span>
                             <span class="mood-label">Struggling</span>
                         </div>
-                    </div>
-                    <div class="mood-selected-display" v-else>
-                        <span class="mood-icon selected-mood-icon">{{ getMoodEmoji(selectedMood) }}</span>
                     </div>
                 </div>
             </div>
