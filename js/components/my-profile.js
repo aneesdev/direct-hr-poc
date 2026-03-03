@@ -1371,17 +1371,11 @@ const MyProfileComponent = {
                                     </span>
                                 </template>
                                 <template #content="slotProps">
-                                    <div class="timeline-card" :class="{ 'current-user': slotProps.item.isCurrent }">
-                                        <div class="timeline-card-header">
-                                            <span class="timeline-level-badge" :class="slotProps.item.level">{{ slotProps.item.levelLabel }}</span>
-                                            <span class="timeline-current-badge" v-if="slotProps.item.isCurrent">You</span>
-                                        </div>
-                                        <h4 class="timeline-name">{{ slotProps.item.name }}</h4>
-                                        <p class="timeline-position">{{ slotProps.item.position }}</p>
-                                        <div class="timeline-details">
-                                            <span><i class="pi pi-building"></i> {{ slotProps.item.department }}</span>
-                                            <span><i class="pi pi-envelope"></i> {{ slotProps.item.email }}</span>
-                                        </div>
+                                    <div class="timeline-card timeline-card-simple" :class="{ 'current-user': slotProps.item.isCurrent }">
+                                        <h4 class="timeline-name">
+                                            {{ slotProps.item.name }}
+                                            <span class="timeline-you-badge" v-if="slotProps.item.isCurrent">You</span>
+                                        </h4>
                                     </div>
                                 </template>
                             </p-timeline>
@@ -1435,62 +1429,47 @@ const MyProfileComponent = {
             showOrderModal.value = true;
         };
 
-        // Line Manager Hierarchy (from top to current employee)
+        // Line Manager Hierarchy (from current employee to top - reversed order)
         const lineManagerHierarchy = ref([
             {
-                id: 1,
-                name: 'Abdullah Al-Rashid',
-                position: 'Chief Executive Officer',
-                department: 'Executive Office',
-                email: 'a.rashid@direct.sa',
-                avatar: 'https://i.pravatar.cc/80?img=68',
-                level: 'executive',
-                levelLabel: 'CEO',
-                isCurrent: false
-            },
-            {
-                id: 2,
-                name: 'Fatima Al-Zahrani',
-                position: 'Chief Technology Officer',
-                department: 'Technology',
-                email: 'f.zahrani@direct.sa',
-                avatar: 'https://i.pravatar.cc/80?img=47',
-                level: 'executive',
-                levelLabel: 'CTO',
-                isCurrent: false
-            },
-            {
-                id: 3,
-                name: 'Khalid Al-Otaibi',
-                position: 'Engineering Director',
-                department: 'Product Engineering',
-                email: 'k.otaibi@direct.sa',
-                avatar: 'https://i.pravatar.cc/80?img=52',
-                level: 'management',
-                levelLabel: 'Director',
-                isCurrent: false
+                id: 5,
+                name: 'Mohammed Soliman Alsoliman',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                level: 'professional',
+                levelLabel: 'You',
+                isCurrent: true
             },
             {
                 id: 4,
                 name: 'Sarah Jenkins',
-                position: 'Engineering Manager',
-                department: 'Product Engineering',
-                email: 's.jenkins@direct.sa',
                 avatar: 'https://i.pravatar.cc/80?img=32',
                 level: 'supervisor',
                 levelLabel: 'Manager',
                 isCurrent: false
             },
             {
-                id: 5,
-                name: 'Mohammed Soliman Alsoliman',
-                position: 'Senior Software Engineer',
-                department: 'Product Engineering',
-                email: 'm.alsoliman@direct.sa',
-                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
-                level: 'professional',
-                levelLabel: 'Employee',
-                isCurrent: true
+                id: 3,
+                name: 'Khalid Al-Otaibi',
+                avatar: 'https://i.pravatar.cc/80?img=52',
+                level: 'management',
+                levelLabel: 'Director',
+                isCurrent: false
+            },
+            {
+                id: 2,
+                name: 'Fatima Al-Zahrani',
+                avatar: 'https://i.pravatar.cc/80?img=47',
+                level: 'executive',
+                levelLabel: 'CTO',
+                isCurrent: false
+            },
+            {
+                id: 1,
+                name: 'Abdullah Al-Rashid',
+                avatar: 'https://i.pravatar.cc/80?img=68',
+                level: 'executive',
+                levelLabel: 'CEO',
+                isCurrent: false
             }
         ]);
 
