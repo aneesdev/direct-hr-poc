@@ -509,8 +509,9 @@ img {
     border-radius: var(--radius-lg);
     padding: 1.25rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    text-align: center;
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
 }
@@ -521,18 +522,22 @@ img {
 }
 
 .stat-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: var(--radius-md);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.stat-icon i {
+    font-size: 1.1rem;
 }
 
 .stat-icon.orange {
-    background: rgba(255, 110, 5, 0.15);
-    color: var(--primary-color);
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
 }
 
 .stat-icon.blue {
@@ -545,9 +550,14 @@ img {
     color: #22c55e;
 }
 
+.stat-icon.red {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
 .stat-icon.purple {
-    background: rgba(168, 85, 247, 0.15);
-    color: #a855f7;
+    background: rgba(139, 92, 246, 0.15);
+    color: #8b5cf6;
 }
 
 .stat-icon.gray {
@@ -561,12 +571,17 @@ img {
 }
 
 .stat-value {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
+    color: var(--text-color);
+    line-height: 1;
+    margin-bottom: 0.35rem;
 }
 
 .stat-label {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     color: var(--text-color-secondary);
 }
 
@@ -13889,71 +13904,11 @@ img {
     letter-spacing: 0.3px;
 }
 
-/* Stats Cards Row */
+/* Stats Cards Row (analytics uses same stats-grid styles) */
 .analytics-stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-}
-
-.stat-card {
-    background: var(--surface-card);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    box-shadow: var(--card-shadow);
-}
-
-.stat-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.75rem;
-}
-
-.stat-icon i {
-    font-size: 1.1rem;
-}
-
-.stat-icon.blue {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
-}
-
-.stat-icon.purple {
-    background: rgba(139, 92, 246, 0.15);
-    color: #8b5cf6;
-}
-
-.stat-icon.orange {
-    background: rgba(249, 115, 22, 0.15);
-    color: #f97316;
-}
-
-.stat-icon.green {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-}
-
-.stat-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--text-color);
-    line-height: 1;
-    margin-bottom: 0.35rem;
-}
-
-.stat-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: var(--text-color-secondary);
 }
 
 /* Main Analytics Grid */
@@ -15183,31 +15138,75 @@ img {
 
 .widget-comment {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+}
+
+.widget-comment:last-of-type {
+    margin-bottom: 0;
+}
+
+/* View More Comments */
+.view-more-comments {
     padding: 0.5rem 0;
+    text-align: center;
+}
+
+.view-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.view-more-btn:hover {
+    background: rgba(249, 115, 22, 0.1);
+}
+
+.view-more-btn i {
+    font-size: 0.65rem;
+}
+
+.widget-comments .view-more-comments {
+    text-align: left;
+    padding: 0.25rem 0 0 0;
 }
 
 .widget-comment-avatar {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     flex-shrink: 0;
 }
 
 .widget-comment-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
 }
 
 .widget-comment-name {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-color);
-    margin-right: 0.5rem;
 }
 
 .widget-comment-text {
     font-size: 0.8rem;
     color: var(--text-color-secondary);
+    line-height: 1.4;
 }
 
 .widget-comment-input {

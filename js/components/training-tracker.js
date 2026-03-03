@@ -16,26 +16,51 @@ const TrainingTrackerComponent = {
             </div>
 
             <!-- Stats Cards -->
-            <div class="tracker-stats-grid">
-                <div class="tracker-stat-card">
-                    <div class="stat-value">{{ stats.assigned }}</div>
-                    <div class="stat-label">ASSIGNED</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="pi pi-users"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.assigned }}</div>
+                        <div class="stat-label">Assigned</div>
+                    </div>
                 </div>
-                <div class="tracker-stat-card">
-                    <div class="stat-value">{{ stats.inProgress }}</div>
-                    <div class="stat-label">IN PROGRESS</div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="pi pi-spin pi-spinner"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.inProgress }}</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
                 </div>
-                <div class="tracker-stat-card">
-                    <div class="stat-value green">{{ stats.completed }}</div>
-                    <div class="stat-label">COMPLETED</div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.completed }}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
                 </div>
-                <div class="tracker-stat-card">
-                    <div class="stat-value red">{{ stats.failed }}</div>
-                    <div class="stat-label">FAILED</div>
+                <div class="stat-card">
+                    <div class="stat-icon red">
+                        <i class="pi pi-times-circle"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.failed }}</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
                 </div>
-                <div class="tracker-stat-card highlight">
-                    <div class="stat-value">{{ stats.hoursAchieved }}</div>
-                    <div class="stat-label">HOURS ACHIEVED</div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="pi pi-clock"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.hoursAchieved }}</div>
+                        <div class="stat-label">Hours Achieved</div>
+                    </div>
                 </div>
             </div>
 

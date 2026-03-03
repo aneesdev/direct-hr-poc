@@ -139,7 +139,7 @@ const HomeComponent = {
                             
                             <!-- Comments Section -->
                             <div v-if="news.showComments" class="comments-section">
-                                <div v-for="comment in news.commentsList" :key="comment.id" class="comment-item">
+                                <div v-for="comment in getVisibleComments(news)" :key="comment.id" class="comment-item">
                                     <img :src="comment.avatar" :alt="comment.name" class="comment-avatar">
                                     <div class="comment-content">
                                         <div class="comment-header">
@@ -148,6 +148,12 @@ const HomeComponent = {
                                         </div>
                                         <div class="comment-text">{{ comment.text }}</div>
                                     </div>
+                                </div>
+                                <div class="view-more-comments" v-if="news.commentsList.length > 2">
+                                    <button class="view-more-btn" @click="toggleExpandComments(news)">
+                                        <i :class="news.commentsExpanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
+                                        {{ news.commentsExpanded ? 'View less' : 'View ' + (news.commentsList.length - 2) + ' more comments' }}
+                                    </button>
                                 </div>
                             </div>
                             
@@ -202,12 +208,18 @@ const HomeComponent = {
                                 
                                 <!-- Comments Section -->
                                 <div class="widget-comments">
-                                    <div v-for="comment in bday.commentsList" :key="comment.id" class="widget-comment">
+                                    <div v-for="comment in getVisibleWidgetComments(bday)" :key="comment.id" class="widget-comment">
                                         <img :src="comment.avatar" :alt="comment.name" class="widget-comment-avatar">
                                         <div class="widget-comment-content">
                                             <span class="widget-comment-name">{{ comment.name }}</span>
                                             <span class="widget-comment-text">{{ comment.text }}</span>
                                         </div>
+                                    </div>
+                                    <div class="view-more-comments" v-if="bday.commentsList.length > 2">
+                                        <button class="view-more-btn" @click="toggleExpandWidgetComments(bday)">
+                                            <i :class="bday.commentsExpanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
+                                            {{ bday.commentsExpanded ? 'View less' : 'View ' + (bday.commentsList.length - 2) + ' more' }}
+                                        </button>
                                     </div>
                                 </div>
                                 
@@ -225,7 +237,6 @@ const HomeComponent = {
                             <h4><i class="pi pi-star"></i> Anniversaries</h4>
                             <p-button label="Wall of Fame" severity="warning" size="small" @click="showWallOfFameModal = true"></p-button>
                         </div>
-                        <div class="widget-subtitle"><i class="pi pi-calendar"></i> PAST HIGHLIGHTS</div>
                         <div class="anniversary-list">
                             <div v-for="anni in anniversariesData" :key="anni.id" class="anniversary-card">
                                 <div class="anniversary-card-header">
@@ -260,12 +271,18 @@ const HomeComponent = {
                                 
                                 <!-- Comments Section -->
                                 <div class="widget-comments">
-                                    <div v-for="comment in anni.commentsList" :key="comment.id" class="widget-comment">
+                                    <div v-for="comment in getVisibleWidgetComments(anni)" :key="comment.id" class="widget-comment">
                                         <img :src="comment.avatar" :alt="comment.name" class="widget-comment-avatar">
                                         <div class="widget-comment-content">
                                             <span class="widget-comment-name">{{ comment.name }}</span>
                                             <span class="widget-comment-text">{{ comment.text }}</span>
                                         </div>
+                                    </div>
+                                    <div class="view-more-comments" v-if="anni.commentsList.length > 2">
+                                        <button class="view-more-btn" @click="toggleExpandWidgetComments(anni)">
+                                            <i :class="anni.commentsExpanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
+                                            {{ anni.commentsExpanded ? 'View less' : 'View ' + (anni.commentsList.length - 2) + ' more' }}
+                                        </button>
                                     </div>
                                 </div>
                                 
@@ -339,14 +356,6 @@ const HomeComponent = {
                                     <span class="stat-value-lg">{{ workforceStatus.onLeave.count }}</span>
                                 </div>
                                 <span class="stat-change negative">{{ workforceStatus.onLeave.change }}%</span>
-                            </div>
-                            <div class="workforce-stat">
-                                <div class="stat-icon-small green"><i class="pi pi-chart-line"></i></div>
-                                <div class="stat-info">
-                                    <span class="stat-label-sm">PERFORMANCE</span>
-                                    <span class="stat-value-lg">{{ workforceStatus.performance.percent }}%</span>
-                                </div>
-                                <span class="stat-change positive">+{{ workforceStatus.performance.change }}%</span>
                             </div>
                         </div>
                     </div>
@@ -542,8 +551,12 @@ const HomeComponent = {
                 likeAnimating: false,
                 likedBy: ['Khaled Al-Anazi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi'],
                 newComment: '',
+                commentsExpanded: false,
                 commentsList: [
-                    { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Happy Birthday! 🎂' }
+                    { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Happy Birthday! 🎂' },
+                    { id: 2, name: 'Khaled Al-Anazi', avatar: 'https://i.pravatar.cc/40?img=11', text: 'Wishing you an amazing day!' },
+                    { id: 3, name: 'Reem Al-Fahad', avatar: 'https://i.pravatar.cc/40?img=5', text: 'Many happy returns! 🎉' },
+                    { id: 4, name: 'Sami Al-Harbi', avatar: 'https://i.pravatar.cc/40?img=15', text: 'Have a wonderful birthday!' }
                 ]
             },
             {
@@ -556,8 +569,11 @@ const HomeComponent = {
                 likeAnimating: false,
                 likedBy: ['Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani'],
                 newComment: '',
+                commentsExpanded: false,
                 commentsList: [
-                    { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Many happy returns!' }
+                    { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Many happy returns!' },
+                    { id: 2, name: 'Sarah Al-Otaibi', avatar: 'https://i.pravatar.cc/40?img=5', text: 'Happy Birthday Khaled! 🎁' },
+                    { id: 3, name: 'Mohammad Al-Dossari', avatar: 'https://i.pravatar.cc/40?img=14', text: 'Have a great one!' }
                 ]
             }
         ]);
@@ -576,8 +592,12 @@ const HomeComponent = {
                 likeAnimating: false,
                 likedBy: ['Sarah Al-Otaibi', 'Khaled Al-Anazi', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi'],
                 newComment: '',
+                commentsExpanded: false,
                 commentsList: [
-                    { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Congrats on 5 years!' }
+                    { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Congrats on 5 years!' },
+                    { id: 2, name: 'Sarah Al-Otaibi', avatar: 'https://i.pravatar.cc/40?img=5', text: 'Amazing milestone! Keep it up! 🌟' },
+                    { id: 3, name: 'Khaled Al-Anazi', avatar: 'https://i.pravatar.cc/40?img=11', text: 'Well deserved recognition!' },
+                    { id: 4, name: 'Reem Al-Fahad', avatar: 'https://i.pravatar.cc/40?img=9', text: 'Here\'s to many more years! 🎊' }
                 ]
             }
         ]);
@@ -630,6 +650,30 @@ const HomeComponent = {
             if (!commentsList) return [];
             const names = commentsList.map(c => c.name);
             return [...new Set(names)];
+        };
+
+        // Get visible comments for company news (show 2 by default)
+        const getVisibleComments = (news) => {
+            if (!news.commentsList) return [];
+            if (news.commentsExpanded) return news.commentsList;
+            return news.commentsList.slice(0, 2);
+        };
+
+        // Toggle expand comments for company news
+        const toggleExpandComments = (news) => {
+            news.commentsExpanded = !news.commentsExpanded;
+        };
+
+        // Get visible comments for widget (birthday/anniversary) - show 2 by default
+        const getVisibleWidgetComments = (item) => {
+            if (!item.commentsList) return [];
+            if (item.commentsExpanded) return item.commentsList;
+            return item.commentsList.slice(0, 2);
+        };
+
+        // Toggle expand comments for widget
+        const toggleExpandWidgetComments = (item) => {
+            item.commentsExpanded = !item.commentsExpanded;
         };
         
         // Add birthday comment
@@ -748,7 +792,8 @@ const HomeComponent = {
                 news.likeAnimating = false;
                 news.showComments = true;
                 news.newComment = '';
-                news.likedBy = ['Khaled Al-Anazi', 'Sarah Al-Otaibi', 'Mohammad Al-Dossari'];
+                news.commentsExpanded = false;
+                news.likedBy = ['Khaled Al-Anazi', 'Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie'];
                 if (!news.commentsList) {
                     news.commentsList = [
                         {
@@ -764,6 +809,27 @@ const HomeComponent = {
                             avatar: 'https://i.pravatar.cc/40?img=12',
                             text: 'Congratulations to the team!',
                             time: 'Just now'
+                        },
+                        {
+                            id: 3,
+                            name: 'Reem Al-Fahad',
+                            avatar: 'https://i.pravatar.cc/40?img=5',
+                            text: 'So proud to be part of this company!',
+                            time: '1h ago'
+                        },
+                        {
+                            id: 4,
+                            name: 'Noura Al-Subaie',
+                            avatar: 'https://i.pravatar.cc/40?img=9',
+                            text: 'Well deserved! 👏',
+                            time: '45m ago'
+                        },
+                        {
+                            id: 5,
+                            name: 'Omar Al-Salem',
+                            avatar: 'https://i.pravatar.cc/40?img=53',
+                            text: 'Amazing achievement for everyone!',
+                            time: '30m ago'
                         }
                     ];
                 }
@@ -849,6 +915,10 @@ const HomeComponent = {
             toggleAnniversaryLike,
             toggleJoinerReaction,
             getUniqueCommenters,
+            getVisibleComments,
+            toggleExpandComments,
+            getVisibleWidgetComments,
+            toggleExpandWidgetComments,
             selectMood,
             getMoodEmoji,
             openDocument
