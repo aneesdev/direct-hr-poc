@@ -96,11 +96,13 @@ const NewAppraisalComponent = {
                             <h4>Filter {{ selectedGrade.name }}s</h4>
                             <div class="filter-row">
                                 <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Departments" style="width: 200px;" showClear></p-select>
+                                          placeholder="All Departments" style="width: 180px;" showClear @change="onDepartmentChange"></p-select>
+                                <p-select v-model="filters.section" :options="filteredSectionOptions" optionLabel="name" optionValue="id" 
+                                          placeholder="All Sections" style="width: 180px;" showClear :disabled="!filters.department"></p-select>
                                 <p-select v-model="filters.unit" :options="unitOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Units" style="width: 200px;" showClear></p-select>
+                                          placeholder="All Units" style="width: 160px;" showClear></p-select>
                                 <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Teams" style="width: 200px;" showClear></p-select>
+                                          placeholder="All Teams" style="width: 160px;" showClear></p-select>
                                 <div class="filter-search">
                                     <i class="pi pi-search"></i>
                                     <input type="text" v-model="searchQuery" placeholder="Search by name or ID...">
@@ -282,7 +284,7 @@ const NewAppraisalComponent = {
                             <div class="reviewers-grid">
                                 <div v-for="reviewer in filteredReviewers" :key="reviewer.id" 
                                      class="reviewer-card" 
-                                     :class="{ selected: isReviewerSelected(reviewer.id) }"
+                                     :class="{ selected: isReviewerSelected(reviewer.id), disabled: !canSelectReviewer(reviewer) }"
                                      @click="toggleReviewer(reviewer)">
                                     <img :src="reviewer.avatar" class="reviewer-avatar" :alt="reviewer.firstName">
                                     <div class="reviewer-info">
@@ -292,6 +294,10 @@ const NewAppraisalComponent = {
                                         <div class="reviewer-dept">{{ reviewer.department }}</div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="committee-limit-info">
+                                <i class="pi pi-info-circle"></i>
+                                <span>Maximum 1 Management and 1 Executive allowed. Executive's score will be shown as final.</span>
                             </div>
                         </div>
 
@@ -510,6 +516,7 @@ const NewAppraisalComponent = {
         const searchQuery = ref('');
         const filters = ref({
             department: null,
+            section: null,
             unit: null,
             team: null
         });
@@ -544,6 +551,11 @@ const NewAppraisalComponent = {
             if (filters.value.department) {
                 const deptName = departments.value.find(d => d.id === filters.value.department)?.name;
                 result = result.filter(e => e.department === deptName);
+            }
+
+            if (filters.value.section) {
+                const sectionName = sections.value.find(s => s.id === filters.value.section)?.name;
+                result = result.filter(e => e.section === sectionName);
             }
             
             if (searchQuery.value) {
@@ -586,8 +598,17 @@ const NewAppraisalComponent = {
 
         // Filter options
         const departmentOptions = computed(() => [{ id: null, name: 'All Departments' }, ...departments.value]);
+        const filteredSectionOptions = computed(() => {
+            if (!filters.value.department) return [{ id: null, name: 'All Sections' }];
+            const filtered = sections.value.filter(s => s.departmentId === filters.value.department);
+            return [{ id: null, name: 'All Sections' }, ...filtered];
+        });
         const unitOptions = computed(() => [{ id: null, name: 'All Units' }, ...units.value]);
         const teamOptions = computed(() => [{ id: null, name: 'All Teams' }, ...teams.value]);
+
+        const onDepartmentChange = () => {
+            filters.value.section = null;
+        };
 
         // Can proceed validation
         const canProceed = computed(() => {
@@ -666,10 +687,26 @@ const NewAppraisalComponent = {
             return selectedReviewers.value.some(r => r.id === reviewerId);
         };
 
+        const getSelectedManagementCount = () => {
+            return selectedReviewers.value.filter(r => r.mainGrade === 'Management').length;
+        };
+
+        const getSelectedExecutiveCount = () => {
+            return selectedReviewers.value.filter(r => r.mainGrade === 'Executives').length;
+        };
+
+        const canSelectReviewer = (reviewer) => {
+            if (isReviewerSelected(reviewer.id)) return true;
+            if (reviewer.mainGrade === 'Management' && getSelectedManagementCount() >= 1) return false;
+            if (reviewer.mainGrade === 'Executives' && getSelectedExecutiveCount() >= 1) return false;
+            return true;
+        };
+
         const toggleReviewer = (reviewer) => {
             if (isReviewerSelected(reviewer.id)) {
                 selectedReviewers.value = selectedReviewers.value.filter(r => r.id !== reviewer.id);
             } else {
+                if (!canSelectReviewer(reviewer)) return;
                 selectedReviewers.value.push(reviewer);
             }
         };
@@ -722,6 +759,7 @@ const NewAppraisalComponent = {
             employees,
             mainGrades,
             departments,
+            sections,
             units,
             teams,
             selectedCycle,
@@ -738,10 +776,12 @@ const NewAppraisalComponent = {
             filteredReviewers,
             gradeWeights,
             departmentOptions,
+            filteredSectionOptions,
             unitOptions,
             teamOptions,
             canProceed,
             getEmployeeCountByGrade,
+            onDepartmentChange,
             selectCycle,
             selectGrade,
             changeGrade,
@@ -754,6 +794,7 @@ const NewAppraisalComponent = {
             changeFile,
             removeFile,
             isReviewerSelected,
+            canSelectReviewer,
             toggleReviewer,
             removeReviewer,
             nextStep,

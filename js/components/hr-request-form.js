@@ -77,7 +77,9 @@ const HrRequestFormComponent = {
                             <span v-if="isSalaryGroup(groupName)" class="currency-badge">SAR</span>
                         </div>
                         <div :class="isSalaryGroup(groupName) ? 'salary-grid' : 'form-grid-2'">
-                            <div v-for="field in fields" :key="field.id" class="form-group" :class="{ 'salary-field': isSalaryGroup(groupName) }">
+                            <div v-for="field in fields" :key="field.id" 
+                                 v-show="shouldShowField(field, groupName)"
+                                 class="form-group" :class="{ 'salary-field': isSalaryGroup(groupName) }">
                                 <label class="form-label">{{ field.label }}</label>
                                 
                                 <!-- Text Input -->
@@ -88,8 +90,8 @@ const HrRequestFormComponent = {
                                 </p-inputtext>
 
                                 <!-- Number Input (for salary fields) -->
-                                <div v-else-if="field.type === 'number'" class="salary-input-wrapper">
-                                    <span v-if="isSalaryGroup(groupName)" class="currency-prefix">SAR</span>
+                                <div v-else-if="field.type === 'number' && isSalaryGroup(groupName)" class="salary-input-wrapper">
+                                    <span class="currency-prefix">SAR</span>
                                     <p-inputnumber v-model="formValues[field.id]" 
                                                   mode="decimal" 
                                                   :minFractionDigits="0"
@@ -97,6 +99,14 @@ const HrRequestFormComponent = {
                                                   style="width: 100%;">
                                     </p-inputnumber>
                                 </div>
+
+                                <!-- Number Input (for non-salary fields) -->
+                                <p-inputnumber v-else-if="field.type === 'number'" 
+                                              v-model="formValues[field.id]" 
+                                              :minFractionDigits="0"
+                                              :placeholder="'Enter ' + field.label.toLowerCase()"
+                                              style="width: 100%;">
+                                </p-inputnumber>
 
                                 <!-- Dropdown -->
                                 <p-select v-else-if="field.type === 'dropdown'" 
@@ -123,6 +133,156 @@ const HrRequestFormComponent = {
                                              :placeholder="'Select date'"
                                              style="width: 100%;">
                                 </p-datepicker>
+
+                                <!-- Time (for punch in/out) -->
+                                <p-datepicker v-else-if="field.type === 'time'" 
+                                             v-model="formValues[field.id]" 
+                                             :timeOnly="true"
+                                             hourFormat="12"
+                                             :placeholder="'Select time'"
+                                             style="width: 100%;">
+                                </p-datepicker>
+
+                                <!-- Shift Select (enhanced dropdown) -->
+                                <p-select v-else-if="field.type === 'shift_select'" 
+                                         v-model="formValues[field.id]" 
+                                         :options="shiftTemplates"
+                                         optionLabel="name"
+                                         optionValue="id"
+                                         placeholder="Select shift"
+                                         style="width: 100%;"
+                                         class="shift-dropdown">
+                                    <template #value="slotProps">
+                                        <div v-if="slotProps.value" class="shift-select-value">
+                                            <span class="shift-color-dot" :style="{ backgroundColor: getShiftById(slotProps.value)?.color }"></span>
+                                            <span class="shift-name">{{ getShiftById(slotProps.value)?.name }}</span>
+                                            <span class="shift-type-tag" :class="getShiftById(slotProps.value)?.shiftType">{{ getShiftTypeLabel(getShiftById(slotProps.value)?.shiftType) }}</span>
+                                            <span v-if="getShiftById(slotProps.value)?.shiftType !== 'flexible'" class="shift-time">{{ getShiftById(slotProps.value)?.startTime }} - {{ getShiftById(slotProps.value)?.endTime }}</span>
+                                            <span v-else class="shift-time">{{ getShiftById(slotProps.value)?.requiredHours }} hrs/day</span>
+                                        </div>
+                                        <span v-else>Select shift</span>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <div class="shift-option-enhanced">
+                                            <div class="shift-option-header">
+                                                <span class="shift-color-dot" :style="{ backgroundColor: slotProps.option.color }"></span>
+                                                <div class="shift-option-name-row">
+                                                    <span class="shift-name">{{ slotProps.option.name }}</span>
+                                                    <span class="shift-type-tag" :class="slotProps.option.shiftType">{{ getShiftTypeLabel(slotProps.option.shiftType) }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="shift-option-details">
+                                                <div class="shift-meta">
+                                                    <span v-if="slotProps.option.shiftType !== 'flexible'" class="shift-time">
+                                                        <i class="pi pi-clock"></i> {{ slotProps.option.startTime }} - {{ slotProps.option.endTime }}
+                                                    </span>
+                                                    <span v-else class="shift-time">
+                                                        <i class="pi pi-clock"></i> {{ slotProps.option.validFrom }} - {{ slotProps.option.validTo }} window
+                                                    </span>
+                                                    <span class="shift-hours">{{ slotProps.option.workingHours }} hrs</span>
+                                                </div>
+                                                <button type="button" class="view-rules-btn" @click.stop.prevent="toggleShiftRules(slotProps.option.id)" @mousedown.stop.prevent>
+                                                    <i class="pi pi-eye"></i> {{ expandedShiftRules === slotProps.option.id ? 'Hide' : 'View' }} Rules
+                                                </button>
+                                            </div>
+                                            <div v-if="expandedShiftRules === slotProps.option.id" class="shift-rules-panel" @click.stop @mousedown.stop>
+                                                <template v-if="slotProps.option.shiftType === 'flexible'">
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Required Hours:</span>
+                                                        <span class="rule-value">{{ slotProps.option.requiredHours }} hours/day</span>
+                                                    </div>
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Valid Window:</span>
+                                                        <span class="rule-value">{{ slotProps.option.validFrom }} - {{ slotProps.option.validTo }}</span>
+                                                    </div>
+                                                </template>
+                                                <template v-else-if="slotProps.option.clockIn">
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Clock In:</span>
+                                                        <span class="rule-value">{{ slotProps.option.clockIn.noEarlierThan }} min early, {{ slotProps.option.clockIn.allowedDelay }} min delay allowed</span>
+                                                    </div>
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Clock Out:</span>
+                                                        <span class="rule-value">{{ slotProps.option.clockOut.noEarlierThan }} min early allowed</span>
+                                                    </div>
+                                                </template>
+                                                <template v-else>
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">No specific rules defined</span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </p-select>
+
+                                <!-- Work Week Select (enhanced dropdown) -->
+                                <p-select v-else-if="field.type === 'workweek_select'" 
+                                         v-model="formValues[field.id]" 
+                                         :options="workWeeks"
+                                         optionLabel="name"
+                                         optionValue="id"
+                                         placeholder="Select Work Week Template"
+                                         style="width: 100%;"
+                                         class="workweek-dropdown">
+                                    <template #value="slotProps">
+                                        <div v-if="slotProps.value" class="workweek-select-value">
+                                            <span class="workweek-name">{{ getWorkWeekById(slotProps.value)?.name }}</span>
+                                            <span class="workweek-days-count">{{ getWorkWeekById(slotProps.value)?.totalDays }} days</span>
+                                        </div>
+                                        <span v-else>Select Work Week Template</span>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <div class="workweek-option">
+                                            <div class="workweek-option-header">
+                                                <span class="workweek-name">{{ slotProps.option.name }}</span>
+                                                <span class="workweek-status" :class="{ active: slotProps.option.active }">{{ slotProps.option.active ? 'Active' : 'Inactive' }}</span>
+                                            </div>
+                                            <div class="workweek-option-days">
+                                                <span v-for="(active, day) in slotProps.option.days" :key="day" 
+                                                      class="day-badge" :class="{ active: active }">
+                                                    {{ day.substring(0, 3).toUpperCase() }}
+                                                </span>
+                                            </div>
+                                            <div class="workweek-option-footer">
+                                                <i class="pi pi-calendar"></i>
+                                                <span>{{ slotProps.option.totalDays }} working days</span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </p-select>
+
+                                <!-- Attendance Method (radio buttons - 2x2 grid) -->
+                                <div v-else-if="field.type === 'attendance_method'" class="attendance-method-grid">
+                                    <div class="attendance-method-option" :class="{ active: formValues[field.id] === 'office' }" @click="formValues[field.id] = 'office'">
+                                        <p-radiobutton v-model="formValues[field.id]" value="office" :inputId="field.id + '_office'"></p-radiobutton>
+                                        <label :for="field.id + '_office'">
+                                            <i class="pi pi-building"></i>
+                                            <span>Office</span>
+                                        </label>
+                                    </div>
+                                    <div class="attendance-method-option" :class="{ active: formValues[field.id] === 'system' }" @click="formValues[field.id] = 'system'">
+                                        <p-radiobutton v-model="formValues[field.id]" value="system" :inputId="field.id + '_system'"></p-radiobutton>
+                                        <label :for="field.id + '_system'">
+                                            <i class="pi pi-desktop"></i>
+                                            <span>From System</span>
+                                        </label>
+                                    </div>
+                                    <div class="attendance-method-option" :class="{ active: formValues[field.id] === 'hybrid' }" @click="formValues[field.id] = 'hybrid'">
+                                        <p-radiobutton v-model="formValues[field.id]" value="hybrid" :inputId="field.id + '_hybrid'"></p-radiobutton>
+                                        <label :for="field.id + '_hybrid'">
+                                            <i class="pi pi-sync"></i>
+                                            <span>Hybrid</span>
+                                        </label>
+                                    </div>
+                                    <div class="attendance-method-option" :class="{ active: formValues[field.id] === 'not_required' }" @click="formValues[field.id] = 'not_required'">
+                                        <p-radiobutton v-model="formValues[field.id]" value="not_required" :inputId="field.id + '_not_required'"></p-radiobutton>
+                                        <label :for="field.id + '_not_required'">
+                                            <i class="pi pi-times-circle"></i>
+                                            <span>Not Required</span>
+                                        </label>
+                                    </div>
+                                </div>
 
                                 <!-- File Upload -->
                                 <div v-else-if="field.type === 'file'" class="file-upload-area">
@@ -175,7 +335,7 @@ const HrRequestFormComponent = {
                             <div v-for="(fields, groupName) in groupedFields" :key="groupName">
                                 <div class="summary-group-title">{{ groupName.toUpperCase() }}</div>
                                 
-                                <div v-for="field in fields" :key="field.id" class="summary-item">
+                                <div v-for="field in fields" :key="field.id" v-show="shouldShowField(field, groupName)" class="summary-item">
                                     <div class="summary-item-label">{{ field.label.toUpperCase() }}</div>
                                     <div class="summary-item-values">
                                         <div class="summary-value old">
@@ -213,18 +373,48 @@ const HrRequestFormComponent = {
         const employees = ref([
             { id: 'EMP-1001', name: 'Sarah Johnson', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face', department: 'Engineering Department', position: 'Software Engineer', mainGrade: 'Professional', subGrade: 'Senior Officer', jobTitle: 'Software Engineer', basicSalary: 8500, houseAllowance: 2125, transportationAllowance: 850, otherAllowance: 0, costCenter: 'CC-001', mobile: '+966 50 123 4567', personalEmail: 'sarah.personal@email.com', workEmail: 'sarah.johnson@company.com', extensionNumber: '1234' },
             { id: 'EMP-1002', name: 'Ahmed Al-Rahman', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face', department: 'Finance Department', position: 'Financial Analyst', mainGrade: 'Professional', subGrade: 'Officer', jobTitle: 'Financial Analyst', basicSalary: 7500, houseAllowance: 1875, transportationAllowance: 750, otherAllowance: 0, costCenter: 'CC-002', mobile: '+966 50 234 5678', personalEmail: 'ahmed.personal@email.com', workEmail: 'ahmed.alrahman@company.com', extensionNumber: '1235' },
-            { id: 'EMP-1003', name: 'Maria Garcia', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face', department: 'Marketing Department', position: 'Marketing Specialist', mainGrade: 'Entry Level', subGrade: 'Junior', jobTitle: 'Marketing Specialist', basicSalary: 6000, houseAllowance: 1500, transportationAllowance: 600, otherAllowance: 0, costCenter: 'CC-003', mobile: '+966 50 345 6789', personalEmail: 'maria.personal@email.com', workEmail: 'maria.garcia@company.com', extensionNumber: '1236' },
+            { id: 'EMP-1003', name: 'Maria Garcia', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face', department: 'Marketing Department', position: 'Marketing Specialist', mainGrade: 'Professional', subGrade: 'Junior', jobTitle: 'Marketing Specialist', basicSalary: 6000, houseAllowance: 1500, transportationAllowance: 600, otherAllowance: 0, costCenter: 'CC-003', mobile: '+966 50 345 6789', personalEmail: 'maria.personal@email.com', workEmail: 'maria.garcia@company.com', extensionNumber: '1236' },
             { id: 'EMP-1004', name: 'Mohammed Alsoliman', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face', department: 'IT Department', position: 'Senior Software Engineer', mainGrade: 'Professional', subGrade: 'Senior Officer', jobTitle: 'Senior Software Engineer', basicSalary: 12000, houseAllowance: 3000, transportationAllowance: 1200, otherAllowance: 500, costCenter: 'CC-001', mobile: '+966 50 456 7890', personalEmail: 'mohammed.personal@email.com', workEmail: 'mohammed.alsoliman@company.com', extensionNumber: '1237' }
         ]);
 
         // Options for dropdowns
         const fieldOptions = {
-            mainGrade: ['Entry Level', 'Professional', 'Supervisor', 'Management', 'Executive'],
+            mainGrade: ['Professional', 'Supervisor', 'Management', 'Executive'],
             subGrade: ['Junior', 'Officer', 'Senior Officer', 'Lead', 'Manager'],
             jobTitle: ['Software Engineer', 'Senior Software Engineer', 'Lead Engineer', 'Engineering Manager', 'Financial Analyst', 'Marketing Specialist'],
             department: ['Engineering Department', 'Finance Department', 'Marketing Department', 'IT Department', 'HR Department'],
             section: ['Development', 'QA', 'DevOps', 'Support'],
             costCenter: ['CC-001', 'CC-002', 'CC-003', 'CC-004']
+        };
+
+        // Work week and shift templates from static data
+        const workWeeks = ref([...StaticData.workWeeks]);
+        const shiftTemplates = ref([...StaticData.shiftTemplates]);
+        const expandedShiftRules = ref(null);
+
+        const getWorkWeekById = (id) => {
+            return workWeeks.value.find(w => w.id === id);
+        };
+
+        const getShiftById = (id) => {
+            return shiftTemplates.value.find(s => s.id === id);
+        };
+
+        const toggleShiftRules = (shiftId) => {
+            if (expandedShiftRules.value === shiftId) {
+                expandedShiftRules.value = null;
+            } else {
+                expandedShiftRules.value = shiftId;
+            }
+        };
+
+        const getShiftTypeLabel = (type) => {
+            const labels = { 
+                'normal': 'Normal Shift', 
+                'template': 'Template Day Shift', 
+                'flexible': 'Flexible Shift' 
+            };
+            return labels[type] || (type ? type.charAt(0).toUpperCase() + type.slice(1) : '');
         };
 
         const groupedFields = computed(() => {
@@ -272,13 +462,27 @@ const HrRequestFormComponent = {
                 'Financial': 'pi pi-dollar',
                 'Action Details': 'pi pi-exclamation-triangle',
                 'Document Details': 'pi pi-file',
-                'Adjustment Details': 'pi pi-clock'
+                'Adjustment Details': 'pi pi-clock',
+                'Punch Correction': 'pi pi-clock',
+                'Schedule Settings': 'pi pi-calendar',
+                'Attendance Method': 'pi pi-clock'
             };
             return icons[groupName] || 'pi pi-list';
         };
 
         const isSalaryGroup = (groupName) => {
             return groupName === 'Salary Information' || groupName === 'Compensation Details';
+        };
+
+        const shouldShowField = (field, groupName) => {
+            if (groupName === 'Punch Correction' && field.type === 'time') {
+                return formValues.adjustmentDate !== null && formValues.adjustmentDate !== undefined;
+            }
+            if (field.showWhen) {
+                const dependentValue = formValues[field.showWhen.field];
+                return field.showWhen.values.includes(dependentValue);
+            }
+            return true;
         };
 
         const getFieldOptions = (field) => {
@@ -302,6 +506,24 @@ const HrRequestFormComponent = {
             if (value === undefined || value === null || value === '') return '-';
             if (field.type === 'number' && typeof value === 'number') {
                 return formatCurrency(value);
+            }
+            if (field.type === 'date' && value instanceof Date) {
+                return value.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            }
+            if (field.type === 'time' && value instanceof Date) {
+                return value.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            }
+            if (field.type === 'workweek_select') {
+                const workWeek = getWorkWeekById(value);
+                return workWeek ? workWeek.name : '-';
+            }
+            if (field.type === 'shift_select') {
+                const shift = getShiftById(value);
+                return shift ? shift.name : '-';
+            }
+            if (field.type === 'attendance_method') {
+                const labels = { 'office': 'Office', 'system': 'From System', 'hybrid': 'Hybrid', 'not_required': 'Not Required' };
+                return labels[value] || value;
             }
             return value;
         };
@@ -356,11 +578,19 @@ const HrRequestFormComponent = {
             employees,
             formValues,
             groupedFields,
+            workWeeks,
+            shiftTemplates,
+            expandedShiftRules,
             searchEmployees,
             getIconStyle,
             getSectionIcon,
             isSalaryGroup,
+            shouldShowField,
             getFieldOptions,
+            getWorkWeekById,
+            getShiftById,
+            toggleShiftRules,
+            getShiftTypeLabel,
             getEmployeeCurrentValue,
             getFormattedNewValue,
             hasValueChanged,

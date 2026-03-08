@@ -136,11 +136,14 @@ const TrainingTrackerComponent = {
                             </div>
                         </template>
                     </p-column>
-                    <p-column header="MANAGE" style="width: 100px;">
+                    <p-column header="MANAGE" style="width: 120px;">
                         <template #body="slotProps">
                             <div class="manage-buttons">
                                 <button class="action-icon-btn" @click="viewHistory(slotProps.data)" v-tooltip.top="'View History'">
                                     <i class="pi pi-eye"></i>
+                                </button>
+                                <button class="action-icon-btn reminder" @click="openReminderDialog(slotProps.data)" v-tooltip.top="'Send Reminder'">
+                                    <i class="pi pi-bell"></i>
                                 </button>
                                 <button class="action-icon-btn" @click="openLifecycleMenu($event, slotProps.data)" v-tooltip.top="'Update Status'">
                                     <i class="pi pi-ellipsis-v"></i>
@@ -177,6 +180,32 @@ const TrainingTrackerComponent = {
                 </template>
             </p-dialog>
 
+            <!-- Send Reminder Dialog -->
+            <p-dialog v-model:visible="showReminderDialog" header="Send Reminder" :modal="true" :style="{ width: '500px' }">
+                <div class="reminder-dialog-content" v-if="selectedTraining">
+                    <div class="reminder-recipient">
+                        <label>Sending reminder to:</label>
+                        <div class="recipient-info">
+                            <div class="recipient-avatar" :style="{ background: getAvatarColor(selectedTraining.employee.name) }">
+                                {{ getInitial(selectedTraining.employee.name) }}
+                            </div>
+                            <div class="recipient-details">
+                                <span class="recipient-name">{{ selectedTraining.employee.name }}</span>
+                                <span class="recipient-path">{{ selectedTraining.path }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reminder-message-group">
+                        <label>Message</label>
+                        <p-textarea v-model="reminderMessage" rows="4" placeholder="Enter your reminder message..." style="width: 100%;"></p-textarea>
+                    </div>
+                </div>
+                <template #footer>
+                    <p-button label="Cancel" severity="secondary" outlined @click="showReminderDialog = false"></p-button>
+                    <p-button label="Send Reminder" icon="pi pi-send" @click="sendReminder" :disabled="!reminderMessage"></p-button>
+                </template>
+            </p-dialog>
+
             <!-- Lifecycle Menu (PrimeVue Popup Menu) -->
             <p-menu ref="lifecycleMenu" :model="lifecycleMenuItems" :popup="true" class="lifecycle-popup-menu">
                 <template #start>
@@ -197,6 +226,8 @@ const TrainingTrackerComponent = {
 
         const searchQuery = ref('');
         const showLogsDialog = ref(false);
+        const showReminderDialog = ref(false);
+        const reminderMessage = ref('');
         const lifecycleMenu = ref(null);
         const selectedTraining = ref(null);
 
@@ -294,6 +325,40 @@ const TrainingTrackerComponent = {
             showLogsDialog.value = true;
         };
 
+        const openReminderDialog = (training) => {
+            selectedTraining.value = training;
+            reminderMessage.value = '';
+            showReminderDialog.value = true;
+        };
+
+        const sendReminder = () => {
+            if (!reminderMessage.value || !selectedTraining.value) return;
+            
+            const now = new Date();
+            const formattedDate = now.toLocaleString('en-US', { 
+                month: 'numeric', 
+                day: 'numeric', 
+                year: 'numeric', 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: true 
+            });
+            
+            activityLogs.value.unshift({
+                id: activityLogs.value.length + 1,
+                type: 'reminder',
+                title: 'REMINDER SENT',
+                description: reminderMessage.value,
+                modifiedBy: 'HR ADMINISTRATOR',
+                date: formattedDate
+            });
+            
+            showReminderDialog.value = false;
+            reminderMessage.value = '';
+            alert('Reminder sent successfully to ' + selectedTraining.value.employee.name);
+        };
+
         const updateStatus = (status, progress) => {
             if (selectedTraining.value) {
                 const index = trainings.value.findIndex(t => t.id === selectedTraining.value.id);
@@ -352,6 +417,8 @@ const TrainingTrackerComponent = {
         return {
             searchQuery,
             showLogsDialog,
+            showReminderDialog,
+            reminderMessage,
             lifecycleMenu,
             lifecycleMenuItems,
             selectedTraining,
@@ -369,6 +436,8 @@ const TrainingTrackerComponent = {
             getStatusSeverity,
             getProgressColor,
             viewHistory,
+            openReminderDialog,
+            sendReminder,
             openLifecycleMenu,
             updateStatus,
             exportToExcel

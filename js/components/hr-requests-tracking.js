@@ -96,7 +96,7 @@ const HrRequestsTrackingComponent = {
                             </div>
                         </template>
                     </p-column>
-                    <p-column header="Date of Action" sortable field="dateOfAction">
+                    <p-column header="Submitted" sortable field="dateOfAction">
                         <template #body="slotProps">
                             <div class="date-cell">
                                 <i class="pi pi-calendar"></i>

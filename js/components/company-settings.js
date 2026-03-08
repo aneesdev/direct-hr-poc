@@ -57,7 +57,6 @@ const CompanySettingsComponent = {
                         <p-tab value="grades" @click="activeTab = 'grades'">Grades & Job Titles</p-tab>
                         <p-tab value="offices" @click="activeTab = 'offices'">Offices</p-tab>
                         <p-tab value="costcenters" @click="activeTab = 'costcenters'">Cost Centers</p-tab>
-                        <p-tab value="documents" @click="activeTab = 'documents'">Documents</p-tab>
                         <p-tab value="workweeks" @click="activeTab = 'workweeks'">Work Weeks</p-tab>
                         <p-tab value="attendance" @click="activeTab = 'attendance'">Attendance Settings</p-tab>
                     </p-tablist>
@@ -447,6 +446,7 @@ const CompanySettingsComponent = {
                             <p-datatable :value="costCenters" striped-rows>
                                 <p-column field="code" header="Code"></p-column>
                                 <p-column field="name" header="Name"></p-column>
+                                <p-column field="country" header="Country"></p-column>
                                 <p-column header="Tag">
                                     <template #body="slotProps">
                                         <span v-if="slotProps.data.tag" class="cost-center-type-tag" :class="slotProps.data.tag">
@@ -471,81 +471,6 @@ const CompanySettingsComponent = {
                                     <template #body="slotProps">
                                         <button class="action-btn edit" @click="editCostCenter(slotProps.data)"><i class="pi pi-pencil"></i></button>
                                         <button class="action-btn delete" @click="deleteCostCenter(slotProps.data.id)"><i class="pi pi-trash"></i></button>
-                                    </template>
-                                </p-column>
-                            </p-datatable>
-                        </p-tabpanel>
-                        
-                        <!-- Documents Tab -->
-                        <p-tabpanel value="documents">
-                            <div class="card-header">
-                                <div>
-                                    <div class="card-title">
-                                        <i class="pi pi-file"></i>
-                                        Employee Documents
-                                    </div>
-                                    <div class="card-subtitle">Manage document types and employee documents</div>
-                                </div>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <p-button label="Add Document" icon="pi pi-plus" @click="showAddDocDialog = true"></p-button>
-                                    <p-button label="Document Types" icon="pi pi-cog" outlined @click="showDocTypeDialog = true"></p-button>
-                                </div>
-                            </div>
-                            
-                            <!-- Document Stats -->
-                            <div class="stats-grid" style="margin-bottom: 1rem;">
-                                <div class="stat-card">
-                                    <div class="stat-icon green">
-                                        <i class="pi pi-check-circle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-value">{{ validDocsCount }}</div>
-                                        <div class="stat-label">Valid Documents</div>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon orange">
-                                        <i class="pi pi-exclamation-triangle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="stat-value">{{ expiredDocsCount }}</div>
-                                        <div class="stat-label">Expired</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Documents Table -->
-                            <p-datatable :value="documents" striped-rows>
-                                <p-column header="Employee">
-                                    <template #body="slotProps">
-                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                            <img :src="slotProps.data.employeeAvatar" :alt="slotProps.data.employeeName" style="width: 32px; height: 32px; border-radius: 50%;">
-                                            <span>{{ slotProps.data.employeeName }}</span>
-                                        </div>
-                                    </template>
-                                </p-column>
-                                <p-column field="documentType" header="Document Type"></p-column>
-                                <p-column header="Expiry Date">
-                                    <template #body="slotProps">
-                                        <div>
-                                            <div>{{ slotProps.data.expiryDate || 'N/A' }}</div>
-                                            <div v-if="slotProps.data.expiryDate" :style="{ fontSize: '0.8rem', color: slotProps.data.status === 'expired' ? '#ef4444' : 'var(--text-color-secondary)' }">
-                                                {{ slotProps.data.expiresIn }}
-                                            </div>
-                                        </div>
-                                    </template>
-                                </p-column>
-                                <p-column header="Status">
-                                    <template #body="slotProps">
-                                        <span class="status-tag" :class="slotProps.data.status === 'valid' ? 'active' : 'inactive'">
-                                            {{ slotProps.data.status === 'valid' ? 'Valid' : 'Expired' }}
-                                        </span>
-                                    </template>
-                                </p-column>
-                                <p-column header="Actions" style="width: 120px">
-                                    <template #body="slotProps">
-                                        <button class="action-btn" title="View"><i class="pi pi-eye"></i></button>
-                                        <button class="action-btn edit" title="Update Expiry" @click="updateDocExpiry(slotProps.data)"><i class="pi pi-calendar"></i></button>
                                     </template>
                                 </p-column>
                             </p-datatable>
@@ -649,7 +574,9 @@ const CompanySettingsComponent = {
                 <div class="form-grid" style="grid-template-columns: 1fr;">
                     <div class="form-group">
                         <label class="form-label">Country <span class="required">*</span></label>
-                        <p-select v-model="holidayForm.country" :options="countryOptions" placeholder="Select country" style="width: 100%;"></p-select>
+                        <p-multiselect v-if="!editingHoliday" v-model="holidayForm.countries" :options="countryOptions" placeholder="Select countries" style="width: 100%;" display="chip"></p-multiselect>
+                        <p-select v-else v-model="holidayForm.country" :options="countryOptions" placeholder="Select country" style="width: 100%;"></p-select>
+                        <small v-if="!editingHoliday" class="form-hint">Select multiple countries for shared holidays (e.g., Eid)</small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Holiday Name <span class="required">*</span></label>
@@ -760,6 +687,10 @@ const CompanySettingsComponent = {
                         <p-inputtext v-model="costCenterForm.name" placeholder="Enter cost center name" style="width: 100%;"></p-inputtext>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Country <span class="required">*</span></label>
+                        <p-select v-model="costCenterForm.country" :options="countryOptions" placeholder="Select country" style="width: 100%;"></p-select>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Tag</label>
                         <p-select v-model="costCenterForm.tag" :options="costCenterTagOptions" optionLabel="label" optionValue="value" placeholder="Select tag" style="width: 100%;"></p-select>
                     </div>
@@ -807,70 +738,7 @@ const CompanySettingsComponent = {
                 </template>
             </p-dialog>
             
-            <!-- Add Document Dialog -->
-            <p-dialog v-model:visible="showAddDocDialog" header="Add Employee Document" :modal="true" :style="{ width: '500px' }">
-                <div class="form-grid" style="grid-template-columns: 1fr;">
-                    <div class="form-group">
-                        <label class="form-label">Employee <span class="required">*</span></label>
-                        <p-select v-model="addDocForm.employeeId" :options="employees" optionLabel="firstName" optionValue="id" placeholder="Select employee" style="width: 100%;">
-                            <template #option="slotProps">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <img :src="slotProps.option.avatar" style="width: 24px; height: 24px; border-radius: 50%;">
-                                    <span>{{ slotProps.option.firstName }} {{ slotProps.option.familyName }}</span>
-                                </div>
-                            </template>
-                        </p-select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Document Type <span class="required">*</span></label>
-                        <p-select v-model="addDocForm.documentType" :options="documentTypes" optionLabel="name" optionValue="name" placeholder="Select type" style="width: 100%;"></p-select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Expiry Date</label>
-                        <p-datepicker v-model="addDocForm.expiryDate" dateFormat="dd/mm/yy" style="width: 100%;"></p-datepicker>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Upload Document</label>
-                        <p-fileupload mode="basic" accept="image/*,application/pdf" :maxFileSize="5000000" chooseLabel="Choose File"></p-fileupload>
-                    </div>
-                </div>
-                <template #footer>
-                    <p-button label="Cancel" severity="danger" outlined @click="showAddDocDialog = false"></p-button>
-                    <p-button label="Save" @click="saveDocument"></p-button>
-                </template>
-            </p-dialog>
-            
-            <!-- Update Document Expiry Dialog -->
-            <p-dialog v-model:visible="showUpdateExpiryDialog" header="Update Expiry Date" :modal="true" :style="{ width: '400px' }">
-                <div class="form-group">
-                    <label class="form-label">New Expiry Date <span class="required">*</span></label>
-                    <p-datepicker v-model="updateExpiryForm.expiryDate" dateFormat="dd/mm/yy" style="width: 100%;"></p-datepicker>
-                </div>
-                <template #footer>
-                    <p-button label="Cancel" severity="danger" outlined @click="showUpdateExpiryDialog = false"></p-button>
-                    <p-button label="Update" @click="saveExpiryUpdate"></p-button>
-                </template>
-            </p-dialog>
-            
-            <!-- Document Type Dialog -->
-            <p-dialog v-model:visible="showDocTypeDialog" header="Document Types" :modal="true" :style="{ width: '600px' }">
-                <p-datatable :value="documentTypes" striped-rows>
-                    <p-column field="name" header="Name"></p-column>
-                    <p-column header="Mandatory">
-                        <template #body="slotProps">
-                            <i :class="slotProps.data.mandatory ? 'pi pi-check-circle' : 'pi pi-times-circle'" 
-                               :style="{ color: slotProps.data.mandatory ? '#22c55e' : '#94a3b8' }"></i>
-                        </template>
-                    </p-column>
-                    <p-column header="Has Expiry">
-                        <template #body="slotProps">
-                            <i :class="slotProps.data.hasExpiry ? 'pi pi-check-circle' : 'pi pi-times-circle'" 
-                               :style="{ color: slotProps.data.hasExpiry ? '#22c55e' : '#94a3b8' }"></i>
-                        </template>
-                    </p-column>
-                </p-datatable>
-            </p-dialog>
-        </div>
+            </div>
     `,
 
     setup() {
@@ -889,9 +757,6 @@ const CompanySettingsComponent = {
         const showOfficeDialog = ref(false);
         const showCostCenterDialog = ref(false);
         const showWorkWeekDialog = ref(false);
-        const showAddDocDialog = ref(false);
-        const showUpdateExpiryDialog = ref(false);
-        const showDocTypeDialog = ref(false);
 
         // Edit states
         const editingHoliday = ref(null);
@@ -902,7 +767,6 @@ const CompanySettingsComponent = {
         const editingOffice = ref(null);
         const editingCostCenter = ref(null);
         const editingWorkWeek = ref(null);
-        const editingDoc = ref(null);
 
         // Data
         const countriesOfWork = ref([...StaticData.countriesOfWork]);
@@ -917,8 +781,6 @@ const CompanySettingsComponent = {
         const jobTitles = ref([...StaticData.jobTitles]);
         const offices = ref([...StaticData.offices]);
         const costCenters = ref([...StaticData.costCenters]);
-        const documentTypes = ref([...StaticData.documentTypes]);
-        const documents = ref([...StaticData.documents]);
         const workWeeks = ref([...StaticData.workWeeks]);
         const employees = ref([...StaticData.employees]);
         const attendanceSettings = ref({ ...StaticData.attendanceSettings });
@@ -933,17 +795,14 @@ const CompanySettingsComponent = {
 
         const countryOptions = computed(() => countriesOfWork.value.map(c => c.name));
 
-        // Document counts
-        const validDocsCount = computed(() => documents.value.filter(d => d.status === 'valid').length);
-        const expiredDocsCount = computed(() => documents.value.filter(d => d.status === 'expired').length);
 
         // Forms
         const newCountry = ref({ selected: null, timezone: null });
-        const holidayForm = ref({ country: null, name: '', startDate: null, endDate: null });
+        const holidayForm = ref({ country: null, countries: [], name: '', startDate: null, endDate: null });
         const orgForm = ref({ name: '', parentId: null });
         const gradeForm = ref({ name: '', description: '', parentId: null });
         const officeForm = ref({ name: '', country: null, googleMapsLink: '', active: true });
-        const costCenterForm = ref({ code: '', name: '', tag: null, active: true });
+        const costCenterForm = ref({ code: '', name: '', country: null, tag: null, active: true });
         const costCenterTagOptions = ref([
             { label: 'COGS', value: 'cogs' },
             { label: 'G&A', value: 'ga' },
@@ -954,8 +813,6 @@ const CompanySettingsComponent = {
             days: { Sunday: false, Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false },
             active: true 
         });
-        const addDocForm = ref({ employeeId: null, documentType: null, expiryDate: null });
-        const updateExpiryForm = ref({ docId: null, expiryDate: null });
 
         // Helper functions
         const getDepartmentName = (id) => departments.value.find(d => d.id === id)?.name || '';
@@ -1007,31 +864,37 @@ const CompanySettingsComponent = {
         };
 
         const saveHoliday = () => {
-            if (holidayForm.value.country && holidayForm.value.name && holidayForm.value.startDate) {
-                const data = {
-                    country: holidayForm.value.country,
+            if (holidayForm.value.name && holidayForm.value.startDate) {
+                const baseData = {
                     name: holidayForm.value.name,
                     startDate: formatDate(holidayForm.value.startDate),
                     endDate: formatDate(holidayForm.value.endDate || holidayForm.value.startDate),
                     year: holidayForm.value.startDate.getFullYear()
                 };
+                
                 if (editingHoliday.value) {
+                    if (!holidayForm.value.country) return;
                     const idx = holidays.value.findIndex(h => h.id === editingHoliday.value.id);
-                    if (idx !== -1) holidays.value[idx] = { ...data, id: editingHoliday.value.id };
+                    if (idx !== -1) holidays.value[idx] = { ...baseData, country: holidayForm.value.country, id: editingHoliday.value.id };
                 } else {
-                    const maxId = Math.max(...holidays.value.map(h => h.id), 0);
-                    holidays.value.push({ ...data, id: maxId + 1 });
+                    if (!holidayForm.value.countries || holidayForm.value.countries.length === 0) return;
+                    let maxId = Math.max(...holidays.value.map(h => h.id), 0);
+                    holidayForm.value.countries.forEach(country => {
+                        maxId++;
+                        holidays.value.push({ ...baseData, country: country, id: maxId });
+                    });
                 }
                 showHolidayDialog.value = false;
                 editingHoliday.value = null;
-                holidayForm.value = { country: null, name: '', startDate: null, endDate: null };
+                holidayForm.value = { country: null, countries: [], name: '', startDate: null, endDate: null };
             }
         };
 
         const editHoliday = (holiday) => {
             editingHoliday.value = holiday;
             holidayForm.value = { 
-                country: holiday.country, 
+                country: holiday.country,
+                countries: [],
                 name: holiday.name, 
                 startDate: null, 
                 endDate: null 
@@ -1155,13 +1018,13 @@ const CompanySettingsComponent = {
         // Cost Center methods
         const openCostCenterDialog = () => {
             editingCostCenter.value = null;
-            costCenterForm.value = { code: '', name: '', tag: null, active: true };
+            costCenterForm.value = { code: '', name: '', country: null, tag: null, active: true };
             showCostCenterDialog.value = true;
         };
 
         const editCostCenter = (cc) => {
             editingCostCenter.value = cc;
-            costCenterForm.value = { code: cc.code, name: cc.name, tag: cc.tag || null, active: cc.active };
+            costCenterForm.value = { code: cc.code, name: cc.name, country: cc.country || null, tag: cc.tag || null, active: cc.active };
             showCostCenterDialog.value = true;
         };
 
@@ -1218,64 +1081,23 @@ const CompanySettingsComponent = {
             workWeeks.value = workWeeks.value.filter(w => w.id !== id);
         };
 
-        // Document methods
-        const saveDocument = () => {
-            const emp = employees.value.find(e => e.id === addDocForm.value.employeeId);
-            if (emp && addDocForm.value.documentType) {
-                const maxId = Math.max(...documents.value.map(d => d.id), 0);
-                documents.value.push({
-                    id: maxId + 1,
-                    employeeId: emp.id,
-                    employeeName: `${emp.firstName} ${emp.familyName}`,
-                    employeeAvatar: emp.avatar,
-                    documentType: addDocForm.value.documentType,
-                    isPrimary: false,
-                    expiryDate: addDocForm.value.expiryDate ? formatDate(addDocForm.value.expiryDate) : null,
-                    expiresIn: 'N/A',
-                    status: 'valid',
-                    lastUpdated: formatDate(new Date())
-                });
-                showAddDocDialog.value = false;
-                addDocForm.value = { employeeId: null, documentType: null, expiryDate: null };
-            }
-        };
-
-        const updateDocExpiry = (doc) => {
-            editingDoc.value = doc;
-            updateExpiryForm.value = { docId: doc.id, expiryDate: null };
-            showUpdateExpiryDialog.value = true;
-        };
-
-        const saveExpiryUpdate = () => {
-            const idx = documents.value.findIndex(d => d.id === updateExpiryForm.value.docId);
-            if (idx !== -1 && updateExpiryForm.value.expiryDate) {
-                documents.value[idx].expiryDate = formatDate(updateExpiryForm.value.expiryDate);
-                documents.value[idx].status = 'valid';
-                documents.value[idx].lastUpdated = formatDate(new Date());
-            }
-            showUpdateExpiryDialog.value = false;
-        };
-
         return {
             // Tabs
             activeTab, orgTab, gradeTab,
             // Dialogs
             showCountryDialog, showHolidayDialog, showOrgDialog, showGradeDialog,
             showOfficeDialog, showCostCenterDialog, showWorkWeekDialog,
-            showAddDocDialog, showUpdateExpiryDialog, showDocTypeDialog,
             // Edit states
             editingHoliday, editingOrg, orgType, editingGrade, gradeType,
             editingOffice, editingCostCenter, editingWorkWeek,
             // Data
             countriesOfWork, timezones, holidays, departments, sections, units, teams,
-            mainGrades, subGrades, jobTitles, offices, costCenters, documentTypes, documents,
+            mainGrades, subGrades, jobTitles, offices, costCenters,
             workWeeks, employees, attendanceSettings,
             weekDaysList, availableCountries, countryOptions,
-            // Counts
-            validDocsCount, expiredDocsCount,
             // Forms
             newCountry, holidayForm, orgForm, gradeForm, officeForm, costCenterForm, costCenterTagOptions,
-            workWeekForm, addDocForm, updateExpiryForm,
+            workWeekForm,
             // Helpers
             getCostCenterTagLabel,
             getDepartmentName, getSectionName, getUnitName, getMainGradeName, getSubGradeName,
@@ -1289,7 +1111,6 @@ const CompanySettingsComponent = {
             openOfficeDialog, editOffice, saveOffice, deleteOffice,
             openCostCenterDialog, editCostCenter, saveCostCenter, deleteCostCenter,
             openWorkWeekDialog, editWorkWeek, saveWorkWeek, deleteWorkWeek,
-            saveDocument, updateDocExpiry, saveExpiryUpdate
         };
     }
 };

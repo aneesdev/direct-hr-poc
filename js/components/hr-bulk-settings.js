@@ -101,16 +101,6 @@ const HrBulkSettingsComponent = {
                                         </div>
 
                                         <div class="form-group" style="margin-top: 1rem;">
-                                            <label class="form-label">Applies To</label>
-                                            <p-multiselect v-model="ramadanForm.appliesTo" :options="departmentOptions" 
-                                                          optionLabel="name" optionValue="id"
-                                                          placeholder="Select departments/locations" 
-                                                          style="width: 100%;" display="chip">
-                                            </p-multiselect>
-                                            <small class="form-hint">Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.</small>
-                                        </div>
-
-                                        <div class="form-group" style="margin-top: 1rem;">
                                             <label class="form-label">Cutoff Time</label>
                                             <p-select v-model="ramadanForm.cutoffTime" :options="cutoffTimeOptions" 
                                                       placeholder="Select Time" style="width: 100%;">
@@ -135,32 +125,6 @@ const HrBulkSettingsComponent = {
 
                                     <div class="form-actions">
                                         <p-button label="Save Configuration" icon="pi pi-save" @click="saveRamadanConfig"></p-button>
-                                    </div>
-                                </div>
-
-                                <div class="form-sidebar">
-                                    <!-- Quick Summary -->
-                                    <div class="summary-card">
-                                        <div class="summary-header">
-                                            <i class="pi pi-info-circle"></i>
-                                            <span>Quick Summary</span>
-                                        </div>
-                                        <p class="summary-text">
-                                            This mode simplifies the attendance tracking system to accommodate the flexible working hours during the holy month.
-                                        </p>
-                                    </div>
-
-                                    <!-- Target Audience -->
-                                    <div class="audience-card">
-                                        <div class="audience-header">Target Audience</div>
-                                        <div class="audience-item">
-                                            <span class="audience-label">Locations</span>
-                                            <span class="audience-value">Multi-Select</span>
-                                        </div>
-                                        <div class="audience-item">
-                                            <span class="audience-label">Shift Type</span>
-                                            <span class="audience-value">Open Shift</span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -208,6 +172,15 @@ const HrBulkSettingsComponent = {
                                                   optionLabel="name" optionValue="id"
                                                   placeholder="Select eligibility criteria" style="width: 100%;">
                                         </p-select>
+                                    </div>
+
+                                    <div class="form-group" style="margin-top: 1.5rem;">
+                                        <label class="form-label">Expiry Date</label>
+                                        <p-datepicker v-model="giftsForm.expiryDate" dateFormat="dd/mm/yy" 
+                                                     placeholder="Select expiry date" showIcon iconDisplay="input"
+                                                     style="width: 100%;">
+                                        </p-datepicker>
+                                        <small class="form-hint">Date by which employees must use this vacation gift.</small>
                                     </div>
 
                                     <div class="form-group" style="margin-top: 1.5rem;">
@@ -270,7 +243,7 @@ const HrBulkSettingsComponent = {
                                         </div>
                                     </template>
                                 </p-column>
-                                <p-column header="Date of Action" sortable field="dateOfAction">
+                                <p-column header="Submitted" sortable field="dateOfAction">
                                     <template #body="slotProps">
                                         <div class="date-cell">
                                             <i class="pi pi-calendar"></i>
@@ -329,7 +302,7 @@ const HrBulkSettingsComponent = {
                             <span class="detail-value">{{ selectedLog.hrUserRole }}</span>
                         </div>
                         <div class="log-detail-item">
-                            <span class="detail-label">Date of Action</span>
+                            <span class="detail-label">Submitted</span>
                             <span class="detail-value">{{ formatDate(selectedLog.dateOfAction) }}</span>
                         </div>
                         <div class="log-detail-item">
@@ -369,7 +342,6 @@ const HrBulkSettingsComponent = {
             active: false,
             startDate: null,
             endDate: null,
-            appliesTo: [],
             cutoffTime: null
         });
 
@@ -377,6 +349,7 @@ const HrBulkSettingsComponent = {
         const giftsForm = ref({
             giftValue: null,
             eligibility: null,
+            expiryDate: null,
             ceoMessage: ''
         });
 
@@ -426,8 +399,7 @@ const HrBulkSettingsComponent = {
                 details: {
                     startDate: '2024-03-10',
                     endDate: '2024-04-09',
-                    cutoffTime: '06:00 AM',
-                    locations: 'All Departments'
+                    cutoffTime: '06:00 AM'
                 }
             },
             {
@@ -444,6 +416,7 @@ const HrBulkSettingsComponent = {
                 details: {
                     giftValue: '3 days paid vacation',
                     eligibility: 'All Active Employees (Probation Completed)',
+                    expiryDate: '2024-12-31',
                     message: 'Thank you for your dedication...'
                 }
             },
@@ -461,8 +434,7 @@ const HrBulkSettingsComponent = {
                 details: {
                     startDate: '2025-02-28',
                     endDate: '2025-03-29',
-                    cutoffTime: '05:00 AM',
-                    locations: 'Saudi Arabia, Cairo'
+                    cutoffTime: '05:00 AM'
                 }
             }
         ]);
@@ -537,7 +509,6 @@ const HrBulkSettingsComponent = {
             selectedLog,
             ramadanForm,
             giftsForm,
-            departmentOptions,
             cutoffTimeOptions,
             giftOptions,
             eligibilityOptions,

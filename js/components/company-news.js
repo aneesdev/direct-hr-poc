@@ -46,6 +46,24 @@ const CompanyNewsComponent = {
                             <div class="stat-label">Greetings</div>
                         </div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-icon cyan">
+                            <i class="pi pi-megaphone"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value">{{ announcementCount }}</div>
+                            <div class="stat-label">Announcements</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon teal">
+                            <i class="pi pi-building"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value">{{ companyUpdateCount }}</div>
+                            <div class="stat-label">Company Updates</div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- News Table -->
@@ -77,6 +95,12 @@ const CompanyNewsComponent = {
                             </button>
                             <button class="filter-tab" :class="{ active: categoryFilter === 'greeting' }" @click="categoryFilter = 'greeting'">
                                 Greetings <span class="filter-count">{{ greetingCount }}</span>
+                            </button>
+                            <button class="filter-tab" :class="{ active: categoryFilter === 'announcement' }" @click="categoryFilter = 'announcement'">
+                                Announcements <span class="filter-count">{{ announcementCount }}</span>
+                            </button>
+                            <button class="filter-tab" :class="{ active: categoryFilter === 'company-update' }" @click="categoryFilter = 'company-update'">
+                                Company Updates <span class="filter-count">{{ companyUpdateCount }}</span>
                             </button>
                         </div>
                     </div>
@@ -174,6 +198,16 @@ const CompanyNewsComponent = {
                                          @click="form.category = 'greeting'">
                                         <i class="pi pi-heart"></i>
                                         <span>GREETING</span>
+                                    </div>
+                                    <div class="category-option" :class="{ active: form.category === 'announcement' }" 
+                                         @click="form.category = 'announcement'">
+                                        <i class="pi pi-megaphone"></i>
+                                        <span>ANNOUNCEMENT</span>
+                                    </div>
+                                    <div class="category-option" :class="{ active: form.category === 'company-update' }" 
+                                         @click="form.category = 'company-update'">
+                                        <i class="pi pi-building"></i>
+                                        <span>COMPANY UPDATE</span>
                                     </div>
                                 </div>
                             </div>
@@ -384,6 +418,8 @@ const CompanyNewsComponent = {
         const achievementCount = computed(() => newsList.value.filter(n => n.category === 'achievement').length);
         const eventCount = computed(() => newsList.value.filter(n => n.category === 'event').length);
         const greetingCount = computed(() => newsList.value.filter(n => n.category === 'greeting').length);
+        const announcementCount = computed(() => newsList.value.filter(n => n.category === 'announcement').length);
+        const companyUpdateCount = computed(() => newsList.value.filter(n => n.category === 'company-update').length);
 
         const filteredNews = computed(() => {
             if (!categoryFilter.value) return newsList.value;
@@ -394,7 +430,9 @@ const CompanyNewsComponent = {
             const icons = {
                 'achievement': 'pi pi-trophy',
                 'event': 'pi pi-calendar',
-                'greeting': 'pi pi-heart'
+                'greeting': 'pi pi-heart',
+                'announcement': 'pi pi-megaphone',
+                'company-update': 'pi pi-building'
             };
             return icons[category] || 'pi pi-tag';
         };
@@ -534,6 +572,8 @@ const CompanyNewsComponent = {
             achievementCount,
             eventCount,
             greetingCount,
+            announcementCount,
+            companyUpdateCount,
             filteredNews,
             getCategoryIcon,
             formatDate,

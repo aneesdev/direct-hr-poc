@@ -172,16 +172,41 @@ const HrRequestCenterComponent = {
             },
             {
                 id: 11,
-                name: 'Attendance & Shift Adjustment',
-                description: 'Correct punch-in/out records or modify an assigned shift schedule.',
+                name: 'Attendance Adjustment',
+                description: 'Correct punch-in/out records for a specific date.',
                 icon: 'pi-clock',
                 color: '#ec4899',
                 fields: [
-                    { id: 'adjustmentType', group: 'Adjustment Details', label: 'Adjustment Type', type: 'dropdown', options: ['Punch Correction', 'Shift Change', 'Overtime Request'] },
-                    { id: 'adjustmentDate', group: 'Adjustment Details', label: 'Date', type: 'date' },
-                    { id: 'reason', group: 'Adjustment Details', label: 'Reason', type: 'textarea' }
+                    { id: 'adjustmentDate', group: 'Punch Correction', label: 'Date', type: 'date' },
+                    { id: 'punchIn', group: 'Punch Correction', label: 'Punch In', type: 'time' },
+                    { id: 'punchOut', group: 'Punch Correction', label: 'Punch Out', type: 'time' }
                 ],
                 summaryTitle: 'Summary'
+            },
+            {
+                id: 12,
+                name: 'Compound Leaves',
+                description: 'Request compound leave days for multiple consecutive days off.',
+                icon: 'pi-calendar-plus',
+                color: '#0891b2',
+                fields: [
+                    { id: 'numberOfDays', group: 'Leave Details', label: 'Number of Days', type: 'number' }
+                ],
+                summaryTitle: 'Leave Summary'
+            },
+            {
+                id: 13,
+                name: 'Schedule Configuration',
+                description: 'Request changes to work week template, shift assignment, or attendance record method.',
+                icon: 'pi-calendar',
+                color: '#8b5cf6',
+                fields: [
+                    { id: 'workWeek', group: 'Schedule Settings', label: 'Work Week Template', type: 'workweek_select' },
+                    { id: 'shift', group: 'Schedule Settings', label: 'Shift', type: 'shift_select' },
+                    { id: 'attendanceMethod', group: 'Attendance Method', label: 'Attendance Record Method', type: 'attendance_method' },
+                    { id: 'office', group: 'Attendance Method', label: 'Office Location', type: 'dropdown', options: ['HQ - Main Office', 'Branch - Riyadh', 'Branch - Dubai'], showWhen: { field: 'attendanceMethod', values: ['office', 'hybrid'] } }
+                ],
+                summaryTitle: 'Schedule Summary'
             }
         ]);
 

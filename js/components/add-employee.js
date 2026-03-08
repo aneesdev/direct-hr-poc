@@ -678,19 +678,61 @@ const AddEmployeeComponent = {
                                         <div v-if="slotProps.value" class="shift-select-value">
                                             <span class="shift-color-dot" :style="{ backgroundColor: getShiftById(slotProps.value)?.color }"></span>
                                             <span class="shift-name">{{ getShiftById(slotProps.value)?.name }}</span>
-                                            <span class="shift-time">{{ getShiftById(slotProps.value)?.startTime }} - {{ getShiftById(slotProps.value)?.endTime }}</span>
+                                            <span class="shift-type-tag" :class="getShiftById(slotProps.value)?.shiftType">{{ getShiftTypeLabel(getShiftById(slotProps.value)?.shiftType) }}</span>
+                                            <span v-if="getShiftById(slotProps.value)?.shiftType !== 'flexible'" class="shift-time">{{ getShiftById(slotProps.value)?.startTime }} - {{ getShiftById(slotProps.value)?.endTime }}</span>
+                                            <span v-else class="shift-time">{{ getShiftById(slotProps.value)?.requiredHours }} hrs/day</span>
                                         </div>
                                         <span v-else>Select shift</span>
                                     </template>
                                     <template #option="slotProps">
-                                        <div class="shift-option">
-                                            <span class="shift-color-dot" :style="{ backgroundColor: slotProps.option.color }"></span>
-                                            <div class="shift-option-details">
-                                                <div class="shift-name">{{ slotProps.option.name }}</div>
-                                                <div class="shift-meta">
-                                                    <span class="shift-time">{{ slotProps.option.startTime }} - {{ slotProps.option.endTime }}</span>
-                                                    <span class="shift-hours"><i class="pi pi-clock"></i> {{ slotProps.option.workingHours }} hrs</span>
+                                        <div class="shift-option-enhanced">
+                                            <div class="shift-option-header">
+                                                <span class="shift-color-dot" :style="{ backgroundColor: slotProps.option.color }"></span>
+                                                <div class="shift-option-name-row">
+                                                    <span class="shift-name">{{ slotProps.option.name }}</span>
+                                                    <span class="shift-type-tag" :class="slotProps.option.shiftType">{{ getShiftTypeLabel(slotProps.option.shiftType) }}</span>
                                                 </div>
+                                            </div>
+                                            <div class="shift-option-details">
+                                                <div class="shift-meta">
+                                                    <span v-if="slotProps.option.shiftType !== 'flexible'" class="shift-time">
+                                                        <i class="pi pi-clock"></i> {{ slotProps.option.startTime }} - {{ slotProps.option.endTime }}
+                                                    </span>
+                                                    <span v-else class="shift-time">
+                                                        <i class="pi pi-clock"></i> {{ slotProps.option.validFrom }} - {{ slotProps.option.validTo }} window
+                                                    </span>
+                                                    <span class="shift-hours">{{ slotProps.option.workingHours }} hrs</span>
+                                                </div>
+                                                <button type="button" class="view-rules-btn" @click.stop.prevent="toggleShiftRules(slotProps.option.id)" @mousedown.stop.prevent>
+                                                    <i class="pi pi-eye"></i> {{ expandedShiftRules === slotProps.option.id ? 'Hide' : 'View' }} Rules
+                                                </button>
+                                            </div>
+                                            <div v-if="expandedShiftRules === slotProps.option.id" class="shift-rules-panel" @click.stop @mousedown.stop>
+                                                <template v-if="slotProps.option.shiftType === 'flexible'">
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Required Hours:</span>
+                                                        <span class="rule-value">{{ slotProps.option.requiredHours }} hours/day</span>
+                                                    </div>
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Valid Window:</span>
+                                                        <span class="rule-value">{{ slotProps.option.validFrom }} - {{ slotProps.option.validTo }}</span>
+                                                    </div>
+                                                </template>
+                                                <template v-else-if="slotProps.option.clockIn">
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Clock In:</span>
+                                                        <span class="rule-value">{{ slotProps.option.clockIn.noEarlierThan }} min early, {{ slotProps.option.clockIn.allowedDelay }} min delay allowed</span>
+                                                    </div>
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">Clock Out:</span>
+                                                        <span class="rule-value">{{ slotProps.option.clockOut.noEarlierThan }} min early allowed</span>
+                                                    </div>
+                                                </template>
+                                                <template v-else>
+                                                    <div class="rules-row">
+                                                        <span class="rule-label">No specific rules defined</span>
+                                                    </div>
+                                                </template>
                                             </div>
                                         </div>
                                     </template>
@@ -729,6 +771,13 @@ const AddEmployeeComponent = {
                                         <span>From System</span>
                                     </label>
                                 </div>
+                                <div class="attendance-method-option" :class="{ active: form.attendanceMethod === 'hybrid' }" @click="form.attendanceMethod = 'hybrid'">
+                                    <p-radiobutton v-model="form.attendanceMethod" value="hybrid" inputId="methodHybrid"></p-radiobutton>
+                                    <label for="methodHybrid">
+                                        <i class="pi pi-sync"></i>
+                                        <span>Hybrid</span>
+                                    </label>
+                                </div>
                                 <div class="attendance-method-option" :class="{ active: form.attendanceMethod === 'not_required' }" @click="form.attendanceMethod = 'not_required'">
                                     <p-radiobutton v-model="form.attendanceMethod" value="not_required" inputId="methodNotRequired"></p-radiobutton>
                                     <label for="methodNotRequired">
@@ -736,6 +785,10 @@ const AddEmployeeComponent = {
                                         <span>Not Required</span>
                                     </label>
                                 </div>
+                            </div>
+                            <div v-if="form.attendanceMethod === 'not_required'" class="attendance-method-warning">
+                                <i class="pi pi-info-circle"></i>
+                                <span>Only for site visit / intern employees</span>
                             </div>
                         </div>
 
@@ -1069,6 +1122,26 @@ const AddEmployeeComponent = {
             return shiftTemplates.value.find(s => s.id === id);
         };
 
+        // Shift rules toggle
+        const expandedShiftRules = ref(null);
+
+        const toggleShiftRules = (shiftId) => {
+            if (expandedShiftRules.value === shiftId) {
+                expandedShiftRules.value = null;
+            } else {
+                expandedShiftRules.value = shiftId;
+            }
+        };
+
+        const getShiftTypeLabel = (type) => {
+            const labels = { 
+                'normal': 'Normal Shift', 
+                'template': 'Template Day Shift', 
+                'flexible': 'Flexible Shift' 
+            };
+            return labels[type] || (type ? type.charAt(0).toUpperCase() + type.slice(1) : '');
+        };
+
         // Computed filtered options
         const filteredSections = computed(() => {
             if (!form.value.department) return [];
@@ -1268,6 +1341,9 @@ const AddEmployeeComponent = {
             formatCurrency,
             getWorkWeekById,
             getShiftById,
+            expandedShiftRules,
+            toggleShiftRules,
+            getShiftTypeLabel,
             goToStep,
             nextStep,
             prevStep,

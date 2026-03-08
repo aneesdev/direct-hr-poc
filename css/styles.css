@@ -570,6 +570,11 @@ img {
     color: #06b6d4;
 }
 
+.stat-icon.teal {
+    background: rgba(20, 184, 166, 0.15);
+    color: #14b8a6;
+}
+
 .stat-value {
     font-size: 1.75rem;
     font-weight: 700;
@@ -608,6 +613,13 @@ img {
 
 .form-label .required {
     color: #ef4444;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
 }
 
 /* ==========================================================================
@@ -6153,6 +6165,13 @@ img {
     flex-wrap: wrap;
 }
 
+/* 2x2 Grid layout for HR Help Desk form */
+.attendance-method-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
 .attendance-method-option {
     display: flex;
     align-items: center;
@@ -6163,7 +6182,7 @@ img {
     cursor: pointer;
     transition: all 0.2s ease;
     flex: 1;
-    min-width: 150px;
+    min-width: 120px;
 }
 
 .attendance-method-option:hover {
@@ -6342,6 +6361,160 @@ img {
 
 .shift-option .shift-hours i {
     font-size: 0.7rem;
+}
+
+/* Enhanced Shift Dropdown */
+.shift-select-value .shift-type-tag,
+.shift-type-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.shift-type-tag.normal {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.shift-type-tag.template {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.shift-type-tag.flexible {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.shift-option-enhanced {
+    padding: 0.5rem 0;
+}
+
+.shift-option-enhanced .shift-option-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.shift-option-enhanced .shift-color-dot {
+    margin-top: 0.35rem;
+}
+
+.shift-option-enhanced .shift-option-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.shift-option-enhanced .shift-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.shift-option-enhanced .shift-option-details {
+    margin-left: 1.6rem;
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.shift-option-enhanced .shift-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.shift-option-enhanced .shift-time {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.shift-option-enhanced .shift-time i {
+    font-size: 0.7rem;
+}
+
+.shift-option-enhanced .shift-hours {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    background: var(--surface-ground);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.view-rules-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.view-rules-btn:hover {
+    background: rgba(var(--primary-color-rgb, 249, 115, 22), 0.1);
+}
+
+.view-rules-btn i {
+    font-size: 0.7rem;
+}
+
+.shift-rules-panel {
+    margin-left: 1.6rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface-ground);
+    border-radius: 6px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.shift-rules-panel .rules-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.2rem 0;
+}
+
+.shift-rules-panel .rule-label {
+    color: var(--text-color-secondary);
+    font-weight: 500;
+}
+
+.shift-rules-panel .rule-value {
+    color: var(--text-color);
+}
+
+/* Attendance Method Warning */
+.attendance-method-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    color: #92400e;
+    font-size: 0.85rem;
+}
+
+.attendance-method-warning i {
+    color: #d97706;
 }
 
 .file-preview-image {
@@ -9768,6 +9941,19 @@ img {
     font-weight: 600;
     margin: 0;
     color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.type-balance-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border-radius: 4px;
+    white-space: nowrap;
 }
 
 .type-card-arrow {
@@ -11906,6 +12092,29 @@ img {
 .reviewer-card.selected {
     border-color: var(--primary-color);
     background: rgba(255, 110, 5, 0.05);
+}
+
+.reviewer-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.committee-limit-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 0.85rem;
+}
+
+.committee-limit-info i {
+    color: #d97706;
 }
 
 .reviewer-avatar {
@@ -16602,6 +16811,16 @@ img {
     color: #16a34a;
 }
 
+.category-badge.announcement {
+    background: rgba(6, 182, 212, 0.15);
+    color: #0891b2;
+}
+
+.category-badge.company-update {
+    background: rgba(20, 184, 166, 0.15);
+    color: #0d9488;
+}
+
 .engagement-cell {
     display: flex;
     gap: 1rem;
@@ -16823,6 +17042,16 @@ img {
 
 .preview-badge.greeting {
     background: #16a34a;
+    color: #fff;
+}
+
+.preview-badge.announcement {
+    background: #0891b2;
+    color: #fff;
+}
+
+.preview-badge.company-update {
+    background: #0d9488;
     color: #fff;
 }
 
@@ -20729,6 +20958,31 @@ img {
     color: #3b82f6;
 }
 
+/* Document Status Tag (Iqama) */
+.doc-status-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.doc-status-tag.valid {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+}
+
+.doc-status-tag.near_expire {
+    background: rgba(249, 115, 22, 0.15);
+    color: #ea580c;
+}
+
+.doc-status-tag.expired {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
 /* File Type Badge */
 .file-type-badge {
     display: inline-flex;
@@ -23417,6 +23671,88 @@ img {
     padding: 0;
 }
 
+/* Send Reminder Button & Dialog */
+.action-icon-btn.reminder {
+    color: #8b5cf6;
+}
+
+.action-icon-btn.reminder:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: transparent;
+    color: #8b5cf6;
+}
+
+.reminder-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.reminder-recipient {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.reminder-recipient label {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+}
+
+.recipient-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface-50);
+    border-radius: var(--radius-md);
+}
+
+.recipient-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.recipient-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.recipient-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.recipient-path {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.reminder-message-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.reminder-message-group label {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+}
+
+.log-icon.reminder {
+    border-color: #8b5cf6;
+}
+
 /* Training Insights Page */
 .training-insights-page .page-header-row {
     display: flex;
@@ -23845,4 +24181,208 @@ img {
     display: flex;
     gap: 0.5rem;
     margin-top: 0.5rem;
+}
+
+/* Activity Log Badges */
+.activity-action-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.activity-action-badge.created {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.activity-action-badge.updated {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.activity-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+}
+
+/* Type View Dialog */
+.type-view-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.type-view-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.type-view-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.type-view-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.type-detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.type-detail-row .detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+}
+
+.type-detail-row .detail-value {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.type-view-section {
+    padding: 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+}
+
+.type-view-section h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+
+.approval-flow-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.approval-flow-summary .flow-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.approval-flow-summary .flow-item i {
+    font-size: 0.75rem;
+    color: var(--primary-color);
+}
+
+.conditional-flow-summary {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+.conditional-flow-summary .condition-note {
+    font-size: 0.8rem;
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Clickable Stat Cards */
+.stat-card.clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.stat-card.clickable:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+}
+
+.stat-card.stat-active {
+    border-color: var(--primary-color);
+    background: rgba(249, 115, 22, 0.05);
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+}
+
+/* Current Step Cell */
+.current-step-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.approver-name-small {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    font-style: italic;
+}
+
+/* SLA Badge */
+.sla-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.sla-badge.good {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.sla-badge.warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.sla-badge.critical {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.sla-badge.completed {
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+}
+
+/* Filters Card */
+.filters-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
 }

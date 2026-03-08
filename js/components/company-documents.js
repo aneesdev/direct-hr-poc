@@ -1,6 +1,6 @@
 /**
- * Company Documents Component
- * CRUD for managing company documents and policies
+ * Directory Documents Component
+ * CRUD for managing directory documents and policies
  */
 
 const CompanyDocumentsComponent = {
@@ -20,30 +20,21 @@ const CompanyDocumentsComponent = {
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon orange">
-                            <i class="pi pi-file-pdf"></i>
-                        </div>
-                        <div>
-                            <div class="stat-value">{{ policyCount }}</div>
-                            <div class="stat-label">Policies</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon purple">
-                            <i class="pi pi-book"></i>
-                        </div>
-                        <div>
-                            <div class="stat-value">{{ guideCount }}</div>
-                            <div class="stat-label">Guides</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-icon green">
                             <i class="pi pi-check-circle"></i>
                         </div>
                         <div>
                             <div class="stat-value">{{ activeCount }}</div>
-                            <div class="stat-label">Active</div>
+                            <div class="stat-label">Active Documents</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="pi pi-download"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value">{{ totalDownloads }}</div>
+                            <div class="stat-label">Total Downloads</div>
                         </div>
                     </div>
                 </div>
@@ -54,34 +45,16 @@ const CompanyDocumentsComponent = {
                         <div>
                             <div class="card-title">
                                 <i class="pi pi-folder"></i>
-                                Company Documents
+                                Directory Documents
                             </div>
-                            <div class="card-subtitle">Manage company policies, guides, and official documents</div>
+                            <div class="card-subtitle">Manage official documents and policies</div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
                             <p-button label="Add Document" icon="pi pi-plus" @click="openForm(null)"></p-button>
                         </div>
                     </div>
 
-                    <!-- Filters -->
-                    <div class="request-filters">
-                        <div class="filter-tabs">
-                            <button class="filter-tab" :class="{ active: categoryFilter === null }" @click="categoryFilter = null">
-                                All <span class="filter-count">{{ documentsList.length }}</span>
-                            </button>
-                            <button class="filter-tab" :class="{ active: categoryFilter === 'policy' }" @click="categoryFilter = 'policy'">
-                                Policies <span class="filter-count">{{ policyCount }}</span>
-                            </button>
-                            <button class="filter-tab" :class="{ active: categoryFilter === 'guide' }" @click="categoryFilter = 'guide'">
-                                Guides <span class="filter-count">{{ guideCount }}</span>
-                            </button>
-                            <button class="filter-tab" :class="{ active: categoryFilter === 'regulation' }" @click="categoryFilter = 'regulation'">
-                                Regulations <span class="filter-count">{{ regulationCount }}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <p-datatable :value="filteredDocuments" striped-rows paginator :rows="10" 
+                    <p-datatable :value="documentsList" striped-rows paginator :rows="10" 
                                  :rowsPerPageOptions="[5, 10, 20]">
                         <p-column header="Document" sortable field="name">
                             <template #body="slotProps">
@@ -94,13 +67,6 @@ const CompanyDocumentsComponent = {
                                         <div class="doc-name-ar">{{ slotProps.data.nameAr }}</div>
                                     </div>
                                 </div>
-                            </template>
-                        </p-column>
-                        <p-column header="Category" sortable field="category">
-                            <template #body="slotProps">
-                                <span class="doc-category-badge" :class="slotProps.data.category">
-                                    {{ formatCategory(slotProps.data.category) }}
-                                </span>
                             </template>
                         </p-column>
                         <p-column header="File Type" sortable field="fileType">
@@ -131,14 +97,11 @@ const CompanyDocumentsComponent = {
                                        :severity="slotProps.data.status === 'active' ? 'success' : 'warn'"></p-tag>
                             </template>
                         </p-column>
-                        <p-column header="Actions">
+                        <p-column header="Actions" style="width: 80px;">
                             <template #body="slotProps">
                                 <div class="action-buttons">
                                     <button class="action-icon-btn" @click="openForm(slotProps.data)" v-tooltip.top="'Edit'">
                                         <i class="pi pi-pencil"></i>
-                                    </button>
-                                    <button class="action-icon-btn danger" @click="confirmDelete(slotProps.data)" v-tooltip.top="'Delete'">
-                                        <i class="pi pi-trash"></i>
                                     </button>
                                 </div>
                             </template>
@@ -187,11 +150,6 @@ const CompanyDocumentsComponent = {
 
                             <div class="form-grid" style="margin-top: 1rem;">
                                 <div class="form-group">
-                                    <label class="form-label">Category <span class="required">*</span></label>
-                                    <p-select v-model="docForm.category" :options="categoryOptions" optionLabel="name" optionValue="id" 
-                                              placeholder="Select category" style="width: 100%;"></p-select>
-                                </div>
-                                <div class="form-group">
                                     <label class="form-label">Icon</label>
                                     <p-select v-model="docForm.icon" :options="iconOptions" optionLabel="label" optionValue="value" 
                                               placeholder="Select icon" style="width: 100%;">
@@ -203,19 +161,17 @@ const CompanyDocumentsComponent = {
                                         </template>
                                     </p-select>
                                 </div>
-                            </div>
-
-                            <div class="form-grid" style="margin-top: 1rem;">
                                 <div class="form-group">
                                     <label class="form-label">Icon Color</label>
                                     <p-select v-model="docForm.iconClass" :options="colorOptions" optionLabel="name" optionValue="id" 
                                               placeholder="Select color" style="width: 100%;"></p-select>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Status</label>
-                                    <p-select v-model="docForm.status" :options="statusOptions" 
-                                              placeholder="Select status" style="width: 100%;"></p-select>
-                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label class="form-label">Status</label>
+                                <p-select v-model="docForm.status" :options="statusOptions" 
+                                          placeholder="Select status" style="width: 100%;"></p-select>
                             </div>
 
                             <!-- Document Type Selection -->
@@ -268,28 +224,14 @@ const CompanyDocumentsComponent = {
                 </div>
             </div>
 
-            <!-- Delete Confirmation Dialog -->
-            <p-dialog v-model:visible="showDeleteDialog" header="Confirm Delete" :modal="true" :style="{ width: '400px' }">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: var(--red-500);"></i>
-                    <span>Are you sure you want to delete "{{ docToDelete?.name }}"?</span>
-                </div>
-                <template #footer>
-                    <p-button label="Cancel" severity="danger" outlined @click="showDeleteDialog = false"></p-button>
-                    <p-button label="Delete" severity="danger" @click="deleteDocument"></p-button>
-                </template>
-            </p-dialog>
-        </div>
+            </div>
     `,
 
     setup() {
         const { ref, computed, reactive } = Vue;
 
         const currentView = ref('list');
-        const categoryFilter = ref(null);
         const editingDoc = ref(null);
-        const showDeleteDialog = ref(false);
-        const docToDelete = ref(null);
 
         // Documents data
         const documentsList = ref([
@@ -308,7 +250,6 @@ const CompanyDocumentsComponent = {
             name: '',
             nameAr: '',
             description: '',
-            category: null,
             icon: 'pi-file-pdf',
             iconClass: 'pdf',
             status: 'active',
@@ -318,13 +259,6 @@ const CompanyDocumentsComponent = {
         });
         
         const fileInput = ref(null);
-
-        // Options
-        const categoryOptions = ref([
-            { id: 'policy', name: 'Policy' },
-            { id: 'guide', name: 'Guide' },
-            { id: 'regulation', name: 'Regulation' }
-        ]);
 
         const iconOptions = ref([
             { label: 'PDF File', value: 'pi-file-pdf' },
@@ -360,15 +294,8 @@ const CompanyDocumentsComponent = {
         ]);
 
         // Computed
-        const policyCount = computed(() => documentsList.value.filter(d => d.category === 'policy').length);
-        const guideCount = computed(() => documentsList.value.filter(d => d.category === 'guide').length);
-        const regulationCount = computed(() => documentsList.value.filter(d => d.category === 'regulation').length);
         const activeCount = computed(() => documentsList.value.filter(d => d.status === 'active').length);
-
-        const filteredDocuments = computed(() => {
-            if (!categoryFilter.value) return documentsList.value;
-            return documentsList.value.filter(d => d.category === categoryFilter.value);
-        });
+        const totalDownloads = computed(() => documentsList.value.reduce((sum, d) => sum + d.downloads, 0));
 
         // Methods
         const formatDate = (dateStr) => {
@@ -387,17 +314,12 @@ const CompanyDocumentsComponent = {
             return Math.floor(diff / 30) + ' months ago';
         };
 
-        const formatCategory = (category) => {
-            return category.charAt(0).toUpperCase() + category.slice(1);
-        };
-
         const openForm = (doc) => {
             if (doc) {
                 editingDoc.value = doc;
                 docForm.name = doc.name;
                 docForm.nameAr = doc.nameAr;
                 docForm.description = doc.description || '';
-                docForm.category = doc.category;
                 docForm.icon = doc.icon;
                 docForm.iconClass = doc.iconClass;
                 docForm.status = doc.status;
@@ -409,7 +331,6 @@ const CompanyDocumentsComponent = {
                 docForm.name = '';
                 docForm.nameAr = '';
                 docForm.description = '';
-                docForm.category = null;
                 docForm.icon = 'pi-file-pdf';
                 docForm.iconClass = 'pdf';
                 docForm.status = 'active';
@@ -441,7 +362,7 @@ const CompanyDocumentsComponent = {
         };
 
         const saveDocument = () => {
-            if (!docForm.name || !docForm.category) {
+            if (!docForm.name) {
                 alert('Please fill in all required fields.');
                 return;
             }
@@ -454,7 +375,6 @@ const CompanyDocumentsComponent = {
                         name: docForm.name,
                         nameAr: docForm.nameAr,
                         description: docForm.description,
-                        category: docForm.category,
                         icon: docForm.icon,
                         iconClass: docForm.iconClass,
                         status: docForm.status,
@@ -468,7 +388,6 @@ const CompanyDocumentsComponent = {
                     name: docForm.name,
                     nameAr: docForm.nameAr,
                     description: docForm.description,
-                    category: docForm.category,
                     icon: docForm.icon,
                     iconClass: docForm.iconClass,
                     fileType: 'pdf',
@@ -481,47 +400,24 @@ const CompanyDocumentsComponent = {
             currentView.value = 'list';
         };
 
-        const confirmDelete = (doc) => {
-            docToDelete.value = doc;
-            showDeleteDialog.value = true;
-        };
-
-        const deleteDocument = () => {
-            if (docToDelete.value) {
-                documentsList.value = documentsList.value.filter(d => d.id !== docToDelete.value.id);
-            }
-            showDeleteDialog.value = false;
-            docToDelete.value = null;
-        };
-
         return {
             currentView,
-            categoryFilter,
             editingDoc,
-            showDeleteDialog,
-            docToDelete,
             documentsList,
             docForm,
             fileInput,
-            categoryOptions,
             iconOptions,
             colorOptions,
             statusOptions,
-            policyCount,
-            guideCount,
-            regulationCount,
             activeCount,
-            filteredDocuments,
+            totalDownloads,
             formatDate,
             formatTimeAgo,
-            formatCategory,
             openForm,
             triggerFileInput,
             onFileSelect,
             removeFile,
-            saveDocument,
-            confirmDelete,
-            deleteDocument
+            saveDocument
         };
     }
 };

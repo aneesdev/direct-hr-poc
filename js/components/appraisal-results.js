@@ -209,7 +209,6 @@ const AppraisalResultsComponent = {
                     </div>
                 </div>
                 <template #footer>
-                    <p-button label="Print Official Copy" icon="pi pi-print" text @click="printCopy"></p-button>
                     <p-button label="Close View" icon="pi pi-times" @click="showArchiveModal = false"></p-button>
                 </template>
             </p-dialog>
@@ -333,7 +332,6 @@ const AppraisalResultsComponent = {
             showArchiveModal,
             selectedResult,
             openArchiveModal,
-            printCopy,
             clearFilters
         };
     }

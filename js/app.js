@@ -31,6 +31,7 @@ const app = createApp({
         'hr-request-view': HrRequestViewComponent,
         'hr-bulk-settings': HrBulkSettingsComponent,
         'company-documents': CompanyDocumentsComponent,
+        'employee-documents': EmployeeDocumentsComponent,
         'stats-module': StatsComponent,
         'attendance-static-insights': AttendanceStaticInsights,
         'attendance-dynamic-insights': AttendanceDynamicInsights,

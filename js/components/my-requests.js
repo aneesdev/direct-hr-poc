@@ -9,8 +9,8 @@ const MyRequestsComponent = {
             <!-- List View -->
             <div v-if="!selectedRequest">
                 <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
+                <div class="stats-grid" style="grid-template-columns: repeat(6, 1fr);">
+                    <div class="stat-card clickable" :class="{ 'stat-active': statusFilter === null }" @click="setStatusFilter(null)">
                         <div class="stat-icon blue">
                             <i class="pi pi-list"></i>
                         </div>
@@ -19,7 +19,7 @@ const MyRequestsComponent = {
                             <div class="stat-label">Total Requests</div>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" :class="{ 'stat-active': statusFilter === 'pending' }" @click="setStatusFilter('pending')">
                         <div class="stat-icon orange">
                             <i class="pi pi-clock"></i>
                         </div>
@@ -28,7 +28,16 @@ const MyRequestsComponent = {
                             <div class="stat-label">Pending</div>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" :class="{ 'stat-active': statusFilter === 'in_review' }" @click="setStatusFilter('in_review')">
+                        <div class="stat-icon purple">
+                            <i class="pi pi-eye"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value">{{ inReviewCount }}</div>
+                            <div class="stat-label">In Review</div>
+                        </div>
+                    </div>
+                    <div class="stat-card clickable" :class="{ 'stat-active': statusFilter === 'approved' }" @click="setStatusFilter('approved')">
                         <div class="stat-icon green">
                             <i class="pi pi-check-circle"></i>
                         </div>
@@ -37,13 +46,22 @@ const MyRequestsComponent = {
                             <div class="stat-label">Approved</div>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon purple">
-                            <i class="pi pi-eye"></i>
+                    <div class="stat-card clickable" :class="{ 'stat-active': statusFilter === 'rejected' }" @click="setStatusFilter('rejected')">
+                        <div class="stat-icon red">
+                            <i class="pi pi-times-circle"></i>
                         </div>
                         <div>
-                            <div class="stat-value">{{ inReviewCount }}</div>
-                            <div class="stat-label">In Review</div>
+                            <div class="stat-value">{{ rejectedCount }}</div>
+                            <div class="stat-label">Rejected</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="pi pi-stopwatch"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value">{{ averageSla }}</div>
+                            <div class="stat-label">Avg SLA (Days)</div>
                         </div>
                     </div>
                 </div>
@@ -63,23 +81,72 @@ const MyRequestsComponent = {
                         </div>
                     </div>
 
-                    <!-- Filters -->
+                    <!-- Top Filters -->
+                    <div class="filters-card" style="margin-bottom: 1rem;">
+                        <div class="filters-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
+                            <div class="form-group">
+                                <label class="form-label">Country of Work</label>
+                                <p-select v-model="filters.countryOfWork" :options="countryOptions" optionLabel="name" optionValue="id" 
+                                          placeholder="All Countries" showClear style="width: 100%;"></p-select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Department</label>
+                                <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id" 
+                                          placeholder="All Departments" showClear style="width: 100%;" @change="onDepartmentChange"></p-select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Section</label>
+                                <p-select v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id" 
+                                          placeholder="All Sections" showClear style="width: 100%;" :disabled="!filters.department" @change="onSectionChange"></p-select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Unit</label>
+                                <p-select v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id" 
+                                          placeholder="All Units" showClear style="width: 100%;" :disabled="!filters.section" @change="onUnitChange"></p-select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Team</label>
+                                <p-select v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id" 
+                                          placeholder="All Teams" showClear style="width: 100%;" :disabled="!filters.unit"></p-select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Entity</label>
+                                <p-select v-model="filters.entity" :options="entityOptions" optionLabel="name" optionValue="id" 
+                                          placeholder="All Entities" showClear style="width: 100%;"></p-select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Office</label>
+                                <p-select v-model="filters.office" :options="officeOptions" optionLabel="name" optionValue="id" 
+                                          placeholder="All Offices" showClear style="width: 100%;"></p-select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Submitted Date</label>
+                                <p-datepicker v-model="filters.dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Select date range" showIcon style="width: 100%;"></p-datepicker>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
+                            <p-button label="Reset" icon="pi pi-refresh" severity="secondary" outlined @click="resetFilters" v-if="hasActiveFilters"></p-button>
+                            <p-button label="Apply" icon="pi pi-check" @click="applyFilters"></p-button>
+                        </div>
+                    </div>
+
+                    <!-- Role Filter Tabs -->
                     <div class="request-filters">
                         <div class="filter-tabs">
-                            <button class="filter-tab" :class="{ active: statusFilter === null }" @click="statusFilter = null">
+                            <button class="filter-tab" :class="{ active: roleFilter === null }" @click="setRoleFilter(null)">
                                 All <span class="filter-count">{{ requests.length }}</span>
                             </button>
-                            <button class="filter-tab" :class="{ active: statusFilter === 'pending' }" @click="statusFilter = 'pending'">
-                                Pending <span class="filter-count">{{ pendingCount }}</span>
+                            <button class="filter-tab" :class="{ active: roleFilter === 'line_manager' }" @click="setRoleFilter('line_manager')">
+                                Line Manager <span class="filter-count">{{ lineManagerCount }}</span>
                             </button>
-                            <button class="filter-tab" :class="{ active: statusFilter === 'in_review' }" @click="statusFilter = 'in_review'">
-                                In Review <span class="filter-count">{{ inReviewCount }}</span>
+                            <button class="filter-tab" :class="{ active: roleFilter === 'hr_admin' }" @click="setRoleFilter('hr_admin')">
+                                HR Admin <span class="filter-count">{{ hrAdminCount }}</span>
                             </button>
-                            <button class="filter-tab" :class="{ active: statusFilter === 'approved' }" @click="statusFilter = 'approved'">
-                                Approved <span class="filter-count">{{ approvedCount }}</span>
+                            <button class="filter-tab" :class="{ active: roleFilter === 'hr_manager' }" @click="setRoleFilter('hr_manager')">
+                                HR Manager <span class="filter-count">{{ hrManagerCount }}</span>
                             </button>
-                            <button class="filter-tab" :class="{ active: statusFilter === 'rejected' }" @click="statusFilter = 'rejected'">
-                                Rejected <span class="filter-count">{{ rejectedCount }}</span>
+                            <button class="filter-tab" :class="{ active: roleFilter === 'hr_evp' }" @click="setRoleFilter('hr_evp')">
+                                HR EVP <span class="filter-count">{{ hrEvpCount }}</span>
                             </button>
                         </div>
                     </div>
@@ -113,19 +180,28 @@ const MyRequestsComponent = {
                         </p-column>
                         <p-column header="Submitted" sortable>
                             <template #body="slotProps">
-                                <div class="date-cell">
-                                    <div>{{ formatDate(slotProps.data.submittedAt) }}</div>
-                                    <div class="time-ago">{{ formatTimeAgo(slotProps.data.submittedAt) }}</div>
+                                <div class="date-cell" v-tooltip.top="formatDate(slotProps.data.submittedAt)">
+                                    <div>{{ formatTimeAgo(slotProps.data.submittedAt) }}</div>
                                 </div>
                             </template>
                         </p-column>
                         <p-column header="Current Step">
                             <template #body="slotProps">
-                                <span v-if="slotProps.data.currentApprover" class="current-approver">
-                                    <i class="pi pi-user"></i>
-                                    {{ slotProps.data.currentApprover }}
-                                </span>
+                                <div v-if="slotProps.data.currentApprover" class="current-step-cell">
+                                    <span class="current-approver">
+                                        <i class="pi pi-user"></i>
+                                        {{ slotProps.data.currentApprover }}
+                                    </span>
+                                    <div class="approver-name-small">{{ slotProps.data.currentApproverName || 'Pending Assignment' }}</div>
+                                </div>
                                 <span v-else class="completed-text">Completed</span>
+                            </template>
+                        </p-column>
+                        <p-column header="SLA" style="width: 90px">
+                            <template #body="slotProps">
+                                <span class="sla-badge" :class="getSlaClass(slotProps.data)">
+                                    {{ calculateSla(slotProps.data) }}
+                                </span>
                             </template>
                         </p-column>
                         <p-column header="Status" sortable>
@@ -172,6 +248,7 @@ const MyRequestsComponent = {
                                     <div class="detail-meta">
                                         <span><i class="pi pi-hashtag"></i> {{ selectedRequest.id }}</span>
                                         <span><i class="pi pi-calendar"></i> Submitted on {{ formatDate(selectedRequest.submittedAt) }}</span>
+                                        <span><i class="pi pi-stopwatch"></i> SLA: {{ calculateSla(selectedRequest) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -302,28 +379,223 @@ const MyRequestsComponent = {
     emits: ['new-request'],
 
     setup(props, { emit }) {
-        const { ref, computed } = Vue;
+        const { ref, computed, reactive } = Vue;
 
         // State
         const requests = ref([...StaticData.submittedRequests]);
         const selectedRequest = ref(null);
         const statusFilter = ref(null);
+        const roleFilter = ref(null);
         const actionComment = ref('');
         const newComment = ref('');
+        const viewType = ref('all');
 
         // Categories data for icons/colors
         const categories = ref([...StaticData.requestCategories]);
         const statuses = ref([...StaticData.requestStatuses]);
 
-        // Computed counts
+        // Filter data
+        const countryOptions = ref([...StaticData.countriesOfWork]);
+        const departmentOptions = ref([...StaticData.departments]);
+        const sectionOptions = ref([...StaticData.sections]);
+        const unitOptions = ref([...StaticData.units]);
+        const teamOptions = ref([...StaticData.teams]);
+        const entityOptions = ref([...StaticData.entities]);
+        const officeOptions = ref([
+            { id: 1, name: 'HQ - Main Office' },
+            { id: 2, name: 'Branch - Riyadh' },
+            { id: 3, name: 'Branch - Dubai' }
+        ]);
+
+        // View Type Options
+        const viewTypeOptions = ref([
+            { id: 'all', name: 'All Requests' },
+            { id: 'line_manager', name: 'Line Manager View' },
+            { id: 'hr_admin', name: 'HR Administrator View' },
+            { id: 'hr_manager', name: 'HR Manager View' },
+            { id: 'hr_evp', name: 'HR EVP View' }
+        ]);
+
+        // Filters (UI state - what user selects)
+        const filters = reactive({
+            countryOfWork: null,
+            department: null,
+            section: null,
+            unit: null,
+            team: null,
+            entity: null,
+            office: null,
+            dateRange: null
+        });
+
+        // Applied filters (actual filtering state - only changes on Apply click)
+        const appliedFilters = reactive({
+            countryOfWork: null,
+            department: null,
+            section: null,
+            unit: null,
+            team: null,
+            entity: null,
+            office: null,
+            dateRange: null
+        });
+
+        // Dependent filters
+        const filteredSections = computed(() => {
+            if (!filters.department) return [];
+            return sectionOptions.value.filter(s => s.departmentId === filters.department);
+        });
+
+        const filteredUnits = computed(() => {
+            if (!filters.section) return [];
+            return unitOptions.value.filter(u => u.sectionId === filters.section);
+        });
+
+        const filteredTeams = computed(() => {
+            if (!filters.unit) return [];
+            return teamOptions.value.filter(t => t.unitId === filters.unit);
+        });
+
+        const hasActiveFilters = computed(() => {
+            return appliedFilters.countryOfWork || appliedFilters.department || appliedFilters.section || 
+                   appliedFilters.unit || appliedFilters.team || appliedFilters.entity || appliedFilters.office ||
+                   (appliedFilters.dateRange && appliedFilters.dateRange.length > 0);
+        });
+
+        // Filter change handlers
+        const onDepartmentChange = () => {
+            filters.section = null;
+            filters.unit = null;
+            filters.team = null;
+        };
+
+        const onSectionChange = () => {
+            filters.unit = null;
+            filters.team = null;
+        };
+
+        const onUnitChange = () => {
+            filters.team = null;
+        };
+
+        const applyFilters = () => {
+            appliedFilters.countryOfWork = filters.countryOfWork;
+            appliedFilters.department = filters.department;
+            appliedFilters.section = filters.section;
+            appliedFilters.unit = filters.unit;
+            appliedFilters.team = filters.team;
+            appliedFilters.entity = filters.entity;
+            appliedFilters.office = filters.office;
+            appliedFilters.dateRange = filters.dateRange ? [...filters.dateRange] : null;
+        };
+
+        const resetFilters = () => {
+            // Reset UI filters
+            filters.countryOfWork = null;
+            filters.department = null;
+            filters.section = null;
+            filters.unit = null;
+            filters.team = null;
+            filters.entity = null;
+            filters.office = null;
+            filters.dateRange = null;
+            // Reset applied filters
+            appliedFilters.countryOfWork = null;
+            appliedFilters.department = null;
+            appliedFilters.section = null;
+            appliedFilters.unit = null;
+            appliedFilters.team = null;
+            appliedFilters.entity = null;
+            appliedFilters.office = null;
+            appliedFilters.dateRange = null;
+        };
+
+        // Computed counts - Status based
         const pendingCount = computed(() => requests.value.filter(r => r.status === 'pending').length);
         const approvedCount = computed(() => requests.value.filter(r => r.status === 'approved').length);
         const rejectedCount = computed(() => requests.value.filter(r => r.status === 'rejected').length);
         const inReviewCount = computed(() => requests.value.filter(r => r.status === 'in_review').length);
 
+        // Computed counts - Role based (by current step)
+        const lineManagerCount = computed(() => requests.value.filter(r => {
+            const pendingStep = r.approvalFlow?.find(s => s.status === 'pending');
+            return pendingStep?.role?.includes('Line Manager');
+        }).length);
+
+        const hrAdminCount = computed(() => requests.value.filter(r => {
+            const pendingStep = r.approvalFlow?.find(s => s.status === 'pending');
+            return pendingStep?.role === 'HR Administrator';
+        }).length);
+
+        const hrManagerCount = computed(() => requests.value.filter(r => {
+            const pendingStep = r.approvalFlow?.find(s => s.status === 'pending');
+            return pendingStep?.role === 'HR Manager';
+        }).length);
+
+        const hrEvpCount = computed(() => requests.value.filter(r => {
+            const pendingStep = r.approvalFlow?.find(s => s.status === 'pending');
+            return pendingStep?.role === 'HR EVP';
+        }).length);
+
+        // Average SLA calculation
+        const averageSla = computed(() => {
+            const completedRequests = requests.value.filter(r => r.status === 'approved' || r.status === 'rejected');
+            if (completedRequests.length === 0) return '0';
+            
+            const totalDays = completedRequests.reduce((sum, r) => {
+                const submitted = new Date(r.submittedAt);
+                const completed = r.completedAt ? new Date(r.completedAt) : new Date();
+                const days = Math.ceil((completed - submitted) / (1000 * 60 * 60 * 24));
+                return sum + days;
+            }, 0);
+            
+            return (totalDays / completedRequests.length).toFixed(1);
+        });
+
         const filteredRequests = computed(() => {
-            if (!statusFilter.value) return requests.value;
-            return requests.value.filter(r => r.status === statusFilter.value);
+            let result = requests.value;
+            
+            // Status filter (from stat cards)
+            if (statusFilter.value) {
+                result = result.filter(r => r.status === statusFilter.value);
+            }
+
+            // Role filter (from tabs)
+            if (roleFilter.value) {
+                result = result.filter(r => {
+                    const pendingStep = r.approvalFlow?.find(s => s.status === 'pending');
+                    if (!pendingStep) return false;
+                    
+                    switch (roleFilter.value) {
+                        case 'line_manager':
+                            return pendingStep.role?.includes('Line Manager');
+                        case 'hr_admin':
+                            return pendingStep.role === 'HR Administrator';
+                        case 'hr_manager':
+                            return pendingStep.role === 'HR Manager';
+                        case 'hr_evp':
+                            return pendingStep.role === 'HR EVP';
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            // Date range filter (uses appliedFilters)
+            if (appliedFilters.dateRange && appliedFilters.dateRange.length > 0) {
+                if (appliedFilters.dateRange[0]) {
+                    const fromDate = new Date(appliedFilters.dateRange[0]);
+                    fromDate.setHours(0, 0, 0, 0);
+                    result = result.filter(r => new Date(r.submittedAt) >= fromDate);
+                }
+                if (appliedFilters.dateRange[1]) {
+                    const toDate = new Date(appliedFilters.dateRange[1]);
+                    toDate.setHours(23, 59, 59, 999);
+                    result = result.filter(r => new Date(r.submittedAt) <= toDate);
+                }
+            }
+
+            return result;
         });
 
         // Mock: current user can take action on pending requests
@@ -338,6 +610,14 @@ const MyRequestsComponent = {
         const getCategoryIcon = (id) => categories.value.find(c => c.id === id)?.icon || 'pi-folder';
         const getStatusLabel = (status) => statuses.value.find(s => s.id === status)?.name || status;
         const getStatusIcon = (status) => statuses.value.find(s => s.id === status)?.icon || 'pi-circle';
+
+        const setStatusFilter = (status) => {
+            statusFilter.value = status;
+        };
+
+        const setRoleFilter = (role) => {
+            roleFilter.value = role;
+        };
 
         const formatDate = (dateStr) => {
             const date = new Date(dateStr);
@@ -364,6 +644,33 @@ const MyRequestsComponent = {
             if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
             if (diffHours > 0) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
             return 'Just now';
+        };
+
+        const calculateSla = (request) => {
+            const submitted = new Date(request.submittedAt);
+            let endDate;
+            
+            if (request.status === 'approved' || request.status === 'rejected') {
+                endDate = request.completedAt ? new Date(request.completedAt) : new Date();
+            } else {
+                endDate = new Date();
+            }
+            
+            const days = Math.ceil((endDate - submitted) / (1000 * 60 * 60 * 24));
+            return `${days}d`;
+        };
+
+        const getSlaClass = (request) => {
+            const submitted = new Date(request.submittedAt);
+            const now = new Date();
+            const days = Math.ceil((now - submitted) / (1000 * 60 * 60 * 24));
+            
+            if (request.status === 'approved' || request.status === 'rejected') {
+                return 'completed';
+            }
+            if (days <= 2) return 'good';
+            if (days <= 5) return 'warning';
+            return 'critical';
         };
 
         const getLogDotClass = (action) => {
@@ -397,9 +704,12 @@ const MyRequestsComponent = {
                     nextPending.status = 'pending';
                     selectedRequest.value.status = 'in_review';
                     selectedRequest.value.currentApprover = nextPending.role;
+                    selectedRequest.value.currentApproverName = nextPending.assignee;
                 } else {
                     selectedRequest.value.status = 'approved';
                     selectedRequest.value.currentApprover = null;
+                    selectedRequest.value.currentApproverName = null;
+                    selectedRequest.value.completedAt = new Date().toISOString();
                 }
 
                 actionComment.value = '';
@@ -422,6 +732,8 @@ const MyRequestsComponent = {
 
                 selectedRequest.value.status = 'rejected';
                 selectedRequest.value.currentApprover = null;
+                selectedRequest.value.currentApproverName = null;
+                selectedRequest.value.completedAt = new Date().toISOString();
                 actionComment.value = '';
             }
         };
@@ -443,13 +755,33 @@ const MyRequestsComponent = {
             requests,
             selectedRequest,
             statusFilter,
+            roleFilter,
             actionComment,
             newComment,
-            // Computed
+            viewType,
+            filters,
+            // Filter options
+            countryOptions,
+            departmentOptions,
+            filteredSections,
+            filteredUnits,
+            filteredTeams,
+            entityOptions,
+            officeOptions,
+            viewTypeOptions,
+            hasActiveFilters,
+            // Computed - Status counts
             pendingCount,
             approvedCount,
             rejectedCount,
             inReviewCount,
+            averageSla,
+            // Computed - Role counts
+            lineManagerCount,
+            hrAdminCount,
+            hrManagerCount,
+            hrEvpCount,
+            // Computed
             filteredRequests,
             canTakeAction,
             // Helpers
@@ -457,11 +789,21 @@ const MyRequestsComponent = {
             getCategoryIcon,
             getStatusLabel,
             getStatusIcon,
+            setStatusFilter,
+            setRoleFilter,
             formatDate,
             formatDateTime,
             formatTime,
             formatTimeAgo,
+            calculateSla,
+            getSlaClass,
             getLogDotClass,
+            // Filter handlers
+            onDepartmentChange,
+            onSectionChange,
+            onUnitChange,
+            applyFilters,
+            resetFilters,
             // Actions
             viewRequest,
             approveRequest,

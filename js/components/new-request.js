@@ -79,7 +79,7 @@ const NewRequestComponent = {
                          @click="selectType(type)">
                         <div class="type-card-content">
                             <div class="type-card-main">
-                                <h3>{{ type.name }}</h3>
+                                <h3>{{ type.name }} <span v-if="getTypeBalance(type) !== null" class="type-balance-badge">{{ getTypeBalance(type) }}</span></h3>
                             </div>
                         </div>
                         <div class="type-card-arrow">
@@ -404,6 +404,22 @@ const NewRequestComponent = {
         // Helper functions
         const getTypeCountByCategory = (catId) => requestTypes.value.filter(t => t.categoryId === catId && t.active).length;
         const getRepetitionLabel = (id) => repetitionOptions.value.find(r => r.id === id)?.name || id;
+        
+        const getTypeBalance = (type) => {
+            if (!type.balanceSource) return null;
+            if (type.balanceSource === 'system') {
+                // Return system balance (from employee settings)
+                return currentBalance.value + ' days';
+            } else if (type.balanceSource === 'fixed') {
+                // Return fixed balance
+                if (type.balanceDays) {
+                    return type.balanceDays + ' days';
+                } else if (type.balanceHours) {
+                    return type.balanceHours + ' hrs';
+                }
+            }
+            return null;
+        };
 
         // Navigation
         const selectCategory = (cat) => {
@@ -520,6 +536,7 @@ const NewRequestComponent = {
             // Helpers
             getTypeCountByCategory,
             getRepetitionLabel,
+            getTypeBalance,
             // Navigation
             selectCategory,
             selectType,

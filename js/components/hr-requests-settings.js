@@ -165,19 +165,33 @@ const HrRequestsSettingsComponent = {
                         <p>No fields added yet. Click "Add Field" to select employee fields.</p>
                     </div>
 
+                    <!-- Allowed Roles Section -->
+                    <div class="form-section-title">Allowed Roles</div>
+                    <div class="form-group">
+                        <label class="form-label">Who can create this request type?</label>
+                        <p-multiselect v-model="typeForm.allowedRoles" :options="roleOptions" optionLabel="name" optionValue="id" 
+                                      placeholder="Select roles" style="width: 100%;" display="chip"></p-multiselect>
+                    </div>
+
                     <!-- Approval Flow Section -->
                     <div class="form-section-title">Approval Flow</div>
                     <div class="approval-flow-builder">
                         <div class="approval-step">
-                            <div class="step-label">Primary Approval</div>
                             <div class="approval-checkboxes">
                                 <div class="approval-checkbox-item">
-                                    <p-checkbox v-model="typeForm.approvalFlow.requireHrAdmin" :binary="true" inputId="hrAdmin"></p-checkbox>
-                                    <label for="hrAdmin">Requires HR Administrator</label>
+                                    <p-checkbox v-model="typeForm.approvalFlow.autoApproval" :binary="true" inputId="autoApproval"></p-checkbox>
+                                    <label for="autoApproval">Auto Approval by System</label>
                                 </div>
+                            </div>
+                            <div v-if="!typeForm.approvalFlow.autoApproval" class="approval-checkboxes" style="margin-top: 1rem;">
+                                <div class="step-label">Requires Approval From:</div>
                                 <div class="approval-checkbox-item">
                                     <p-checkbox v-model="typeForm.approvalFlow.requireHrManager" :binary="true" inputId="hrManager"></p-checkbox>
-                                    <label for="hrManager">Requires HR Manager</label>
+                                    <label for="hrManager">HR Manager</label>
+                                </div>
+                                <div class="approval-checkbox-item">
+                                    <p-checkbox v-model="typeForm.approvalFlow.requireHrEvp" :binary="true" inputId="hrEvp"></p-checkbox>
+                                    <label for="hrEvp">HR EVP</label>
                                 </div>
                             </div>
                         </div>
@@ -309,6 +323,18 @@ const HrRequestsSettingsComponent = {
                     { id: 'probationPeriod', group: 'Contract Details', label: 'Probation Period', type: 'dropdown' },
                     { id: 'annualLeaveDays', group: 'Contract Details', label: 'Annual Leave', type: 'dropdown' }
                 ]
+            },
+            {
+                id: 12,
+                name: 'Compound Leaves',
+                description: 'Request compound leave days for multiple consecutive days off.',
+                icon: 'pi-calendar-plus',
+                color: '#06b6d4',
+                active: true,
+                fields: [],
+                customFields: [
+                    { id: 'numberOfDays', label: 'Number of Days', type: 'number', required: true }
+                ]
             }
         ]);
 
@@ -377,6 +403,13 @@ const HrRequestsSettingsComponent = {
             ]
         });
 
+        // Role options for allowed roles
+        const roleOptions = ref([
+            { id: 'hr_admin', name: 'HR Administrator' },
+            { id: 'hr_manager', name: 'HR Manager' },
+            { id: 'hr_evp', name: 'HR EVP' }
+        ]);
+
         // Form for type
         const typeForm = reactive({
             name: '',
@@ -385,9 +418,11 @@ const HrRequestsSettingsComponent = {
             color: '#3b82f6',
             active: true,
             fields: [],
+            allowedRoles: [],
             approvalFlow: {
-                requireHrAdmin: false,
-                requireHrManager: false
+                autoApproval: false,
+                requireHrManager: false,
+                requireHrEvp: false
             }
         });
 
@@ -407,7 +442,8 @@ const HrRequestsSettingsComponent = {
             { label: 'Ticket', value: 'pi-ticket' },
             { label: 'Briefcase', value: 'pi-briefcase' },
             { label: 'Wallet', value: 'pi-wallet' },
-            { label: 'Users', value: 'pi-users' }
+            { label: 'Users', value: 'pi-users' },
+            { label: 'Calendar Plus', value: 'pi-calendar-plus' }
         ]);
 
         // Color options
@@ -469,9 +505,11 @@ const HrRequestsSettingsComponent = {
             typeForm.color = '#3b82f6';
             typeForm.active = true;
             typeForm.fields = [];
+            typeForm.allowedRoles = [];
             typeForm.approvalFlow = {
-                requireHrAdmin: false,
-                requireHrManager: false
+                autoApproval: false,
+                requireHrManager: false,
+                requireHrEvp: false
             };
             showTypeDialog.value = true;
         };
@@ -484,9 +522,11 @@ const HrRequestsSettingsComponent = {
             typeForm.color = type.color;
             typeForm.active = type.active;
             typeForm.fields = [...type.fields];
+            typeForm.allowedRoles = type.allowedRoles ? [...type.allowedRoles] : [];
             typeForm.approvalFlow = type.approvalFlow ? { ...type.approvalFlow } : {
-                requireHrAdmin: false,
-                requireHrManager: false
+                autoApproval: false,
+                requireHrManager: false,
+                requireHrEvp: false
             };
             showTypeDialog.value = true;
         };
@@ -514,6 +554,7 @@ const HrRequestsSettingsComponent = {
                         color: typeForm.color,
                         active: typeForm.active,
                         fields: [...typeForm.fields],
+                        allowedRoles: [...typeForm.allowedRoles],
                         approvalFlow: { ...typeForm.approvalFlow }
                     };
                 }
@@ -527,6 +568,7 @@ const HrRequestsSettingsComponent = {
                     color: typeForm.color,
                     active: typeForm.active,
                     fields: [...typeForm.fields],
+                    allowedRoles: [...typeForm.allowedRoles],
                     approvalFlow: { ...typeForm.approvalFlow }
                 });
             }
@@ -585,6 +627,7 @@ const HrRequestsSettingsComponent = {
             typeForm,
             iconOptions,
             colorOptions,
+            roleOptions,
             activeTypesCount,
             totalFieldsCount,
             filteredEmployeeFields,

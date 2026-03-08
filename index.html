@@ -59,6 +59,7 @@
     <script src="js/components/hr-request-view.js"></script>
     <script src="js/components/hr-bulk-settings.js"></script>
     <script src="js/components/company-documents.js"></script>
+    <script src="js/components/employee-documents.js"></script>
     <script src="js/components/training-paths.js"></script>
     <script src="js/components/training-assign.js"></script>
     <script src="js/components/training-tracker.js"></script>
@@ -178,6 +179,10 @@
                         <i class="pi pi-megaphone"></i>
                         <span>Company News</span>
                     </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'company-documents' }" @click="navigateTo('company-documents')">
+                        <i class="pi pi-folder"></i>
+                        <span>Directory Documents</span>
+                    </div>
                     <div class="menu-item" :class="{ active: currentPage === 'orders-settings' }" @click="navigateTo('orders-settings')">
                         <i class="pi pi-file-edit"></i>
                         <span>Orders Requests Settings</span>
@@ -185,6 +190,10 @@
                     <div class="menu-item" :class="{ active: currentPage === 'hr-requests-settings' }" @click="navigateTo('hr-requests-settings')">
                         <i class="pi pi-cog"></i>
                         <span>Help Desk Requests Settings</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'employee-documents' }" @click="navigateTo('employee-documents')">
+                        <i class="pi pi-id-card"></i>
+                        <span>Employee Documents</span>
                     </div>
 
                     <!-- Settings Section -->
@@ -198,10 +207,6 @@
                     <div class="menu-item" :class="{ active: currentPage === 'hr-bulk-settings' }" @click="navigateTo('hr-bulk-settings')">
                         <i class="pi pi-sliders-h"></i>
                         <span>HR Help Desk Settings</span>
-                    </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'company-documents' }" @click="navigateTo('company-documents')">
-                        <i class="pi pi-folder"></i>
-                        <span>Company Documents</span>
                     </div>
                     <div class="menu-item disabled">
                         <i class="pi pi-chart-bar"></i>
@@ -345,6 +350,7 @@
 
                     <!-- Company Documents Page -->
                     <company-documents v-else-if="currentPage === 'company-documents'"></company-documents>
+                    <employee-documents v-else-if="currentPage === 'employee-documents'"></employee-documents>
 
                     <!-- Stats Page -->
                     <stats-module v-else-if="currentPage === 'stats'"></stats-module>

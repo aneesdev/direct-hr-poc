@@ -344,7 +344,8 @@ const StaticData = {
         'hr-requests-tracking': 'HR Help Desk Tracking',
         'hr-request-view': 'HR Request Details',
         'hr-bulk-settings': 'HR Help Desk Settings',
-        'company-documents': 'Company Documents',
+        'company-documents': 'Directory Documents',
+        'employee-documents': 'Employee Documents',
         'stats': 'Stats',
         'training-paths': 'Training Paths',
         'training-assign': 'Assign Training',
@@ -719,71 +720,92 @@ const StaticData = {
             name: 'Morning Shift',
             nameAr: 'الوردية الصباحية',
             type: 'Fixed',
+            shiftType: 'normal',
             startTime: '08:00',
             endTime: '16:00',
-            breakDuration: 60, // minutes
+            breakDuration: 60,
             color: '#22c55e',
             workingHours: 8,
-            active: true
+            active: true,
+            clockIn: { noEarlierThan: 60, allowedDelay: 15, noLaterThan: 120 },
+            clockOut: { noEarlierThan: 30, allowedShortage: 0, noLaterThan: 60 }
         },
         {
             id: 2,
             name: 'Evening Shift',
             nameAr: 'الوردية المسائية',
             type: 'Fixed',
+            shiftType: 'normal',
             startTime: '16:00',
             endTime: '00:00',
             breakDuration: 60,
             color: '#3b82f6',
             workingHours: 8,
-            active: true
+            active: true,
+            clockIn: { noEarlierThan: 30, allowedDelay: 10, noLaterThan: 90 },
+            clockOut: { noEarlierThan: 15, allowedShortage: 0, noLaterThan: 45 }
         },
         {
             id: 3,
             name: 'Night Shift',
             nameAr: 'الوردية الليلية',
             type: 'Fixed',
+            shiftType: 'normal',
             startTime: '00:00',
             endTime: '08:00',
             breakDuration: 60,
             color: '#8b5cf6',
             workingHours: 8,
-            active: true
+            active: true,
+            clockIn: { noEarlierThan: 45, allowedDelay: 15, noLaterThan: 90 },
+            clockOut: { noEarlierThan: 30, allowedShortage: 0, noLaterThan: 60 }
         },
         {
             id: 4,
-            name: '12-Hour Day Shift',
-            nameAr: 'وردية 12 ساعة نهارية',
+            name: 'CS Double Shift',
+            nameAr: 'وردية خدمة العملاء المزدوجة',
             type: 'Fixed',
-            startTime: '06:00',
-            endTime: '18:00',
-            breakDuration: 60,
+            shiftType: 'template',
+            startTime: '09:00',
+            endTime: '21:00',
+            breakDuration: 120,
             color: '#f59e0b',
-            workingHours: 12,
-            active: true
+            workingHours: 10,
+            active: true,
+            periods: [
+                { startTime: '09:00', endTime: '13:00', clockIn: { noEarlierThan: 30, allowedDelay: 0, noLaterThan: 60 }, clockOut: { noEarlierThan: 15, allowedShortage: 0, noLaterThan: 30 } },
+                { startTime: '17:00', endTime: '21:00', clockIn: { noEarlierThan: 30, allowedDelay: 0, noLaterThan: 60 }, clockOut: { noEarlierThan: 15, allowedShortage: 0, noLaterThan: 30 } }
+            ]
         },
         {
             id: 5,
             name: '12-Hour Night Shift',
             nameAr: 'وردية 12 ساعة ليلية',
             type: 'Fixed',
+            shiftType: 'normal',
             startTime: '18:00',
             endTime: '06:00',
             breakDuration: 60,
             color: '#ec4899',
             workingHours: 12,
-            active: true
+            active: true,
+            clockIn: { noEarlierThan: 60, allowedDelay: 15, noLaterThan: 120 },
+            clockOut: { noEarlierThan: 30, allowedShortage: 0, noLaterThan: 60 }
         },
         {
             id: 6,
             name: 'Flexible Hours',
             nameAr: 'ساعات مرنة',
             type: 'Variable',
+            shiftType: 'flexible',
             startTime: null,
             endTime: null,
             breakDuration: 60,
             color: '#06b6d4',
             workingHours: 8,
+            requiredHours: 8,
+            validFrom: '07:00',
+            validTo: '22:00',
             active: true
         }
     ],
@@ -1345,9 +1367,9 @@ const StaticData = {
 
     // Line Manager Levels
     lineManagerLevels: [
-        { id: 1, name: 'Level 1' },
-        { id: 2, name: 'Level 2' },
-        { id: 3, name: 'Level 3' },
+        { id: 1, name: '1 Line Manager' },
+        { id: 2, name: '2 Line Manager' },
+        { id: 3, name: '3 Line Manager' },
         { id: 4, name: 'All Line Managers' }
     ],
 
@@ -1744,9 +1766,10 @@ const StaticData = {
                 'Leave Period': { from: '2026-02-01', to: '2026-02-05' },
                 'Duration': '5 working days'
             },
-            currentApprover: 'Line Manager',
+            currentApprover: '1 Line Manager',
+            currentApproverName: 'Fahad Al-Rashid',
             approvalFlow: [
-                { role: 'Line Manager', level: 1, status: 'pending', assignee: 'Fahad Al-Rashid' },
+                { role: '1 Line Manager', level: 1, status: 'pending', assignee: 'Fahad Al-Rashid' },
                 { role: 'HR Administrator', level: 2, status: 'waiting', assignee: 'Sara Omar' }
             ],
             actionLog: [
@@ -1764,14 +1787,16 @@ const StaticData = {
             department: 'Human Resources',
             status: 'approved',
             submittedAt: '2026-01-18T10:30:00',
+            completedAt: '2026-01-18T14:00:00',
             formData: {
                 'Leave Period': { from: '2026-01-19', to: '2026-01-20' },
                 'Duration': '2 calendar days',
                 'Medical Report': 'medical_report.pdf'
             },
             currentApprover: null,
+            currentApproverName: null,
             approvalFlow: [
-                { role: 'Line Manager', level: 1, status: 'approved', assignee: 'Mohammed Al-Rashid', actionAt: '2026-01-18T11:00:00' },
+                { role: '1 Line Manager', level: 1, status: 'approved', assignee: 'Mohammed Al-Rashid', actionAt: '2026-01-18T11:00:00' },
                 { role: 'HR Administrator', level: 2, status: 'approved', assignee: 'Admin User', actionAt: '2026-01-18T14:00:00' }
             ],
             actionLog: [
@@ -1791,13 +1816,15 @@ const StaticData = {
             department: 'Finance',
             status: 'rejected',
             submittedAt: '2026-01-15T08:00:00',
+            completedAt: '2026-01-15T15:00:00',
             formData: {
                 'Leave Period': { from: '2026-01-25', to: '2026-02-10' },
                 'Duration': '12 working days'
             },
             currentApprover: null,
+            currentApproverName: null,
             approvalFlow: [
-                { role: 'Line Manager', level: 1, status: 'approved', assignee: 'Khalid Ibrahim', actionAt: '2026-01-15T10:00:00' },
+                { role: '1 Line Manager', level: 1, status: 'approved', assignee: 'Khalid Ibrahim', actionAt: '2026-01-15T10:00:00' },
                 { role: 'HR Administrator', level: 2, status: 'rejected', assignee: 'Sara Omar', actionAt: '2026-01-15T15:00:00' }
             ],
             actionLog: [
@@ -1824,8 +1851,9 @@ const StaticData = {
                 'Purpose': 'Client meeting and project kickoff'
             },
             currentApprover: 'HR Administrator',
+            currentApproverName: 'Sara Omar',
             approvalFlow: [
-                { role: 'Line Manager', level: 1, status: 'approved', assignee: 'Fahad Al-Rashid', actionAt: '2026-01-19T16:00:00' },
+                { role: '1 Line Manager', level: 1, status: 'approved', assignee: 'Fahad Al-Rashid', actionAt: '2026-01-19T16:00:00' },
                 { role: 'HR Administrator', level: 2, status: 'pending', assignee: 'Sara Omar' }
             ],
             actionLog: [
@@ -1849,9 +1877,10 @@ const StaticData = {
                 'Duration': '3 working days',
                 'Reason': 'Home renovation requires supervision'
             },
-            currentApprover: 'Line Manager',
+            currentApprover: '1 Line Manager',
+            currentApproverName: 'Ahmed Hassan',
             approvalFlow: [
-                { role: 'Line Manager', level: 1, status: 'pending', assignee: 'Ahmed Hassan' }
+                { role: '1 Line Manager', level: 1, status: 'pending', assignee: 'Ahmed Hassan' }
             ],
             actionLog: [
                 { action: 'Submitted', user: 'Fatima Ibrahim', timestamp: '2026-01-20T11:00:00', comment: null }
@@ -1868,16 +1897,78 @@ const StaticData = {
             department: 'Operations',
             status: 'approved',
             submittedAt: '2026-01-17T09:00:00',
+            completedAt: '2026-01-17T11:00:00',
             formData: {
                 'Addressed To': 'To Whom It May Concern'
             },
             currentApprover: null,
+            currentApproverName: null,
             approvalFlow: [
                 { role: 'HR Administrator', level: 1, status: 'approved', assignee: 'Sara Omar', actionAt: '2026-01-17T11:00:00' }
             ],
             actionLog: [
                 { action: 'Submitted', user: 'Yusuf Ahmed', timestamp: '2026-01-17T09:00:00', comment: null },
                 { action: 'Approved', user: 'Sara Omar', timestamp: '2026-01-17T11:00:00', comment: 'Letter will be ready for pickup tomorrow.' }
+            ]
+        },
+        {
+            id: 'REQ-007',
+            categoryId: 1,
+            typeId: 1,
+            typeName: 'Annual Leave',
+            employeeId: 6,
+            employeeName: 'Khalid Ibrahim',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=33',
+            department: 'Sales',
+            status: 'pending',
+            submittedAt: '2026-02-05T08:30:00',
+            formData: {
+                'Leave Period': { from: '2026-02-20', to: '2026-02-25' },
+                'Duration': '4 working days'
+            },
+            currentApprover: 'HR Manager',
+            currentApproverName: 'Sarah Ahmed',
+            approvalFlow: [
+                { role: '1 Line Manager', level: 1, status: 'approved', assignee: 'Ahmed Hassan', actionAt: '2026-02-05T10:00:00' },
+                { role: 'HR Administrator', level: 2, status: 'approved', assignee: 'Admin User', actionAt: '2026-02-05T14:00:00' },
+                { role: 'HR Manager', level: 3, status: 'pending', assignee: 'Sarah Ahmed' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Khalid Ibrahim', timestamp: '2026-02-05T08:30:00', comment: null },
+                { action: 'Approved', user: 'Ahmed Hassan', timestamp: '2026-02-05T10:00:00', comment: 'Approved.' },
+                { action: 'Approved', user: 'Admin User', timestamp: '2026-02-05T14:00:00', comment: 'Forwarded to HR Manager.' }
+            ]
+        },
+        {
+            id: 'REQ-008',
+            categoryId: 2,
+            typeId: 4,
+            typeName: 'Business Trip',
+            employeeId: 7,
+            employeeName: 'Layla Hassan',
+            employeeAvatar: 'https://i.pravatar.cc/40?img=25',
+            department: 'Marketing',
+            status: 'pending',
+            submittedAt: '2026-02-07T09:00:00',
+            formData: {
+                'Trip Period': { from: '2026-03-01', to: '2026-03-05' },
+                'Duration': '5 working days',
+                'Destination': 'Riyadh, KSA',
+                'Purpose': 'Marketing conference and networking'
+            },
+            currentApprover: 'HR EVP',
+            currentApproverName: 'Abdullah Al-Faisal',
+            approvalFlow: [
+                { role: '1 Line Manager', level: 1, status: 'approved', assignee: 'Marketing Director', actionAt: '2026-02-07T11:00:00' },
+                { role: 'HR Administrator', level: 2, status: 'approved', assignee: 'Admin User', actionAt: '2026-02-07T15:00:00' },
+                { role: 'HR Manager', level: 3, status: 'approved', assignee: 'Sarah Ahmed', actionAt: '2026-02-08T09:00:00' },
+                { role: 'HR EVP', level: 4, status: 'pending', assignee: 'Abdullah Al-Faisal' }
+            ],
+            actionLog: [
+                { action: 'Submitted', user: 'Layla Hassan', timestamp: '2026-02-07T09:00:00', comment: null },
+                { action: 'Approved', user: 'Marketing Director', timestamp: '2026-02-07T11:00:00', comment: 'Important event.' },
+                { action: 'Approved', user: 'Admin User', timestamp: '2026-02-07T15:00:00', comment: 'Forwarded.' },
+                { action: 'Approved', user: 'Sarah Ahmed', timestamp: '2026-02-08T09:00:00', comment: 'Escalated to EVP.' }
             ]
         }
     ],
