@@ -10,10 +10,6 @@ const ShiftAttendanceComponent = {
             <div class="settings-tabs">
                 <p-tabs :value="activeTab">
                     <p-tablist>
-                        <p-tab value="shifts" @click="activeTab = 'shifts'">
-                            <i class="pi pi-list" style="margin-right: 0.5rem;"></i>
-                            Shift Library
-                        </p-tab>
                         <p-tab value="schedule" @click="activeTab = 'schedule'">
                             <i class="pi pi-calendar" style="margin-right: 0.5rem;"></i>
                             Shift Scheduling
@@ -29,162 +25,6 @@ const ShiftAttendanceComponent = {
                     </p-tablist>
 
                     <p-tabpanels>
-                        <!-- Shift Library Tab -->
-                        <p-tabpanel value="shifts">
-                            <!-- Shift Library Header -->
-                            <div class="shift-library-header">
-                                <div class="shift-library-info">
-                                    <h2>SHIFT LIBRARY</h2>
-                                    <p>Standardize operational hours across all departments.</p>
-                                </div>
-                                <div class="shift-library-stats">
-                                    <div class="preset-count">
-                                        <span class="count-value">{{ allShifts.length }}</span>
-                                        <span class="count-label">PRESETS</span>
-                                    </div>
-                                    <button class="new-preset-btn" @click="openShiftDialog()">
-                                        <i class="pi pi-plus"></i>
-                                        <span>NEW PRESET</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Shift Type Tabs -->
-                            <div class="shift-type-tabs">
-                                <button class="shift-type-tab" :class="{ active: shiftTypeFilter === 'normal' }" 
-                                        @click="shiftTypeFilter = 'normal'">NORMAL SHIFT</button>
-                                <button class="shift-type-tab" :class="{ active: shiftTypeFilter === 'template' }" 
-                                        @click="shiftTypeFilter = 'template'">TEMPLATE DAY SHIFT</button>
-                                <button class="shift-type-tab" :class="{ active: shiftTypeFilter === 'flexible' }" 
-                                        @click="shiftTypeFilter = 'flexible'">FLEXIBLE SHIFT</button>
-                            </div>
-
-                            <!-- Shift Cards Grid -->
-                            <div class="shift-library-grid">
-                                <!-- Existing Shift Cards -->
-                                <div v-for="shift in filteredShifts" :key="shift.id" class="shift-preset-card">
-                                    <div class="preset-card-header">
-                                        <div class="preset-icon" :style="{ background: shift.color + '20', color: shift.color }">
-                                            <i class="pi pi-calendar"></i>
-                                        </div>
-                                        <div class="preset-info">
-                                            <h3>{{ shift.name }}</h3>
-                                            <div class="preset-meta">
-                                                <span class="preset-type">{{ getShiftTypeLabel(shift.shiftType) }}</span>
-                                                <span class="preset-periods">{{ (shift.periods && shift.periods.length > 0) ? shift.periods.length : 1 }} Period{{ ((shift.periods?.length || 1) > 1) ? 's' : '' }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="preset-actions">
-                                            <button class="action-btn edit" @click="editShift(shift)" title="Edit">
-                                                <i class="pi pi-pencil"></i>
-                                            </button>
-                                            <button class="action-btn delete" @click="deleteShift(shift)" title="Delete">
-                                                <i class="pi pi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Period Details (show first period or flexible info) -->
-                                    <template v-if="shift.shiftType === 'flexible'">
-                                        <div class="flexible-shift-details">
-                                            <!-- Required Hours Display -->
-                                            <div class="flexible-hours-display">
-                                                <div class="hours-value">{{ shift.requiredHours }}</div>
-                                                <div class="hours-label">Hours Required Daily</div>
-                                            </div>
-
-                                            <!-- Duration Progress Bar -->
-                                            <div class="duration-bar">
-                                                <div class="duration-bar-fill" :style="{ width: (shift.requiredHours / 12 * 100) + '%', background: shift.color }"></div>
-                                            </div>
-
-                                            <!-- Valid Time Window -->
-                                            <div class="clock-rules-section flexible-window">
-                                                <div class="rules-header">
-                                                    <i class="pi pi-clock"></i>
-                                                    <span>VALID WORK WINDOW:</span>
-                                                </div>
-                                                <div class="rules-content">
-                                                    <div class="rule-line">
-                                                        Punch-in allowed from <strong>{{ formatTime12(shift.validFrom) }}</strong> 
-                                                        to <strong>{{ formatTime12(shift.validTo) }}</strong>
-                                                    </div>
-                                                    <div class="rule-line info-text">
-                                                        <i class="pi pi-info-circle"></i>
-                                                        Total work time calculated based on first and last punch
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                    <template v-else>
-                                        <div v-for="(period, pIndex) in ((shift.periods && shift.periods.length > 0) ? shift.periods : [{ startTime: shift.startTime, endTime: shift.endTime, clockIn: shift.clockIn, clockOut: shift.clockOut }])" 
-                                             :key="pIndex" class="preset-period">
-                                            <div class="preset-time-info">
-                                                <div class="time-display">
-                                                    <i class="pi pi-clock"></i>
-                                                    <span>{{ formatTime12(period.startTime) }} - {{ formatTime12(period.endTime) }}</span>
-                                                </div>
-                                                <div class="duration-display">
-                                                    <i class="pi pi-stopwatch"></i>
-                                                    <span>{{ calculateDuration(period.startTime, period.endTime) }} hrs Duration</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Duration Progress Bar -->
-                                            <div class="duration-bar">
-                                                <div class="duration-bar-fill" :style="{ width: getDurationPercent(period.startTime, period.endTime) + '%', background: shift.color }"></div>
-                                            </div>
-
-                                            <!-- Clock-In Rules -->
-                                            <div class="clock-rules-section">
-                                                <div class="rules-header">
-                                                    <i class="pi pi-sign-in"></i>
-                                                    <span>CLOCK-IN RULES:</span>
-                                                </div>
-                                                <div class="rules-content">
-                                                    <div class="rule-line">
-                                                        Window: <strong>{{ formatTime12(period.clockIn?.windowStart || subtractMinutes(period.startTime, 60)) }}</strong> 
-                                                        to <strong>{{ formatTime12(period.clockIn?.windowEnd || addMinutes(period.startTime, 60)) }}</strong>.
-                                                    </div>
-                                                    <div class="rule-line threshold">
-                                                        Late threshold: <span class="threshold-value">{{ formatTime12(period.clockIn?.lateThreshold || addMinutes(period.startTime, 15)) }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Clock-Out Rules -->
-                                            <div class="clock-rules-section">
-                                                <div class="rules-header out">
-                                                    <i class="pi pi-sign-out"></i>
-                                                    <span>CLOCK-OUT RULES:</span>
-                                                </div>
-                                                <div class="rules-content">
-                                                    <div class="rule-line">
-                                                        Window: <strong>{{ formatTime12(period.clockOut?.windowStart || subtractMinutes(period.endTime, 30)) }}</strong> 
-                                                        to <strong>{{ formatTime12(period.clockOut?.windowEnd || addMinutes(period.endTime, 60)) }}</strong>.
-                                                    </div>
-                                                    <div class="rule-line threshold">
-                                                        Early exit threshold: <span class="threshold-value">{{ formatTime12(period.clockOut?.earlyThreshold || period.endTime) }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-
-                                <!-- Create New Shift Card -->
-                                <div class="shift-preset-card create-new" @click="openShiftDialog()">
-                                    <div class="create-new-content">
-                                        <i class="pi pi-plus"></i>
-                                        <h4>Create New Shift</h4>
-                                        <p>Add a custom shift preset</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </p-tabpanel>
-
                         <!-- Shift Scheduling Tab -->
                         <p-tabpanel value="schedule">
                             <!-- Scheduler Header -->
@@ -196,9 +36,6 @@ const ShiftAttendanceComponent = {
                                     <div class="scheduler-title-info">
                                         <h2>SHIFT SCHEDULING</h2>
                                         <p>Manage individual assignments</p>
-                                    </div>
-                                    <div v-if="pendingChanges.length > 0" class="pending-badge">
-                                        {{ pendingChanges.length }} PENDING CHANGES
                                     </div>
                                 </div>
                                 <div class="scheduler-actions">
@@ -240,10 +77,9 @@ const ShiftAttendanceComponent = {
                                         <i class="pi pi-save"></i>
                                         Save as Draft
                                     </button>
-                                    <button class="scheduler-action-btn primary" :disabled="Object.keys(scheduleAssignments).length === 0">
-                                        <i class="pi pi-send"></i>
-                                        Publish Schedule
-                                    </button>
+                                    <div v-if="pendingChanges.length > 0" class="pending-badge">
+                                        {{ pendingChanges.length }} PENDING CHANGES
+                                    </div>
                                 </div>
                                 <div class="scheduler-date-nav">
                                     <button class="nav-arrow" @click="previousWeek"><i class="pi pi-chevron-left"></i></button>
@@ -252,16 +88,21 @@ const ShiftAttendanceComponent = {
                                 </div>
                             </div>
 
-                            <!-- Search and Filter Bar -->
+                            <!-- Search and Layer Bar -->
                             <div class="scheduler-toolbar">
                                 <div class="search-filter-group">
                                     <span class="p-input-icon-left">
                                         <i class="pi pi-search"></i>
                                         <p-inputtext v-model="scheduleSearch" placeholder="Search by name or role..." style="width: 250px;"></p-inputtext>
                                     </span>
-                                    <button class="filter-btn">
-                                        <i class="pi pi-filter"></i>
-                                    </button>
+                                    <div class="scheduler-layer-tabs">
+                                        <button class="layer-tab" :class="{ active: schedulerLayer === 'first' }" @click="schedulerLayer = 'first'">
+                                            First Layer
+                                        </button>
+                                        <button class="layer-tab" :class="{ active: schedulerLayer === 'all' }" @click="schedulerLayer = 'all'">
+                                            All Layer
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="scheduler-legend">
                                     <div class="legend-item-new">
@@ -273,6 +114,14 @@ const ShiftAttendanceComponent = {
                                         <span>UNASSIGNED</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- Publish Schedule (centered above grid) -->
+                            <div class="scheduler-publish-bar">
+                                <button class="scheduler-action-btn primary" :disabled="Object.keys(scheduleAssignments).length === 0">
+                                    <i class="pi pi-send"></i>
+                                    Publish Schedule
+                                </button>
                             </div>
 
                             <!-- Schedule Grid -->
@@ -291,13 +140,15 @@ const ShiftAttendanceComponent = {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="schedule in filteredEmployeeSchedules" :key="schedule.id">
+                                        <tr v-for="schedule in paginatedScheduleList" :key="schedule.id">
                                             <td class="staff-col">
                                                 <div class="staff-info">
-                                                    <img :src="getEmployeeAvatar(schedule.employeeId)" :alt="schedule.employeeName" class="staff-avatar">
+                                                    <img :src="getEmployeeAvatar(schedule.employeeId, schedule.employeeName)" :alt="schedule.employeeName" class="staff-avatar">
                                                     <div class="staff-details">
                                                         <div class="staff-name">{{ schedule.employeeName }}</div>
-                                                        <div class="staff-role">{{ schedule.scheduleType }}</div>
+                                                        <div v-if="getEmployeeNumber(schedule.employeeId)" class="staff-id">{{ getEmployeeNumber(schedule.employeeId) }}</div>
+                                                        <div v-if="getEmployeeDepartmentPath(schedule.employeeId)" class="staff-dept">{{ getEmployeeDepartmentPath(schedule.employeeId) }}</div>
+                                                        <div class="staff-role">{{ schedule.scheduleType === 'Fixed' ? 'Variable' : schedule.scheduleType }}</div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -309,11 +160,54 @@ const ShiftAttendanceComponent = {
                                                             <button class="remove-assignment-btn" @click.stop="removeAssignment(schedule, day.dayName)" title="Remove">
                                                                 <i class="pi pi-times"></i>
                                                             </button>
-                                                            <div class="shift-card-header">
-                                                                <span class="shift-indicator" :style="{ background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></span>
-                                                                <span class="shift-name-assigned">{{ getAssignment(schedule, day.dayName).shiftName }}</span>
-                                                            </div>
-                                                            <div class="shift-time-display">{{ getAssignment(schedule, day.dayName).startTime?.replace(' AM', '').replace(' PM', '') || '08:00' }}</div>
+                                                            <template v-if="getShiftById(getAssignment(schedule, day.dayName).shiftId)">
+                                                                <div class="assigned-card-header">
+                                                                    <div class="assigned-card-icon" :style="{ background: (getAssignment(schedule, day.dayName).color || '#f59e0b') + '20', color: getAssignment(schedule, day.dayName).color || '#f59e0b' }">
+                                                                        <i class="pi pi-calendar"></i>
+                                                                    </div>
+                                                                    <div class="assigned-card-info">
+                                                                        <div class="assigned-card-name">{{ getShiftById(getAssignment(schedule, day.dayName).shiftId).name }}</div>
+                                                                        <div class="assigned-card-meta">
+                                                                            <span class="assigned-card-type">{{ getShiftTypeLabel(getShiftById(getAssignment(schedule, day.dayName).shiftId).shiftType) }}</span>
+                                                                            <span class="assigned-card-periods">{{ (getShiftById(getAssignment(schedule, day.dayName).shiftId).periods && getShiftById(getAssignment(schedule, day.dayName).shiftId).periods.length) || 1 }} Period{{ ((getShiftById(getAssignment(schedule, day.dayName).shiftId).periods?.length || 1) > 1) ? 's' : '' }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="assigned-card-time">
+                                                                    <i class="pi pi-clock"></i>
+                                                                    <span>{{ getAssignedShiftTimeRange(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }}</span>
+                                                                </div>
+                                                                <div class="assigned-card-duration">
+                                                                    <i class="pi pi-stopwatch"></i>
+                                                                    <span>{{ getShiftDuration(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }} hrs Duration</span>
+                                                                </div>
+                                                                <div class="assigned-card-bar">
+                                                                    <div class="assigned-card-bar-fill" :style="{ width: (getShiftDuration(getShiftById(getAssignment(schedule, day.dayName).shiftId)) / 12 * 100) + '%', background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></div>
+                                                                </div>
+                                                                <template v-if="getShiftById(getAssignment(schedule, day.dayName).shiftId).shiftType === 'flexible'">
+                                                                    <div class="assigned-card-rule">
+                                                                        <i class="pi pi-clock"></i>
+                                                                        <span>Valid: {{ getAssignedShiftTimeRange(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }} · {{ getShiftById(getAssignment(schedule, day.dayName).shiftId).requiredHours }} hrs</span>
+                                                                    </div>
+                                                                </template>
+                                                                <template v-else>
+                                                                    <div class="assigned-card-rule">
+                                                                        <i class="pi pi-sign-in"></i>
+                                                                        <span>{{ getAssignedClockInSummary(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }}</span>
+                                                                    </div>
+                                                                    <div class="assigned-card-rule out">
+                                                                        <i class="pi pi-sign-out"></i>
+                                                                        <span>{{ getAssignedClockOutSummary(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }}</span>
+                                                                    </div>
+                                                                </template>
+                                                            </template>
+                                                            <template v-else>
+                                                                <div class="shift-card-header">
+                                                                    <span class="shift-indicator" :style="{ background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></span>
+                                                                    <span class="shift-name-assigned">{{ getAssignment(schedule, day.dayName).shiftName }}</span>
+                                                                </div>
+                                                                <div class="shift-time-display">{{ getAssignment(schedule, day.dayName).startTime || '08:00' }}</div>
+                                                            </template>
                                                         </div>
                                                         <div v-else class="time-off-card">
                                                             <button class="remove-assignment-btn" @click.stop="removeAssignment(schedule, day.dayName)" title="Remove">
@@ -339,6 +233,17 @@ const ShiftAttendanceComponent = {
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="scheduler-pagination">
+                                <span class="pagination-info">Showing {{ schedulePaginationStart }}-{{ schedulePaginationEnd }} of {{ filteredEmployeeSchedules.length }}</span>
+                                <div class="pagination-controls">
+                                    <button type="button" class="pagination-btn" :disabled="schedulePage <= 1" @click="schedulePage = Math.max(1, schedulePage - 1)">
+                                        <i class="pi pi-chevron-left"></i>
+                                    </button>
+                                    <button type="button" class="pagination-btn" :disabled="schedulePage >= schedulePageCount" @click="schedulePage = Math.min(schedulePageCount, schedulePage + 1)">
+                                        <i class="pi pi-chevron-right"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Scheduler Footer Stats -->
@@ -522,15 +427,6 @@ const ShiftAttendanceComponent = {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="completion-rate-section">
-                                    <div class="completion-label">SHIFT COMPLETION RATE</div>
-                                    <div class="completion-bar-container">
-                                        <div class="completion-bar">
-                                            <div class="completion-bar-fill" :style="{ width: summaryStats.completionRate + '%' }"></div>
-                                        </div>
-                                        <span class="completion-percent">{{ summaryStats.completionRate }}% COMPLETE</span>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Shift Reviewer Section -->
@@ -551,11 +447,14 @@ const ShiftAttendanceComponent = {
                                             <i class="pi pi-filter"></i>
                                             <span>FILTER</span>
                                         </div>
-                                        <p-select v-model="reviewerDepartment" :options="departmentOptions" optionLabel="name" optionValue="value" placeholder="Select Department" style="width: 200px;"></p-select>
+                                        <p-select v-model="reviewerDepartment" :options="reviewerDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Select Department" showClear style="width: 160px;" @change="onReviewerDepartmentChange"></p-select>
+                                        <p-select v-model="reviewerSection" :options="reviewerFilteredSections" optionLabel="name" optionValue="id" placeholder="Select Section" showClear style="width: 160px;" :disabled="!reviewerDepartment" @change="onReviewerSectionChange"></p-select>
+                                        <p-select v-model="reviewerUnit" :options="reviewerFilteredUnits" optionLabel="name" optionValue="id" placeholder="Select Unit" showClear style="width: 140px;" :disabled="!reviewerSection"></p-select>
                                         <span class="p-input-icon-left">
                                             <i class="pi pi-search"></i>
-                                            <p-inputtext v-model="reviewerSearch" placeholder="Search staff members..." style="width: 220px;"></p-inputtext>
+                                            <p-inputtext v-model="reviewerSearch" placeholder="Search staff members..." style="width: 200px;"></p-inputtext>
                                         </span>
+                                        <p-button label="Search" icon="pi pi-search" @click="applyReviewerFilters" class="reviewer-search-btn"></p-button>
                                     </div>
                                     <div class="filter-controls-right">
                                         <div class="week-selector-pill">
@@ -582,12 +481,14 @@ const ShiftAttendanceComponent = {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="schedule in filteredReviewerSchedules" :key="schedule.id">
+                                            <tr v-for="schedule in paginatedReviewerSchedules" :key="schedule.id">
                                                 <td class="employee-col-rev">
                                                     <div class="employee-info-rev">
-                                                        <img :src="getEmployeeAvatar(schedule.employeeId)" :alt="schedule.employeeName" class="avatar-rev">
+                                                        <img :src="getEmployeeAvatar(schedule.employeeId, schedule.employeeName)" :alt="schedule.employeeName" class="avatar-rev">
                                                         <div class="employee-details-rev">
                                                             <div class="employee-name-rev">{{ schedule.employeeName }}</div>
+                                                            <div v-if="getEmployeeNumber(schedule.employeeId)" class="employee-id-rev">{{ getEmployeeNumber(schedule.employeeId) }}</div>
+                                                            <div v-if="getEmployeeDepartmentPath(schedule.employeeId)" class="employee-dept-rev">{{ getEmployeeDepartmentPath(schedule.employeeId) }}</div>
                                                             <div class="employee-role-rev">{{ schedule.scheduleType }}</div>
                                                         </div>
                                                     </div>
@@ -597,8 +498,17 @@ const ShiftAttendanceComponent = {
                                                          :class="getShiftBlockClass(schedule, day.dayName, dIndex)"
                                                          :style="getShiftBlockStyle(schedule, day.dayName)">
                                                         <template v-if="getReviewerShift(schedule, day.dayName)">
-                                                            <div class="shift-block-name">{{ getReviewerShift(schedule, day.dayName).name }}</div>
-                                                            <div class="shift-block-time">{{ getReviewerShift(schedule, day.dayName).time }}</div>
+                                                            <template v-if="getReviewerShift(schedule, day.dayName).type === 'dayoff'">
+                                                                <div class="shift-block-name dayoff-label">Day Off</div>
+                                                            </template>
+                                                            <template v-else-if="getReviewerShift(schedule, day.dayName).type === 'leave'">
+                                                                <div class="shift-block-name">{{ getReviewerShift(schedule, day.dayName).name }}</div>
+                                                                <div class="shift-block-time">Leave</div>
+                                                            </template>
+                                                            <template v-else>
+                                                                <div class="shift-block-name">{{ getReviewerShift(schedule, day.dayName).name }}</div>
+                                                                <div class="shift-block-time">{{ getReviewerShift(schedule, day.dayName).time }}</div>
+                                                            </template>
                                                         </template>
                                                         <template v-else>
                                                             <span class="no-shift">-</span>
@@ -612,6 +522,17 @@ const ShiftAttendanceComponent = {
                                         </tbody>
                                     </table>
                                 </div>
+                                <div class="reviewer-pagination">
+                                    <span class="pagination-info">Showing {{ reviewerPaginationStart }}-{{ reviewerPaginationEnd }} of {{ filteredReviewerSchedules.length }}</span>
+                                    <div class="pagination-controls">
+                                        <button type="button" class="pagination-btn" :disabled="reviewerPage <= 1" @click="reviewerPage = Math.max(1, reviewerPage - 1)">
+                                            <i class="pi pi-chevron-left"></i>
+                                        </button>
+                                        <button type="button" class="pagination-btn" :disabled="reviewerPage >= reviewerPageCount" @click="reviewerPage = Math.min(reviewerPageCount, reviewerPage + 1)">
+                                            <i class="pi pi-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Operational Insights Section -->
@@ -619,58 +540,6 @@ const ShiftAttendanceComponent = {
                                 <div class="section-title-row">
                                     <div class="section-bar orange"></div>
                                     <h3>OPERATIONAL INSIGHTS</h3>
-                                </div>
-                                <div class="insights-grid">
-                                    <!-- Stats Column -->
-                                    <div class="insights-stats-card">
-                                        <div class="insights-stat-row">
-                                            <div class="insights-stat">
-                                                <div class="insights-stat-label orange">TOTAL HOURS</div>
-                                                <div class="insights-stat-value">{{ summaryStats.totalHours }}<span class="unit">HRS</span></div>
-                                            </div>
-                                            <div class="insights-stat">
-                                                <div class="insights-stat-label">ACTIVE STAFF</div>
-                                                <div class="insights-stat-value">{{ summaryStats.staffOnDuty }}<span class="unit">USERS</span></div>
-                                            </div>
-                                        </div>
-                                        <div class="insights-stat-row">
-                                            <div class="insights-stat">
-                                                <div class="insights-stat-label">SHIFT COUNT</div>
-                                                <div class="insights-stat-value">{{ summaryStats.scheduledShifts }}<span class="unit">SLOTS</span></div>
-                                            </div>
-                                            <div class="insights-stat coverage">
-                                                <div class="insights-stat-label">COVERAGE</div>
-                                                <div class="insights-stat-value">{{ summaryStats.completionRate }}%<i class="pi pi-arrow-up-right trend-up"></i></div>
-                                            </div>
-                                        </div>
-                                        <div class="peak-load-card">
-                                            <div class="peak-icon"><i class="pi pi-bolt"></i></div>
-                                            <div class="peak-info">
-                                                <div class="peak-label">PEAK LOAD DAY</div>
-                                                <div class="peak-value">{{ summaryStats.peakDay }} ({{ summaryStats.peakHours }} hrs total)</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Chart Column -->
-                                    <div class="insights-chart-card">
-                                        <div class="chart-header">
-                                            <div class="chart-title-left">
-                                                <i class="pi pi-chart-bar chart-icon"></i>
-                                                <div class="chart-title-text">
-                                                    <span class="chart-title">Hourly Distribution</span>
-                                                    <span class="chart-subtitle">AGGREGATED WORK HOURS ACROSS THE WEEK</span>
-                                                </div>
-                                            </div>
-                                            <div class="average-load">
-                                                <span class="avg-label">AVERAGE LOAD</span>
-                                                <span class="avg-value">{{ summaryStats.avgLoad }}h / user</span>
-                                            </div>
-                                        </div>
-                                        <div class="chart-content">
-                                            <canvas ref="hourlyDistributionChart" style="max-height: 150px;"></canvas>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -694,174 +563,63 @@ const ShiftAttendanceComponent = {
                                     </div>
                                     <p class="heatmap-subtitle">STAFF DISTRIBUTION ACROSS EVERY HOUR OF THE DAY</p>
                                 </div>
-                                <div class="heatmap-grid-container">
+                                <div id="employee-density-heatmap" ref="heatmapChartRef" class="heatmap-chart-container" :class="{ 'heatmap-chart-collapsed': attemptedHeatmapInit && !heatmapChartReady }"></div>
+                                <div v-if="!heatmapChartReady" class="heatmap-grid-container heatmap-fallback">
                                     <table class="heatmap-grid">
                                         <thead>
                                             <tr>
                                                 <th>DAY</th>
                                                 <th v-for="hour in heatmapHours" :key="hour">{{ hour }}</th>
-                                                <th>HRS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="row in heatmapData" :key="row.day">
                                                 <td class="day-label" :class="row.day.toLowerCase()">{{ row.day }}</td>
-                                                <td v-for="(count, hIndex) in row.hours" :key="hIndex" 
-                                                    class="heatmap-cell"
-                                                    :class="getHeatmapCellClass(count)">
-                                                    {{ count > 0 ? count : '' }}
-                                                </td>
-                                                <td class="total-hours">{{ row.total }}</td>
+                                                <td v-for="(count, hIndex) in row.hours" :key="hIndex" class="heatmap-cell" :class="getHeatmapCellClass(count)">{{ count > 0 ? count : '' }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
-                                <div class="heatmap-footer">
-                                    <div class="heatmap-stat">
-                                        <div class="heatmap-stat-icon hotels"><i class="pi pi-building"></i></div>
-                                        <div class="heatmap-stat-info">
-                                            <div class="heatmap-stat-label">HOTELS LOAD</div>
-                                            <div class="heatmap-stat-value">{{ heatmapStats.scheduleLoad }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="heatmap-stat">
-                                        <div class="heatmap-stat-icon flights"><i class="pi pi-send"></i></div>
-                                        <div class="heatmap-stat-info">
-                                            <div class="heatmap-stat-label">FLIGHTS LOAD</div>
-                                            <div class="heatmap-stat-value">{{ heatmapStats.flexibleLoad }}</div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </p-tabpanel>
 
                         <!-- Attendance Tab -->
                         <p-tabpanel value="attendance">
-                            <!-- Week Filter Header -->
+                            <!-- Date range and Week Filter Header (only one active at a time) -->
                             <div class="attendance-week-header">
-                                <div class="week-filter-section">
-                                    <button class="week-nav-btn" @click="prevAttendanceWeek">
-                                        <i class="pi pi-chevron-left"></i>
-                                    </button>
-                                    <span class="week-label-display">WEEK OF {{ attendanceWeekLabel }}</span>
-                                    <button class="week-nav-btn" @click="nextAttendanceWeek">
-                                        <i class="pi pi-chevron-right"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Daily Overview Stats -->
-                            <div class="daily-overview-row">
-                                <div v-for="day in weekDaysAttendance" :key="day.dayName" 
-                                     class="daily-stat-card" :class="{ 'current-day': day.isToday }">
-                                    <div class="daily-stat-header">
-                                        <span class="day-name-att">{{ day.dayName }}</span>
-                                        <span class="day-number-att" :class="{ 'today-badge': day.isToday }">{{ day.dayNumber }}</span>
+                                <div class="attendance-range-and-week">
+                                    <div class="date-range-picker-wrap">
+                                        <p-datepicker ref="attendanceDatePickerRef" v-model="attendanceDateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Select date range" showIcon :showButtonBar="true" :manualInput="false" @update:modelValue="onAttendanceDateRangeChange" class="attendance-datepicker-inline">
+                                            <template #buttonbar="{ todayCallback, clearCallback }">
+                                                <div class="attendance-datepicker-buttonbar">
+                                                    <button type="button" class="attendance-datepicker-btn today" @click="todayCallback">Today</button>
+                                                    <button type="button" class="attendance-datepicker-btn clear" @click="clearCallback">Clear</button>
+                                                    <button type="button" class="attendance-datepicker-btn apply" @click="applyAttendanceDateRange">Apply</button>
+                                                </div>
+                                            </template>
+                                        </p-datepicker>
                                     </div>
-                                    <div class="daily-stat-bar" :style="{ background: day.isToday ? '#f97316' : '#22c55e' }"></div>
-                                    <div class="daily-stat-duration">
-                                        <span class="duration-label">DURATION</span>
-                                        <span class="duration-value">{{ day.duration }}</span>
-                                    </div>
-                                    <div class="daily-stat-shifts">
-                                        <span v-for="shift in day.shifts" :key="shift.name" 
-                                              class="shift-tag" :style="{ background: shift.color }">
-                                            {{ shift.name }}
-                                        </span>
+                                    <div class="week-filter-section" :class="{ 'secondary-control': attendanceDateRangeActive }">
+                                        <button class="week-nav-btn" @click="prevAttendanceWeek">
+                                            <i class="pi pi-chevron-left"></i>
+                                        </button>
+                                        <span class="week-label-display">WEEK OF {{ attendanceWeekLabel }}</span>
+                                        <button class="week-nav-btn" @click="nextAttendanceWeek">
+                                            <i class="pi pi-chevron-right"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Attendance Stats Row -->
+                            <!-- Attendance Stats Row (aligned with stats.js attendance tab: totalStaff, attendanceStats, punchStats, violationStats, vacationStats) -->
                             <div class="attendance-stats-row">
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon">
-                                        <i class="pi pi-users"></i>
+                                <div v-for="stat in attendanceStatCards" :key="stat.key" class="att-stat-card">
+                                    <div class="att-stat-icon" :class="stat.iconClass">
+                                        <i :class="stat.icon"></i>
                                     </div>
                                     <div class="att-stat-content">
-                                        <div class="att-stat-label">TOTAL STAFF</div>
-                                        <div class="att-stat-value">{{ attendanceStats.totalStaff }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon green">
-                                        <i class="pi pi-check"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">PRESENT NOW</div>
-                                        <div class="att-stat-value">{{ attendanceStats.presentNow }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon orange">
-                                        <i class="pi pi-clock"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">LATE IN</div>
-                                        <div class="att-stat-value">{{ attendanceStats.lateIn }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon yellow">
-                                        <i class="pi pi-sign-out"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">EARLY OUT</div>
-                                        <div class="att-stat-value">{{ attendanceStats.earlyOut }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon red">
-                                        <i class="pi pi-exclamation-circle"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">MISSING LOGS</div>
-                                        <div class="att-stat-value">{{ attendanceStats.missingLogs }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon purple">
-                                        <i class="pi pi-calendar"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">ANNUAL LEAVE</div>
-                                        <div class="att-stat-value">{{ attendanceStats.annualLeave }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon blue">
-                                        <i class="pi pi-home"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">WORK FROM HOME</div>
-                                        <div class="att-stat-value">{{ attendanceStats.workFromHome }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon teal">
-                                        <i class="pi pi-briefcase"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">BUSINESS TRIP</div>
-                                        <div class="att-stat-value">{{ attendanceStats.businessTrip }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon pink">
-                                        <i class="pi pi-times"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">ABSENT</div>
-                                        <div class="att-stat-value">{{ attendanceStats.absent }}</div>
-                                    </div>
-                                </div>
-                                <div class="att-stat-card">
-                                    <div class="att-stat-icon warning">
-                                        <i class="pi pi-exclamation-triangle"></i>
-                                    </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">OUTSIDE WRL</div>
-                                        <div class="att-stat-value">{{ attendanceStats.outsideWindow }}</div>
+                                        <div class="att-stat-label">{{ stat.label }}</div>
+                                        <div class="att-stat-value">{{ attendanceStats[stat.key] }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -870,16 +628,22 @@ const ShiftAttendanceComponent = {
                             <div class="attendance-logs-card">
                                 <div class="logs-header">
                                     <h3>ATTENDANCE LOGS</h3>
-                                    <div class="logs-actions">
-                                        <span class="p-input-icon-left">
-                                            <i class="pi pi-search"></i>
-                                            <p-inputtext v-model="searchAttendance" placeholder="Filter..." style="width: 180px;"></p-inputtext>
-                                        </span>
-                                        <button class="export-btn">
-                                            <i class="pi pi-download"></i>
-                                            EXPORT
-                                        </button>
-                                    </div>
+                                    <button type="button" class="collapse-all-attendance-btn" @click.stop="toggleExpandAllAttendance">
+                                        <i :class="attendanceAllExpanded ? 'pi pi-chevron-double-up' : 'pi pi-chevron-double-down'"></i>
+                                        {{ attendanceAllExpanded ? 'Collapse all' : 'Expand all' }}
+                                    </button>
+                                </div>
+                                <div class="attendance-logs-filters">
+                                    <div class="filter-label"><i class="pi pi-filter"></i> FILTER</div>
+                                    <span class="p-input-icon-left attendance-name-search-wrap">
+                                        <i class="pi pi-user"></i>
+                                        <p-inputtext v-model="attendanceSearchName" placeholder="Search by employee name..." style="width: 200px;"></p-inputtext>
+                                    </span>
+                                    <p-select v-model="attendanceDepartment" :options="attendanceDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Select Department" showClear style="width: 160px;" @change="onAttendanceDepartmentChange"></p-select>
+                                    <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Select Section" showClear style="width: 160px;" :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
+                                    <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Select Unit" showClear style="width: 140px;" :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
+                                    <p-select v-model="attendanceTeam" :options="attendanceFilteredTeams" optionLabel="name" optionValue="id" placeholder="Select Team" showClear style="width: 140px;" :disabled="!attendanceUnit"></p-select>
+                                    <p-button label="Search" icon="pi pi-search" @click="applyAttendanceFilters" class="attendance-search-btn"></p-button>
                                 </div>
 
                                 <!-- Attendance Table -->
@@ -898,6 +662,7 @@ const ShiftAttendanceComponent = {
                                                 <th class="col-punch">PUNCH FLAG</th>
                                                 <th class="col-duration">DURATION</th>
                                                 <th class="col-violation">VIOLATION</th>
+                                                <th class="col-fingerprints">NO. OF FINGERPRINTS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -917,7 +682,7 @@ const ShiftAttendanceComponent = {
                                                             <div class="emp-info">
                                                                 <div class="emp-name">{{ employee.name }}</div>
                                                                 <div class="emp-dept">
-                                                                    <span class="dept-name" :style="{ color: employee.deptColor || 'var(--primary-color)' }">{{ employee.department }}</span>
+                                                                    <span class="dept-name" :style="{ color: employee.deptColor || 'var(--primary-color)' }">{{ getEmployeeDepartmentPath(employee.employeeId) || employee.department }}</span>
                                                                     <span class="emp-id">{{ employee.empId }}</span>
                                                                 </div>
                                                                 <div class="emp-role">{{ employee.role }}</div>
@@ -960,7 +725,17 @@ const ShiftAttendanceComponent = {
                                                         <span v-else class="no-data">---</span>
                                                     </td>
                                                     <td class="col-violation">
-                                                        <span v-if="employee.days[0].violation" class="violation-badge" :class="getViolationClass(employee.days[0].violation)">{{ employee.days[0].violation }}</span>
+                                                        <template v-if="employee.days[0].violation === 'LATE IN - EARLY OUT'">
+                                                            <span class="violation-badges-inline">
+                                                                <span class="violation-badge" :class="getViolationClass('LATE IN')">LATE IN</span>
+                                                                <span class="violation-badge" :class="getViolationClass('EARLY OUT')">EARLY OUT</span>
+                                                            </span>
+                                                        </template>
+                                                        <span v-else-if="employee.days[0].violation" class="violation-badge" :class="getViolationClass(employee.days[0].violation)">{{ employee.days[0].violation }}</span>
+                                                        <span v-else class="no-data">---</span>
+                                                    </td>
+                                                    <td class="col-fingerprints">
+                                                        <span v-if="getFingerprintsForDay(employee.days[0], employee.employeeId, 0).count" class="fingerprint-count" v-tooltip.top="{ value: getFingerprintsForDay(employee.days[0], employee.employeeId, 0).tooltip, escape: false }">{{ getFingerprintsForDay(employee.days[0], employee.employeeId, 0).count }}</span>
                                                         <span v-else class="no-data">---</span>
                                                     </td>
                                                 </tr>
@@ -1005,7 +780,17 @@ const ShiftAttendanceComponent = {
                                                             <span v-else class="no-data">---</span>
                                                         </td>
                                                         <td class="col-violation">
-                                                            <span v-if="day.violation" class="violation-badge" :class="getViolationClass(day.violation)">{{ day.violation }}</span>
+                                                            <template v-if="day.violation === 'LATE IN - EARLY OUT'">
+                                                                <span class="violation-badges-inline">
+                                                                    <span class="violation-badge" :class="getViolationClass('LATE IN')">LATE IN</span>
+                                                                    <span class="violation-badge" :class="getViolationClass('EARLY OUT')">EARLY OUT</span>
+                                                                </span>
+                                                            </template>
+                                                            <span v-else-if="day.violation" class="violation-badge" :class="getViolationClass(day.violation)">{{ day.violation }}</span>
+                                                            <span v-else class="no-data">---</span>
+                                                        </td>
+                                                        <td class="col-fingerprints">
+                                                            <span v-if="getFingerprintsForDay(day, employee.employeeId, idx + 1).count" class="fingerprint-count" v-tooltip.top="{ value: getFingerprintsForDay(day, employee.employeeId, idx + 1).tooltip, escape: false }">{{ getFingerprintsForDay(day, employee.employeeId, idx + 1).count }}</span>
                                                             <span v-else class="no-data">---</span>
                                                         </td>
                                                     </tr>
@@ -1025,305 +810,10 @@ const ShiftAttendanceComponent = {
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Weekly Deviation Trends & Correction Queue Section -->
-                            <div class="deviation-section">
-                                <div class="deviation-grid">
-                                    <!-- Weekly Deviation Trends Chart -->
-                                    <div class="deviation-chart-card">
-                                        <div class="deviation-header">
-                                            <div class="deviation-title">
-                                                <i class="pi pi-chart-line"></i>
-                                                <div class="deviation-title-text">
-                                                    <h3>WEEKLY DEVIATION TRENDS</h3>
-                                                    <span class="deviation-subtitle">LATE IN VS EARLY OUT FREQUENCY</span>
-                                                </div>
-                                            </div>
-                                            <div class="deviation-legend">
-                                                <span class="legend-item"><span class="legend-dot orange"></span> LATE ARRIVALS</span>
-                                                <span class="legend-item"><span class="legend-dot blue"></span> EARLY EXITS</span>
-                                            </div>
-                                        </div>
-                                        <div class="deviation-chart-content">
-                                            <canvas ref="deviationTrendsChart" style="max-height: 200px;"></canvas>
-                                        </div>
-                                    </div>
-
-                                    <!-- Correction Queue & Dept Health -->
-                                    <div class="correction-side-panel">
-                                        <!-- Correction Queue -->
-                                        <div class="correction-queue-card">
-                                            <div class="correction-header">
-                                                <div class="correction-icon">
-                                                    <i class="pi pi-exclamation-circle"></i>
-                                                </div>
-                                                <h3>CORRECTION QUEUE</h3>
-                                            </div>
-                                            <p class="correction-desc">{{ correctionQueue.length }} entries require supervisor review for manual punch correction.</p>
-                                            <div class="correction-list">
-                                                <div v-for="item in correctionQueue" :key="item.id" class="correction-item">
-                                                    <span class="correction-name">{{ item.name }}</span>
-                                                    <span class="correction-issue" :class="item.type">{{ item.issue }} <i class="pi pi-arrow-right"></i></span>
-                                                </div>
-                                            </div>
-                                            <button class="resolve-all-btn">RESOLVE ALL ISSUES</button>
-                                        </div>
-
-                                        <!-- Dept Attendance Health -->
-                                        <div class="dept-health-card">
-                                            <div class="dept-health-header">
-                                                <i class="pi pi-chart-line"></i>
-                                                <span>DEPT ATTENDANCE HEALTH</span>
-                                            </div>
-                                            <div class="dept-health-list">
-                                                <div v-for="dept in deptHealthData" :key="dept.name" class="dept-health-item">
-                                                    <div class="dept-health-label">
-                                                        <span class="dept-name-health">{{ dept.name }}</span>
-                                                        <span class="dept-percent">{{ dept.percent }}%</span>
-                                                    </div>
-                                                    <div class="dept-health-bar">
-                                                        <div class="dept-health-fill" :style="{ width: dept.percent + '%', background: dept.color }"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </p-tabpanel>
                     </p-tabpanels>
                 </p-tabs>
             </div>
-
-            <!-- Define New Shift Dialog -->
-            <p-dialog v-model:visible="showShiftDialog" header="" :modal="true" :style="{ width: '1100px', maxWidth: '95vw' }" class="shift-dialog">
-                <template #header>
-                    <div class="shift-dialog-header">
-                        <h2>Define New Shift</h2>
-                        <div class="shift-type-toggle">
-                            <button class="type-btn" :class="{ active: shiftForm.shiftType === 'normal' }" @click="shiftForm.shiftType = 'normal'">Normal</button>
-                            <button class="type-btn" :class="{ active: shiftForm.shiftType === 'template' }" @click="shiftForm.shiftType = 'template'">Template</button>
-                            <button class="type-btn" :class="{ active: shiftForm.shiftType === 'flexible' }" @click="shiftForm.shiftType = 'flexible'">Flexible</button>
-                        </div>
-                    </div>
-                </template>
-
-                <div class="shift-dialog-content">
-                    <!-- Shift Name -->
-                    <div class="form-group">
-                        <label class="form-label">Shift Name (English)</label>
-                        <p-inputtext v-model="shiftForm.name" placeholder="e.g., Morning Shift" style="width: 100%;"></p-inputtext>
-                    </div>
-
-                    <!-- NORMAL SHIFT -->
-                    <template v-if="shiftForm.shiftType === 'normal'">
-                        <div class="shift-details-section">
-                            <h3>Shift Details</h3>
-                            <div class="shift-time-row-compact">
-                                <div class="time-input-group-compact">
-                                    <label class="mini-label">START TIME</label>
-                                    <p-datepicker v-model="shiftForm.startTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
-                                </div>
-                                <div class="time-input-group-compact">
-                                    <label class="mini-label">END TIME</label>
-                                    <p-datepicker v-model="shiftForm.endTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
-                                </div>
-                                <div class="time-input-group-compact color-section">
-                                    <label class="mini-label">SHIFT COLOR</label>
-                                    <div class="color-duration-display">
-                                        <div class="color-box" :style="{ background: shiftForm.color }" @click="showColorPicker = !showColorPicker"></div>
-                                        <span class="duration-badge">{{ computedDuration }} hrs</span>
-                                    </div>
-                                    <div v-if="showColorPicker" class="color-picker-dropdown">
-                                        <div v-for="color in shiftColors" :key="color" 
-                                             class="color-option" 
-                                             :class="{ selected: shiftForm.color === color }"
-                                             :style="{ background: color }"
-                                             @click="shiftForm.color = color; showColorPicker = false"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Clock Rules -->
-                            <div class="clock-rules-grid">
-                                <!-- Clock-In Rules -->
-                                <div class="clock-rules-card">
-                                    <div class="rules-title">
-                                        <span class="rules-dot in"></span>
-                                        <span>Clock-In Rules</span>
-                                        <span class="base-time">Base: {{ formatTimeFromDate(shiftForm.startTimeDate) }}</span>
-                                    </div>
-                                    <div class="rules-inputs-compact">
-                                        <div class="rule-input-group-compact">
-                                            <label>No earlier than (Mins)</label>
-                                            <p-inputnumber v-model="shiftForm.clockIn.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>Allowed delay (Mins)</label>
-                                            <p-inputnumber v-model="shiftForm.clockIn.allowedDelay" :min="0" :max="120" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>No later than (Mins)</label>
-                                            <p-inputnumber v-model="shiftForm.clockIn.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                    </div>
-                                    <div class="rules-summary">
-                                        <i class="pi pi-info-circle"></i>
-                                        <span>Window: <strong>{{ computedClockInWindow }}</strong>. Late threshold: <strong>{{ computedClockInLate }}</strong></span>
-                                    </div>
-                                </div>
-
-                                <!-- Clock-Out Rules -->
-                                <div class="clock-rules-card">
-                                    <div class="rules-title">
-                                        <span class="rules-dot out"></span>
-                                        <span>Clock-Out Rules</span>
-                                        <span class="base-time">Base: {{ formatTimeFromDate(shiftForm.endTimeDate) }}</span>
-                                    </div>
-                                    <div class="rules-inputs-compact">
-                                        <div class="rule-input-group-compact">
-                                            <label>No earlier than (Mins)</label>
-                                            <p-inputnumber v-model="shiftForm.clockOut.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>Allowed shortage (Mins)</label>
-                                            <p-inputnumber v-model="shiftForm.clockOut.allowedShortage" :min="0" :max="120" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>No later than (Mins)</label>
-                                            <p-inputnumber v-model="shiftForm.clockOut.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                    </div>
-                                    <div class="rules-summary out">
-                                        <i class="pi pi-info-circle"></i>
-                                        <span>Window: <strong>{{ computedClockOutWindow }}</strong>. Early exit threshold: <strong>{{ computedClockOutEarly }}</strong></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-
-                    <!-- TEMPLATE DAY SHIFT -->
-                    <template v-if="shiftForm.shiftType === 'template'">
-                        <div v-for="(period, index) in shiftForm.periods" :key="index" class="shift-details-section period-section">
-                            <div class="period-header">
-                                <h3>Shift Period {{ index + 1 }}</h3>
-                                <button v-if="shiftForm.periods.length > 1" class="remove-period-btn" @click="removePeriod(index)">
-                                    <i class="pi pi-times"></i>
-                                </button>
-                            </div>
-                            <div class="shift-time-row-compact">
-                                <div class="time-input-group-compact">
-                                    <label class="mini-label">START TIME</label>
-                                    <p-datepicker v-model="period.startTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
-                                </div>
-                                <div class="time-input-group-compact">
-                                    <label class="mini-label">END TIME</label>
-                                    <p-datepicker v-model="period.endTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
-                                </div>
-                                <div class="time-input-group-compact color-section">
-                                    <label class="mini-label">SHIFT COLOR</label>
-                                    <div class="color-duration-display">
-                                        <div class="color-box" :style="{ background: shiftForm.color }" @click="showColorPicker = !showColorPicker"></div>
-                                        <span class="duration-badge">{{ calculateDurationFromDates(period.startTimeDate, period.endTimeDate) }} hrs</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Clock Rules for this period -->
-                            <div class="clock-rules-grid">
-                                <div class="clock-rules-card">
-                                    <div class="rules-title">
-                                        <span class="rules-dot in"></span>
-                                        <span>Clock-In Rules</span>
-                                        <span class="base-time">Base: {{ formatTimeFromDate(period.startTimeDate) }}</span>
-                                    </div>
-                                    <div class="rules-inputs-compact">
-                                        <div class="rule-input-group-compact">
-                                            <label>No earlier than (Mins)</label>
-                                            <p-inputnumber v-model="period.clockIn.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>Allowed delay (Mins)</label>
-                                            <p-inputnumber v-model="period.clockIn.allowedDelay" :min="0" :max="120" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>No later than (Mins)</label>
-                                            <p-inputnumber v-model="period.clockIn.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                    </div>
-                                    <div class="rules-summary">
-                                        <i class="pi pi-info-circle"></i>
-                                        <span>Window: <strong>{{ computePeriodClockInWindowDate(period) }}</strong>. Late threshold: <strong>{{ computePeriodClockInLateDate(period) }}</strong></span>
-                                    </div>
-                                </div>
-                                <div class="clock-rules-card">
-                                    <div class="rules-title">
-                                        <span class="rules-dot out"></span>
-                                        <span>Clock-Out Rules</span>
-                                        <span class="base-time">Base: {{ formatTimeFromDate(period.endTimeDate) }}</span>
-                                    </div>
-                                    <div class="rules-inputs-compact">
-                                        <div class="rule-input-group-compact">
-                                            <label>No earlier than (Mins)</label>
-                                            <p-inputnumber v-model="period.clockOut.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>Allowed shortage (Mins)</label>
-                                            <p-inputnumber v-model="period.clockOut.allowedShortage" :min="0" :max="120" showButtons></p-inputnumber>
-                                        </div>
-                                        <div class="rule-input-group-compact">
-                                            <label>No later than (Mins)</label>
-                                            <p-inputnumber v-model="period.clockOut.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
-                                        </div>
-                                    </div>
-                                    <div class="rules-summary out">
-                                        <i class="pi pi-info-circle"></i>
-                                        <span>Window: <strong>{{ computePeriodClockOutWindowDate(period) }}</strong>. Early exit threshold: <strong>{{ computePeriodClockOutEarlyDate(period) }}</strong></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add Period Button -->
-                        <div class="add-period-btn" @click="addPeriod">
-                            <i class="pi pi-plus"></i>
-                            <span>Add Shift Period</span>
-                        </div>
-                    </template>
-
-                    <!-- FLEXIBLE SHIFT -->
-                    <template v-if="shiftForm.shiftType === 'flexible'">
-                        <div class="flexible-shift-form">
-                            <div class="flexible-row-compact">
-                                <div class="form-group">
-                                    <label class="form-label">Required Daily Hours</label>
-                                    <p-inputnumber v-model="shiftForm.requiredHours" :min="1" :max="24" showButtons suffix=" hrs"></p-inputnumber>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Valid From</label>
-                                    <p-datepicker v-model="shiftForm.validFromDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Valid To</label>
-                                    <p-datepicker v-model="shiftForm.validToDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
-                                </div>
-                            </div>
-                            <div class="flexible-info-box">
-                                <i class="pi pi-info-circle"></i>
-                                <span>Employees can punch in any time within the window. Total work time is calculated based on first and last punch.</span>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <template #footer>
-                    <div class="shift-dialog-footer">
-                        <p-button label="Cancel" severity="danger" outlined @click="showShiftDialog = false"></p-button>
-                        <p-button label="Save Shift Preset" icon="pi pi-check" @click="saveShift"></p-button>
-                    </div>
-                </template>
-            </p-dialog>
 
             <!-- Assign Shift Dialog -->
             <p-dialog v-model:visible="showAssignDialog" header="Assign Shift" :modal="true" :style="{ width: '400px' }">
@@ -1419,7 +909,7 @@ const ShiftAttendanceComponent = {
         const { ref, computed, onMounted, watch, nextTick } = Vue;
 
         // Tab state
-        const activeTab = ref('shifts');
+        const activeTab = ref('schedule');
         const shiftTypeFilter = ref('normal');
 
         // Data
@@ -1576,14 +1066,33 @@ const ShiftAttendanceComponent = {
         });
 
         // Helper functions
-        const getEmployeeAvatar = (employeeId) => {
+        const getEmployeeAvatar = (employeeId, fallbackName = '') => {
             const emp = employees.value.find(e => e.id === employeeId);
-            return emp ? emp.avatar : '';
+            if (emp && emp.avatar) return emp.avatar;
+            const name = (fallbackName || '').trim();
+            const parts = name.split(/\s+/).filter(Boolean);
+            const initials = parts.length >= 2
+                ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                : (name.substring(0, 2) || '?').toUpperCase();
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=80&background=random`;
         };
 
         const getEmployeeName = (employeeId) => {
             const emp = employees.value.find(e => e.id === employeeId);
             return emp ? `${emp.firstName} ${emp.familyName}` : '';
+        };
+
+        const getEmployeeNumber = (employeeId) => {
+            const emp = employees.value.find(e => e.id === employeeId);
+            return emp ? emp.employeeNumber || '' : '';
+        };
+
+        const getEmployeeDepartmentPath = (employeeId) => {
+            const emp = employees.value.find(e => e.id === employeeId);
+            if (!emp) return '';
+            const parts = [emp.department].filter(Boolean);
+            if (emp.section) parts.push(emp.section);
+            return parts.map(p => String(p).toUpperCase()).join(' > ');
         };
 
         const getShiftName = (shiftId) => {
@@ -1594,6 +1103,10 @@ const ShiftAttendanceComponent = {
         const getShiftColor = (shiftId) => {
             const shift = allShifts.value.find(s => s.id === shiftId);
             return shift ? shift.color : '#e2e8f0';
+        };
+
+        const getShiftById = (shiftId) => {
+            return allShifts.value.find(s => s.id === shiftId) || null;
         };
 
         const getShiftTime = (shiftId) => {
@@ -1981,6 +1494,7 @@ const ShiftAttendanceComponent = {
 
         // Shift Scheduling State
         const scheduleSearch = ref('');
+        const schedulerLayer = ref('all');
         const pendingChanges = ref([]);
         const showShiftMenu = ref(false);
         const showTemplateSelector = ref(false);
@@ -2048,16 +1562,90 @@ const ShiftAttendanceComponent = {
         const reviewerTab = ref('week');
         const reviewerSearch = ref('');
         const reviewerDepartment = ref(null);
+        const reviewerSection = ref(null);
+        const reviewerUnit = ref(null);
+        const appliedReviewerFilters = ref({ departmentId: null, sectionId: null, unitId: null });
+        const appliedReviewerSearch = ref('');
 
-        // Department options for filter
-        const departmentOptions = ref([
-            { name: 'All Departments', value: null },
-            { name: 'IT', value: 'IT' },
-            { name: 'Operations', value: 'Operations' },
-            { name: 'Finance', value: 'Finance' },
-            { name: 'HR', value: 'HR' },
-            { name: 'Sales', value: 'Sales' }
-        ]);
+        // Attendance Logs filters (Department -> Section -> Unit -> Team, applied on Search)
+        const attendanceDepartment = ref(null);
+        const attendanceSection = ref(null);
+        const attendanceUnit = ref(null);
+        const attendanceTeam = ref(null);
+        const appliedAttendanceFilters = ref({ departmentId: null, sectionId: null, unitId: null, teamId: null });
+        const attendanceSearchName = ref('');
+        const appliedAttendanceSearchName = ref('');
+
+        // Department / Section / Unit options (from StaticData, dependent)
+        const reviewerDepartmentOptions = ref([...StaticData.departments]);
+        const reviewerSectionOptions = ref([...StaticData.sections]);
+        const reviewerUnitOptions = ref([...StaticData.units]);
+
+        const reviewerFilteredSections = computed(() => {
+            if (!reviewerDepartment.value) return [];
+            return reviewerSectionOptions.value.filter(s => s.departmentId === reviewerDepartment.value);
+        });
+
+        const reviewerFilteredUnits = computed(() => {
+            if (!reviewerSection.value) return [];
+            return reviewerUnitOptions.value.filter(u => u.sectionId === reviewerSection.value);
+        });
+
+        const attendanceDepartmentOptions = ref([...StaticData.departments]);
+        const attendanceSectionOptions = ref([...StaticData.sections]);
+        const attendanceUnitOptions = ref([...StaticData.units]);
+        const attendanceTeamOptions = ref([...StaticData.teams]);
+        const attendanceFilteredSections = computed(() => {
+            if (!attendanceDepartment.value) return [];
+            return attendanceSectionOptions.value.filter(s => s.departmentId === attendanceDepartment.value);
+        });
+        const attendanceFilteredUnits = computed(() => {
+            if (!attendanceSection.value) return [];
+            return attendanceUnitOptions.value.filter(u => u.sectionId === attendanceSection.value);
+        });
+        const attendanceFilteredTeams = computed(() => {
+            if (!attendanceUnit.value) return [];
+            return attendanceTeamOptions.value.filter(t => t.unitId === attendanceUnit.value);
+        });
+        const onAttendanceDepartmentChange = () => {
+            attendanceSection.value = null;
+            attendanceUnit.value = null;
+            attendanceTeam.value = null;
+        };
+        const onAttendanceSectionChange = () => {
+            attendanceUnit.value = null;
+            attendanceTeam.value = null;
+        };
+        const onAttendanceUnitChange = () => {
+            attendanceTeam.value = null;
+        };
+        const applyAttendanceFilters = () => {
+            appliedAttendanceFilters.value = {
+                departmentId: attendanceDepartment.value,
+                sectionId: attendanceSection.value,
+                unitId: attendanceUnit.value,
+                teamId: attendanceTeam.value
+            };
+            appliedAttendanceSearchName.value = (attendanceSearchName.value || '').trim();
+        };
+
+        const onReviewerDepartmentChange = () => {
+            reviewerSection.value = null;
+            reviewerUnit.value = null;
+        };
+
+        const onReviewerSectionChange = () => {
+            reviewerUnit.value = null;
+        };
+
+        const applyReviewerFilters = () => {
+            appliedReviewerFilters.value = {
+                departmentId: reviewerDepartment.value,
+                sectionId: reviewerSection.value,
+                unitId: reviewerUnit.value
+            };
+            appliedReviewerSearch.value = (reviewerSearch.value || '').trim();
+        };
 
         // Week label short format
         const weekLabelShort = computed(() => {
@@ -2174,20 +1762,20 @@ const ShiftAttendanceComponent = {
             });
         };
 
-        // Heatmap hours labels
-        const heatmapHours = ['12A', '1A', '2A', '3A', '4A', '5A', '6A', '7A', '8A', '9A', '10A', '11A',
-            '12P', '1P', '2P', '3P', '4P', '5P', '6P', '7P', '8P', '9P', '10P', '11P'];
+        // Heatmap hours labels (proper AM/PM format)
+        const heatmapHours = ['12 AM', '1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM', '7 AM', '8 AM', '9 AM', '10 AM', '11 AM',
+            '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM', '7 PM', '8 PM', '9 PM', '10 PM', '11 PM'];
 
-        // Heatmap data
+        // Heatmap data – filled across day with low (green), medium (yellow), high (orange) like reference
         const heatmapData = computed(() => {
             return [
-                { day: 'MON', hours: [0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 6, 6, 4, 6, 6, 5, 5, 4, 3, 2, 0, 0, 0, 0], total: 56 },
-                { day: 'TUE', hours: [0, 0, 0, 0, 0, 0, 0, 0, 3, 5, 5, 5, 3, 5, 5, 4, 4, 3, 0, 0, 0, 0, 0, 0], total: 42 },
-                { day: 'WED', hours: [0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 5, 5, 3, 5, 5, 4, 4, 1, 0, 0, 0, 0, 0, 0], total: 38 },
-                { day: 'THU', hours: [0, 0, 0, 0, 0, 0, 0, 1, 3, 5, 6, 5, 4, 5, 5, 4, 4, 2, 1, 0, 0, 0, 0, 0], total: 45 },
-                { day: 'FRI', hours: [0, 0, 0, 0, 0, 0, 0, 1, 4, 5, 6, 6, 4, 5, 5, 5, 4, 2, 1, 0, 0, 0, 0, 0], total: 48 },
-                { day: 'SAT', hours: [0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 4, 3, 4, 4, 3, 1, 0, 0, 0, 0, 0, 0, 0], total: 28 },
-                { day: 'SUN', hours: [0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 2, 3, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0], total: 20 }
+                { day: 'SUN', hours: [1, 0, 0, 0, 0, 0, 1, 2, 4, 5, 6, 6, 5, 6, 6, 5, 4, 4, 3, 3, 2, 2, 2, 1], total: 72 },
+                { day: 'MON', hours: [0, 0, 0, 0, 0, 0, 2, 3, 5, 6, 6, 6, 5, 6, 6, 5, 5, 4, 4, 3, 3, 2, 1, 0], total: 82 },
+                { day: 'TUE', hours: [0, 0, 0, 0, 0, 0, 2, 4, 5, 6, 6, 6, 6, 6, 5, 5, 5, 4, 4, 3, 2, 2, 1, 0], total: 88 },
+                { day: 'WED', hours: [0, 0, 0, 0, 0, 0, 2, 4, 5, 6, 6, 6, 6, 6, 6, 5, 5, 4, 4, 3, 2, 2, 1, 0], total: 91 },
+                { day: 'THU', hours: [0, 0, 0, 0, 0, 0, 2, 4, 5, 6, 6, 6, 6, 6, 5, 5, 5, 4, 4, 3, 3, 2, 1, 0], total: 90 },
+                { day: 'FRI', hours: [0, 0, 0, 0, 0, 0, 2, 3, 5, 6, 6, 6, 5, 5, 5, 4, 4, 3, 2, 2, 2, 2, 2, 1], total: 79 },
+                { day: 'SAT', hours: [1, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 5, 4, 4, 4, 4, 3, 3, 2, 2, 2, 2, 2, 2], total: 58 }
             ];
         });
 
@@ -2201,40 +1789,158 @@ const ShiftAttendanceComponent = {
             };
         });
 
-        // Filtered reviewer schedules
+        const heatmapChartRef = ref(null);
+        const heatmapChartReady = ref(false);
+        const attemptedHeatmapInit = ref(false);
+        let heatmapChartInstance = null;
+        const ApexChartsLib = typeof window !== 'undefined' ? window.ApexCharts : undefined;
+
+        const initHeatmapChart = () => {
+            attemptedHeatmapInit.value = true;
+            const el = document.getElementById('employee-density-heatmap') || heatmapChartRef.value;
+            if (!el || !ApexChartsLib) return;
+            if (heatmapChartInstance) {
+                try { heatmapChartInstance.destroy(); } catch (e) {}
+                heatmapChartInstance = null;
+            }
+            const data = heatmapData.value;
+            const hours = heatmapHours;
+            const series = data.map(row => ({
+                name: row.day,
+                data: row.hours.map((y, i) => ({ x: hours[i], y }))
+            }));
+            const options = {
+                chart: { type: 'heatmap', height: 320, fontFamily: 'Inter, sans-serif', toolbar: { show: false } },
+                series,
+                dataLabels: { enabled: true, style: { fontSize: '10px' } },
+                xaxis: { categories: hours, labels: { style: { colors: '#64748b', fontSize: '9px' }, maxWidth: 36, rotate: -45 } },
+                yaxis: { labels: { style: { colors: '#64748b', fontSize: '11px' } } },
+                plotOptions: {
+                    heatmap: {
+                        colorScale: {
+                            ranges: [
+                                { from: 0, to: 0, name: 'No activity', color: '#f1f5f9' },
+                                { from: 1, to: 2, name: 'Low', color: '#86efac' },
+                                { from: 3, to: 4, name: 'Medium', color: '#fcd34d' },
+                                { from: 5, to: 10, name: 'High', color: '#f97316' }
+                            ]
+                        }
+                    }
+                },
+                grid: { borderColor: '#e5e7eb', strokeDashArray: 2 },
+                tooltip: { theme: 'light' },
+                legend: { show: false }
+            };
+            heatmapChartInstance = new ApexChartsLib(el, options);
+            heatmapChartInstance.render();
+            heatmapChartReady.value = true;
+        };
+
+        const scheduleHeatmapInit = () => {
+            if (activeTab.value !== 'summary') return;
+            nextTick(() => {
+                setTimeout(() => {
+                    if (document.getElementById('employee-density-heatmap') && activeTab.value === 'summary') initHeatmapChart();
+                }, 300);
+            });
+        };
+
+        watch(() => heatmapChartRef.value, (el) => {
+            if (el && activeTab.value === 'summary') setTimeout(initHeatmapChart, 100);
+        }, { flush: 'post' });
+
+        // Filtered reviewer schedules (by applied department/section/unit + search text)
         const filteredReviewerSchedules = computed(() => {
-            if (!reviewerSearch.value) return employeeSchedules.value;
-            const query = reviewerSearch.value.toLowerCase();
-            return employeeSchedules.value.filter(s =>
-                s.employeeName.toLowerCase().includes(query) ||
-                s.scheduleType.toLowerCase().includes(query)
-            );
+            const applied = appliedReviewerFilters.value;
+            const query = (appliedReviewerSearch.value || '').trim().toLowerCase();
+            let list = employeeSchedules.value;
+
+            if (applied.departmentId != null || applied.sectionId != null || applied.unitId != null) {
+                const deptName = applied.departmentId != null
+                    ? (StaticData.departments.find(d => d.id === applied.departmentId) || {}).name
+                    : null;
+                let sectionName = null;
+                if (applied.sectionId != null) {
+                    sectionName = (StaticData.sections.find(s => s.id === applied.sectionId) || {}).name;
+                } else if (applied.unitId != null) {
+                    const unit = StaticData.units.find(u => u.id === applied.unitId);
+                    sectionName = unit ? (StaticData.sections.find(s => s.id === unit.sectionId) || {}).name : null;
+                }
+                list = list.filter(s => {
+                    const emp = employees.value.find(e => e.id === s.employeeId);
+                    if (!emp) return applied.departmentId == null && applied.sectionId == null && applied.unitId == null;
+                    if (deptName != null && emp.department !== deptName) return false;
+                    if (sectionName != null && emp.section !== sectionName) return false;
+                    return true;
+                });
+            }
+
+            if (query) {
+                list = list.filter(s =>
+                    s.employeeName.toLowerCase().includes(query) ||
+                    (s.scheduleType || '').toLowerCase().includes(query)
+                );
+            }
+            return list;
         });
+
+        const reviewerPerPage = 10;
+        const reviewerPage = ref(1);
+        const paginatedReviewerSchedules = computed(() => {
+            const list = filteredReviewerSchedules.value;
+            const start = (reviewerPage.value - 1) * reviewerPerPage;
+            return list.slice(start, start + reviewerPerPage);
+        });
+        const reviewerPageCount = computed(() => Math.max(1, Math.ceil(filteredReviewerSchedules.value.length / reviewerPerPage)));
+        const reviewerPaginationStart = computed(() => filteredReviewerSchedules.value.length === 0 ? 0 : (reviewerPage.value - 1) * reviewerPerPage + 1);
+        const reviewerPaginationEnd = computed(() => Math.min(reviewerPage.value * reviewerPerPage, filteredReviewerSchedules.value.length));
 
         // Pre-generated mock reviewer shifts (consistent data)
         const reviewerShiftsCache = ref({});
 
-        // Initialize mock reviewer shifts
+        // Leave/request types for summary (Compound Leaves from HR Request Center; others for realistic variety)
+        const summaryLeaveTypes = [
+            { name: 'Compound Leaves', color: '#0891b2' },
+            { name: 'Annual Leave', color: '#0d9488' },
+            { name: 'Sick Leave', color: '#dc2626' },
+            { name: 'Business Trip', color: '#6366f1' },
+            { name: 'Marriage Leave', color: '#a855f7' },
+            { name: 'Bereavement Leave', color: '#64748b' },
+            { name: 'Unpaid Leave', color: '#94a3b8' },
+            { name: 'Parental Leave', color: '#ec4899' }
+        ];
+
+        // Build display time for a shift (template = all periods; flexible = valid window; normal = start–end)
+        const getShiftDisplayTime = (shift) => {
+            if (shift.shiftType === 'flexible' && shift.validFrom != null && shift.validTo != null) return `${formatTime12(shift.validFrom)} - ${formatTime12(shift.validTo)}`;
+            if (shift.periods && shift.periods.length > 0) {
+                return shift.periods.map(p => `${formatTime12(p.startTime)} - ${formatTime12(p.endTime)}`).join(', ');
+            }
+            return `${formatTime12(shift.startTime || '08:00')} - ${formatTime12(shift.endTime || '17:00')}`;
+        };
+
+        // Initialize mock reviewer shifts: 3 library shifts + Day Off + 8 leave types + empty; varied per employee/day
         const initReviewerShifts = () => {
-            // Use same colors as shift presets
-            const mockShiftTypes = [
-                { name: 'MORNING', time: '08:00-17:00', color: '#22c55e' },
-                { name: 'MID-DAY', time: '10:00-17:00', color: '#f97316' },
-                { name: 'EVENING', time: '14:00-22:00', color: '#3b82f6' },
-                { name: 'FLEX', time: '09:00-17:00', color: '#a855f7' },
-                { name: 'NIGHT', time: '22:00-06:00', color: '#1e293b' }
-            ];
+            const shifts = allShifts.value.filter(s => s.active !== false);
+            if (shifts.length === 0) return;
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const cache = {};
+            const nLeaves = summaryLeaveTypes.length;
+            // 0,1,2=shifts 3=dayoff 4..(4+nLeaves-1)=leaves (4+nLeaves)=empty
+            const varietyBuckets = 4 + nLeaves + 1;
 
             employeeSchedules.value.forEach((schedule, sIndex) => {
                 days.forEach((day, dIndex) => {
                     const key = `${schedule.id}-${day}`;
-                    // Deterministic "random" based on indices
-                    const hasShift = (sIndex + dIndex) % 3 !== 0; // ~67% have shifts
-                    if (hasShift) {
-                        const shiftIndex = (sIndex + dIndex) % mockShiftTypes.length;
-                        cache[key] = mockShiftTypes[shiftIndex];
+                    const bucket = (schedule.id * 17 + dIndex * 31 + sIndex * 5) % varietyBuckets;
+                    if (bucket <= 2) {
+                        const shift = shifts[bucket];
+                        cache[key] = { type: 'shift', name: shift.name, time: getShiftDisplayTime(shift), color: shift.color };
+                    } else if (bucket === 3) {
+                        cache[key] = { type: 'dayoff' };
+                    } else if (bucket >= 4 && bucket < 4 + nLeaves) {
+                        const leave = summaryLeaveTypes[bucket - 4];
+                        cache[key] = { type: 'leave', name: leave.name, color: leave.color };
                     } else {
                         cache[key] = null;
                     }
@@ -2252,12 +1958,15 @@ const ShiftAttendanceComponent = {
             if (newTab === 'summary') {
                 nextTick(() => {
                     initHourlyChart();
+                    scheduleHeatmapInit();
                 });
-            }
-            if (newTab === 'attendance') {
-                nextTick(() => {
-                    initDeviationChart();
-                });
+            } else {
+                heatmapChartReady.value = false;
+                attemptedHeatmapInit.value = false;
+                if (heatmapChartInstance) {
+                    try { heatmapChartInstance.destroy(); } catch (e) {}
+                    heatmapChartInstance = null;
+                }
             }
         });
 
@@ -2266,38 +1975,36 @@ const ShiftAttendanceComponent = {
             if (activeTab.value === 'summary') {
                 nextTick(() => {
                     initHourlyChart();
-                });
-            }
-            if (activeTab.value === 'attendance') {
-                nextTick(() => {
-                    initDeviationChart();
+                    scheduleHeatmapInit();
                 });
             }
         });
 
-        // Get reviewer shift for display
+        // Get reviewer shift for display (shift library, day off, or leave; use shift library when real assignment)
         const getReviewerShift = (schedule, dayName) => {
             const key = `${schedule.id}-${dayName}`;
 
-            // Check real assignments first
             const assignment = scheduleAssignments.value[key];
             if (assignment && assignment.type === 'shift') {
-                return {
-                    name: assignment.shiftName,
-                    time: `${assignment.startTime} - ${assignment.endTime}`
-                };
+                const shift = assignment.shiftId != null ? getShiftById(assignment.shiftId) : null;
+                if (shift) {
+                    const time = getShiftDisplayTime(shift);
+                    return { type: 'shift', name: shift.name, time, color: shift.color };
+                }
+                return { type: 'shift', name: assignment.shiftName, time: `${assignment.startTime} - ${assignment.endTime}`, color: assignment.color };
             }
 
-            // Return cached mock data
-            return reviewerShiftsCache.value[key] || null;
+            const cached = reviewerShiftsCache.value[key] || null;
+            return cached;
         };
 
         // Get shift block class
         const getShiftBlockClass = (schedule, dayName, index) => {
             const shift = getReviewerShift(schedule, dayName);
             if (!shift) return 'empty';
-            // Map shift name to class
-            const name = shift.name.toLowerCase();
+            if (shift.type === 'dayoff') return 'dayoff';
+            if (shift.type === 'leave') return 'leave';
+            const name = (shift.name || '').toLowerCase();
             if (name.includes('morning')) return 'morning';
             if (name.includes('mid')) return 'midday';
             if (name.includes('evening')) return 'evening';
@@ -2309,8 +2016,10 @@ const ShiftAttendanceComponent = {
         // Get shift block style
         const getShiftBlockStyle = (schedule, dayName) => {
             const shift = getReviewerShift(schedule, dayName);
-            if (!shift || !shift.color) return {};
-            return { background: shift.color };
+            if (!shift) return {};
+            if (shift.type === 'dayoff') return { background: 'rgba(100, 116, 139, 0.2)', color: 'var(--text-color-secondary)' };
+            if (shift.color) return { background: shift.color };
+            return {};
         };
 
         // Get employee coverage percentage
@@ -2337,7 +2046,16 @@ const ShiftAttendanceComponent = {
         const attendancePage = ref(1);
         const attendancePerPage = 10;
         const attendanceWeekOffset = ref(0);
+        const attendanceDateRange = ref(null);
         const expandedEmployees = ref([]);
+
+        // True when user has selected a date range (only one of range vs week can drive the view)
+        const attendanceDateRangeActive = computed(() => {
+            const r = attendanceDateRange.value;
+            if (!r) return false;
+            if (Array.isArray(r)) return r.length >= 2 && r[0] && r[1];
+            return !!(r && r.start && r.end);
+        });
 
         // Attendance Week Label
         const attendanceWeekLabel = computed(() => {
@@ -2349,12 +2067,85 @@ const ShiftAttendanceComponent = {
         });
 
         const prevAttendanceWeek = () => {
+            attendanceDateRange.value = null;
             attendanceWeekOffset.value -= 1;
         };
 
         const nextAttendanceWeek = () => {
+            attendanceDateRange.value = null;
             attendanceWeekOffset.value += 1;
         };
+
+        const attendanceDatePickerRef = ref(null);
+
+        const onAttendanceDateRangeChange = () => {
+            if (attendanceDateRangeActive.value) attendanceWeekOffset.value = 0;
+        };
+
+        const applyAttendanceDateRange = () => {
+            if (attendanceDateRangeActive.value) attendanceWeekOffset.value = 0;
+            nextTick(() => {
+                const el = attendanceDatePickerRef.value?.$el;
+                const input = el?.querySelector?.('input');
+                if (input) input.blur();
+            });
+        };
+
+        // Normalize date range to [start, end] (Date objects, start of day)
+        const attendanceRangeBounds = computed(() => {
+            const r = attendanceDateRange.value;
+            if (!attendanceDateRangeActive.value) return null;
+            let start, end;
+            if (Array.isArray(r)) {
+                start = r[0] ? new Date(r[0]) : null;
+                end = r[1] ? new Date(r[1]) : null;
+            } else if (r && r.start && r.end) {
+                start = new Date(r.start);
+                end = new Date(r.end);
+            } else {
+                return null;
+            }
+            if (!start || !end) return null;
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            if (start > end) [start, end] = [end, start];
+            return [start, end];
+        });
+
+        // Days to display in the table: either current week (7 days) or date range (N days)
+        const attendanceDisplayDays = computed(() => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const bounds = attendanceRangeBounds.value;
+            if (bounds) {
+                const [start, end] = bounds;
+                const days = [];
+                const dayNamesShort = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+                for (const d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const date = new Date(d);
+                    days.push({
+                        dayName: dayNamesShort[date.getDay()],
+                        date: date.getDate(),
+                        dateObj: new Date(date),
+                        isToday: date.getTime() === today.getTime()
+                    });
+                }
+                return days;
+            }
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (attendanceWeekOffset.value * 7));
+            const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+            return dayNames.map((dayName, index) => {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + index);
+                return {
+                    dayName,
+                    date: date.getDate(),
+                    dateObj: date,
+                    isToday: date.toDateString() === today.toDateString()
+                };
+            });
+        });
 
         // Weekly Days Attendance Overview
         const weekDaysAttendance = computed(() => {
@@ -2382,33 +2173,41 @@ const ShiftAttendanceComponent = {
             });
         });
 
-        // Attendance Stats - computed from logs
-        const attendanceStats = computed(() => {
-            const logs = attendanceLogs.value;
-            const totalStaff = logs.length;
-            const presentNow = logs.filter(l => l.status === 'PRESENT').length;
-            const lateIn = logs.filter(l => l.violation === 'LATE IN' || l.violation === 'LATE IN - EARLY OUT').length;
-            const earlyOut = logs.filter(l => l.violation === 'EARLY OUT' || l.violation === 'LATE IN - EARLY OUT').length;
-            const missingLogs = logs.filter(l => l.punchFlag === 'MISSING CLOCK-IN' || l.punchFlag === 'MISSING CLOCK-OUT').length;
-            const annualLeave = logs.filter(l => l.dayContext === 'Annual Leave').length;
-            const workFromHome = logs.filter(l => l.dayContext === 'Work From Home').length;
-            const businessTrip = logs.filter(l => l.dayContext === 'Business Trip').length;
-            const absent = logs.filter(l => l.status === 'ABSENT').length;
-            const outsideWindow = logs.filter(l => l.violation === 'OUTSIDE WINDOW').length;
+        // Attendance stat cards config (order and labels match stats.js attendance tab)
+        const attendanceStatCards = [
+            { key: 'totalStaff', label: 'Total Staff', iconClass: '', icon: 'pi pi-users' },
+            { key: 'totalPresent', label: 'Total Present', iconClass: 'green', icon: 'pi pi-check' },
+            { key: 'totalAbsent', label: 'Total Absent', iconClass: 'pink', icon: 'pi pi-times' },
+            { key: 'missingClockIn', label: 'Total Missing Clock In', iconClass: 'red', icon: 'pi pi-sign-in' },
+            { key: 'missingClockOut', label: 'Total Missing Clock Out', iconClass: 'red', icon: 'pi pi-sign-out' },
+            { key: 'lateIn', label: 'Total LATE In', iconClass: 'orange', icon: 'pi pi-clock' },
+            { key: 'earlyOut', label: 'Total EARLY Out', iconClass: 'yellow', icon: 'pi pi-sign-out' },
+            { key: 'lessEffort', label: 'Total Less Effort', iconClass: 'purple', icon: 'pi pi-chart-line' },
+            { key: 'noShiftAssigned', label: 'Total NO SHIFT ASSIGNED', iconClass: 'gray', icon: 'pi pi-calendar-times' },
+            { key: 'outsideWindow', label: 'Total OUTSIDE WINDOW', iconClass: 'blue', icon: 'pi pi-exclamation-triangle' },
+            { key: 'businessTrip', label: 'Total Business Trip', iconClass: 'teal', icon: 'pi pi-briefcase' },
+            { key: 'workFromHome', label: 'Total Work From Home', iconClass: 'blue', icon: 'pi pi-home' },
+            { key: 'annualVacation', label: 'Total in Annual Vacation', iconClass: 'purple', icon: 'pi pi-calendar' },
+            { key: 'othersType', label: 'Total in Others Type', iconClass: 'purple', icon: 'pi pi-tag' }
+        ];
 
-            return {
-                totalStaff: String(totalStaff).padStart(2, '0'),
-                presentNow: String(presentNow).padStart(2, '0'),
-                lateIn: String(lateIn).padStart(2, '0'),
-                earlyOut: String(earlyOut).padStart(2, '0'),
-                missingLogs: String(missingLogs).padStart(2, '0'),
-                annualLeave: String(annualLeave).padStart(2, '0'),
-                workFromHome: String(workFromHome).padStart(2, '0'),
-                businessTrip: String(businessTrip).padStart(2, '0'),
-                absent: String(absent).padStart(2, '0'),
-                outsideWindow: String(outsideWindow).padStart(2, '0')
-            };
-        });
+        // Attendance Stats - values aligned with stats.js customPeriod (attendanceStats, punchStats, violationStats, vacationStats)
+        const attendanceStats = computed(() => ({
+                totalStaff: 450,
+                totalPresent: 2410,
+                totalAbsent: 95,
+                missingClockIn: 38,
+                missingClockOut: 29,
+                lateIn: 115,
+                earlyOut: 32,
+                lessEffort: 8,
+                noShiftAssigned: 0,
+                outsideWindow: 5,
+                businessTrip: 18,
+                workFromHome: 60,
+                annualVacation: 42,
+                othersType: 12
+        }));
 
         // Enhanced attendance logs with specific examples
         const attendanceLogs = computed(() => {
@@ -2553,25 +2352,178 @@ const ShiftAttendanceComponent = {
                     actualCheckIn: null, actualCheckOut: null,
                     status: null, punchFlag: null,
                     duration: null, violation: null
+                },
+                {
+                    id: 15, employeeId: 15, name: 'Omar Hassan',
+                    department: 'Engineering', deptColor: '#3b82f6', empId: '#501',
+                    role: 'VARIABLE DAYS', dayContext: 'Sick Leave',
+                    shiftType: null, shiftName: null,
+                    scheduledStart: null, scheduledEnd: null,
+                    actualCheckIn: null, actualCheckOut: null,
+                    status: null, punchFlag: null,
+                    duration: null, violation: null
+                },
+                {
+                    id: 16, employeeId: 16, name: 'Layla Mahmoud',
+                    department: 'Marketing', deptColor: '#ec4899', empId: '#502',
+                    role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
+                    shiftType: 'Normal', shiftName: null,
+                    scheduledStart: '09:00 AM', scheduledEnd: '06:00 PM',
+                    actualCheckIn: '9:45 am', actualCheckOut: '5:30 pm',
+                    status: 'PRESENT', punchFlag: 'COMPLETE',
+                    duration: '7h 45m', violation: 'LATE IN'
+                },
+                {
+                    id: 17, employeeId: 17, name: 'Kareem Ali',
+                    department: 'Operations', deptColor: '#f97316', empId: '#503',
+                    role: 'VARIABLE DAYS', dayContext: 'Eid Holiday',
+                    shiftType: null, shiftName: null,
+                    scheduledStart: null, scheduledEnd: null,
+                    actualCheckIn: null, actualCheckOut: null,
+                    status: null, punchFlag: null,
+                    duration: null, violation: null
+                },
+                {
+                    id: 18, employeeId: 18, name: 'Dina Farouk',
+                    department: 'HR', deptColor: '#ec4899', empId: '#504',
+                    role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
+                    shiftType: 'Normal', shiftName: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '05:00 PM',
+                    actualCheckIn: '8:00 am', actualCheckOut: '3:45 pm',
+                    status: 'PRESENT', punchFlag: 'COMPLETE',
+                    duration: '7 hours 45m', violation: 'EARLY OUT'
+                },
+                {
+                    id: 19, employeeId: 19, name: 'Youssef Nabil',
+                    department: 'Sales', deptColor: '#22c55e', empId: '#505',
+                    role: 'VARIABLE DAYS', dayContext: 'Public Holiday',
+                    shiftType: null, shiftName: null,
+                    scheduledStart: null, scheduledEnd: null,
+                    actualCheckIn: null, actualCheckOut: null,
+                    status: null, punchFlag: null,
+                    duration: null, violation: null
+                },
+                {
+                    id: 20, employeeId: 20, name: 'Nadia Salem',
+                    department: 'Finance', deptColor: '#22c55e', empId: '#506',
+                    role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
+                    shiftType: 'Template', shiftName: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '12:00 PM',
+                    actualCheckIn: '8:15 am', actualCheckOut: '12:30 pm',
+                    status: 'PRESENT', punchFlag: 'COMPLETE',
+                    duration: '4h 15m', violation: 'LATE IN - EARLY OUT'
+                },
+                {
+                    id: 21, employeeId: 21, name: 'Tariq Rashid',
+                    department: 'IT', deptColor: '#ef4444', empId: '#507',
+                    role: 'FIXED DAYS', dayContext: 'On Leave',
+                    shiftType: null, shiftName: null,
+                    scheduledStart: null, scheduledEnd: null,
+                    actualCheckIn: null, actualCheckOut: null,
+                    status: null, punchFlag: null,
+                    duration: null, violation: null
+                },
+                {
+                    id: 22, employeeId: 22, name: 'Hala Ibrahim',
+                    department: 'Customer Success', deptColor: '#14b8a6', empId: '#508',
+                    role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
+                    shiftType: 'Flexible', shiftName: null,
+                    scheduledStart: '09:00 AM', scheduledEnd: '06:00 PM',
+                    actualCheckIn: null, actualCheckOut: '6:00 pm',
+                    status: 'PRESENT', punchFlag: 'MISSING CLOCK-IN',
+                    duration: null, violation: null
+                },
+                {
+                    id: 23, employeeId: 23, name: 'Rami Khalil',
+                    department: 'Engineering', deptColor: '#3b82f6', empId: '#509',
+                    role: 'VARIABLE DAYS', dayContext: 'Maternity Leave',
+                    shiftType: null, shiftName: null,
+                    scheduledStart: null, scheduledEnd: null,
+                    actualCheckIn: null, actualCheckOut: null,
+                    status: null, punchFlag: null,
+                    duration: null, violation: null
+                },
+                {
+                    id: 24, employeeId: 24, name: 'Sara Mohamed',
+                    department: 'Marketing', deptColor: '#ec4899', empId: '#510',
+                    role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
+                    shiftType: 'Normal', shiftName: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '05:00 PM',
+                    actualCheckIn: '7:50 am', actualCheckOut: '4:50 pm',
+                    status: 'PRESENT', punchFlag: 'COMPLETE',
+                    duration: '9 hours', violation: 'OUTSIDE WINDOW'
+                },
+                {
+                    id: 25, employeeId: 25, name: 'Karim Adel',
+                    department: 'Operations', deptColor: '#f97316', empId: '#511',
+                    role: 'VARIABLE DAYS', dayContext: 'Unpaid Leave',
+                    shiftType: null, shiftName: null,
+                    scheduledStart: null, scheduledEnd: null,
+                    actualCheckIn: null, actualCheckOut: null,
+                    status: null, punchFlag: null,
+                    duration: null, violation: null
+                },
+                {
+                    id: 26, employeeId: 26, name: 'Mona Tarek',
+                    department: 'Finance', deptColor: '#22c55e', empId: '#512',
+                    role: 'VARIABLE DAYS', dayContext: 'Regular Workday',
+                    shiftType: 'Normal', shiftName: null,
+                    scheduledStart: '08:00 AM', scheduledEnd: '05:00 PM',
+                    actualCheckIn: '8:00 am', actualCheckOut: null,
+                    status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT',
+                    duration: null, violation: null
+                },
+                {
+                    id: 27, employeeId: 27, name: 'Bassem Fathy',
+                    department: 'Sales', deptColor: '#22c55e', empId: '#513',
+                    role: 'VARIABLE DAYS', dayContext: 'Work From Home',
+                    shiftType: 'Flexible', shiftName: null,
+                    scheduledStart: '09:00 AM', scheduledEnd: '06:00 PM',
+                    actualCheckIn: '9:10 am', actualCheckOut: '5:45 pm',
+                    status: 'PRESENT', punchFlag: 'COMPLETE',
+                    duration: '8h 35m', violation: 'LESS EFFORT'
                 }
             ];
         });
 
-        // Filtered attendance logs
-        const filteredAttendanceLogs = computed(() => {
-            if (!searchAttendance.value) return attendanceLogs.value;
-            const query = searchAttendance.value.toLowerCase();
-            return attendanceLogs.value.filter(log => {
-                const empName = getEmployeeName(log.employeeId).toLowerCase();
-                return empName.includes(query) ||
-                    (log.department && log.department.toLowerCase().includes(query)) ||
-                    (log.dayContext && log.dayContext.toLowerCase().includes(query));
+        // Allowed employee IDs from applied attendance filters (department/section/unit/team)
+        const attendanceAllowedEmployeeIds = computed(() => {
+            const applied = appliedAttendanceFilters.value;
+            if (applied.departmentId == null && applied.sectionId == null && applied.unitId == null && applied.teamId == null) {
+                return null; // no filter = all allowed
+            }
+            const deptName = applied.departmentId != null
+                ? (StaticData.departments.find(d => d.id === applied.departmentId) || {}).name
+                : null;
+            let sectionName = null;
+            if (applied.sectionId != null) {
+                sectionName = (StaticData.sections.find(s => s.id === applied.sectionId) || {}).name;
+            } else if (applied.unitId != null) {
+                const unit = StaticData.units.find(u => u.id === applied.unitId);
+                sectionName = unit ? (StaticData.sections.find(s => s.id === unit.sectionId) || {}).name : null;
+            } else if (applied.teamId != null) {
+                const team = StaticData.teams.find(t => t.id === applied.teamId);
+                const unit = team ? StaticData.units.find(u => u.id === team.unitId) : null;
+                sectionName = unit ? (StaticData.sections.find(s => s.id === unit.sectionId) || {}).name : null;
+            }
+            const allowed = employees.value.filter(emp => {
+                if (deptName != null && emp.department !== deptName) return false;
+                if (sectionName != null && emp.section !== sectionName) return false;
+                return true;
             });
+            return new Set(allowed.map(e => e.id));
         });
 
-        // Total pages
+        // Filtered attendance logs (by applied department/section/unit/team)
+        const filteredAttendanceLogs = computed(() => {
+            const allowedIds = attendanceAllowedEmployeeIds.value;
+            if (allowedIds === null) return attendanceLogs.value;
+            return attendanceLogs.value.filter(log => allowedIds.has(log.employeeId));
+        });
+
+        // Total pages (for weekly attendance table = employee rows)
         const totalAttendancePages = computed(() => {
-            return Math.ceil(filteredAttendanceLogs.value.length / attendancePerPage);
+            return Math.max(1, Math.ceil(weeklyAttendance.value.length / attendancePerPage));
         });
 
         // Paginated attendance
@@ -2580,50 +2532,106 @@ const ShiftAttendanceComponent = {
             return filteredAttendanceLogs.value.slice(start, start + attendancePerPage);
         });
 
-        // Weekly attendance data - grouped by employee with 7 days
+        // Weekly attendance data - grouped by employee, days from attendanceDisplayDays (week or date range)
         const weeklyAttendance = computed(() => {
             const today = new Date();
-            const startOfWeek = new Date(today);
-            startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (attendanceWeekOffset.value * 7));
-
-            const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+            const displayDays = attendanceDisplayDays.value;
             const shiftTypes = ['Normal', 'Flexible', 'Template'];
-            const contexts = ['Regular Workday', 'Regular Workday', 'Regular Workday', 'Regular Workday', 'Regular Workday', 'Weekend Off', 'Weekend Off'];
 
-            // Get unique employees from attendanceLogs
-            const employees = attendanceLogs.value.slice(0, 10).map(emp => ({
+            // Unique employees from filtered attendance logs (first log per employee for row data)
+            const seen = new Set();
+            let logsByEmployee = filteredAttendanceLogs.value.filter(log => {
+                if (seen.has(log.employeeId)) return false;
+                seen.add(log.employeeId);
+                return true;
+            });
+            const nameQuery = (appliedAttendanceSearchName.value || '').toLowerCase();
+            if (nameQuery) {
+                logsByEmployee = logsByEmployee.filter(log => {
+                    const name = (log.name || getEmployeeName(log.employeeId)).toLowerCase();
+                    return name.includes(nameQuery);
+                });
+            }
+            const offSchedulePairs = [[1, 6], [2, 5], [4, 6], [6, 5], [9, 6]];
+            const offScheduleHolidayPairs = [[3, 4], [7, 2]];
+            const offScheduleFirstRowEmployeeIds = [7, 12, 14];
+            const employees = logsByEmployee.map(emp => ({
                 employeeId: emp.employeeId,
                 name: emp.name,
                 department: emp.department,
                 deptColor: emp.deptColor,
                 empId: emp.empId,
                 role: emp.role,
-                days: dayNames.map((dayName, idx) => {
-                    const date = new Date(startOfWeek);
-                    date.setDate(startOfWeek.getDate() + idx);
-                    const isToday = date.toDateString() === today.toDateString();
-                    const isWeekend = idx >= 5;
+                days: displayDays.map((dayInfo, idx) => {
+                    const isWeekend = dayInfo.dateObj.getDay() === 0 || dayInfo.dateObj.getDay() === 6;
+                    const isFirstDay = idx === 0;
+                    const singleLeaveDayIndex = (emp.employeeId % 5) + 1;
+                    const isOffScheduleWeekend = offSchedulePairs.some(([eid, didx]) => eid === emp.employeeId && didx === idx);
+                    const isOffScheduleHoliday = offScheduleHolidayPairs.some(([eid, didx]) => eid === emp.employeeId && didx === idx);
+                    const isOffScheduleFirstRow = isFirstDay && offScheduleFirstRowEmployeeIds.includes(emp.employeeId) && emp.dayContext && emp.dayContext !== 'Regular Workday' && emp.dayContext !== 'Work From Home';
+                    let dayContext;
+                    if (isFirstDay) {
+                        dayContext = isWeekend ? 'Weekend Off' : (emp.dayContext || 'Regular Workday');
+                    } else {
+                        if (isWeekend) {
+                            dayContext = 'Weekend Off';
+                        } else if (isOffScheduleHoliday) {
+                            dayContext = offScheduleHolidayPairs.findIndex(([eid, didx]) => eid === emp.employeeId && didx === idx) === 0 ? 'Eid Holiday' : 'Public Holiday';
+                        } else if (idx === singleLeaveDayIndex) {
+                            const leaveTypes = ['Annual Leave', 'Sick Leave', 'Work From Home'];
+                            dayContext = leaveTypes[emp.employeeId % leaveTypes.length];
+                        } else {
+                            dayContext = 'Regular Workday';
+                        }
+                    }
+                    const isOffSchedule = isOffScheduleFirstRow || (isOffScheduleWeekend && isWeekend) || (isOffScheduleHoliday && (dayContext === 'Eid Holiday' || dayContext === 'Public Holiday'));
+                    const canPunch = dayContext === 'Regular Workday' || dayContext === 'Work From Home' || isOffSchedule;
+                    const shiftType = canPunch ? (emp.shiftType || shiftTypes[emp.employeeId % 3]) : null;
+                    const scheduleStart = canPunch ? (emp.scheduledStart || ['08:00 AM', '09:00 AM', '07:00 AM'][emp.employeeId % 3]) : null;
+                    const scheduleEnd = canPunch ? (emp.scheduledEnd || ['05:00 PM', '06:00 PM', '10:00 PM'][emp.employeeId % 3]) : null;
 
-                    // Generate varied data for each day
-                    const hasShift = !isWeekend || Math.random() > 0.7;
-                    const shiftType = hasShift ? shiftTypes[emp.employeeId % 3] : null;
-                    const scheduleStart = hasShift ? ['08:00 AM', '09:00 AM', '07:00 AM'][emp.employeeId % 3] : null;
-                    const scheduleEnd = hasShift ? ['05:00 PM', '06:00 PM', '10:00 PM'][emp.employeeId % 3] : null;
+                    let actualCheckIn, actualCheckOut, status, punchFlag, duration, violation;
+                    if (isOffSchedule) {
+                        if (isOffScheduleFirstRow && !emp.actualCheckIn) {
+                            actualCheckIn = '8:00 am';
+                            actualCheckOut = '5:00 pm';
+                            status = 'PRESENT';
+                            punchFlag = 'OFF-SCHEDULE ATTENDANCE';
+                            duration = '9 hours';
+                            violation = null;
+                        } else {
+                            actualCheckIn = emp.actualCheckIn;
+                            actualCheckOut = emp.actualCheckOut;
+                            status = emp.status;
+                            punchFlag = 'OFF-SCHEDULE ATTENDANCE';
+                            duration = emp.duration;
+                            violation = emp.violation;
+                        }
+                    } else if (canPunch) {
+                        actualCheckIn = emp.actualCheckIn;
+                        actualCheckOut = emp.actualCheckOut;
+                        status = emp.status;
+                        punchFlag = emp.punchFlag;
+                        duration = emp.duration;
+                        violation = emp.violation;
+                    } else {
+                        actualCheckIn = actualCheckOut = status = punchFlag = duration = violation = null;
+                    }
 
                     return {
-                        dayName,
-                        date: date.getDate(),
-                        isToday,
-                        dayContext: isWeekend ? 'Weekend Off' : emp.dayContext || 'Regular Workday',
-                        shiftType: isWeekend ? null : shiftType,
-                        scheduledStart: isWeekend ? null : scheduleStart,
-                        scheduledEnd: isWeekend ? null : scheduleEnd,
-                        actualCheckIn: isWeekend ? null : emp.actualCheckIn,
-                        actualCheckOut: isWeekend ? null : emp.actualCheckOut,
-                        status: isWeekend ? null : emp.status,
-                        punchFlag: isWeekend ? null : emp.punchFlag,
-                        duration: isWeekend ? null : emp.duration,
-                        violation: isWeekend ? null : emp.violation
+                        dayName: dayInfo.dayName,
+                        date: dayInfo.date,
+                        isToday: dayInfo.isToday,
+                        dayContext,
+                        shiftType: isWeekend && !isOffSchedule ? null : shiftType,
+                        scheduledStart: isWeekend && !isOffSchedule ? null : scheduleStart,
+                        scheduledEnd: isWeekend && !isOffSchedule ? null : scheduleEnd,
+                        actualCheckIn,
+                        actualCheckOut,
+                        status,
+                        punchFlag,
+                        duration,
+                        violation
                     };
                 })
             }));
@@ -2631,11 +2639,30 @@ const ShiftAttendanceComponent = {
             return employees;
         });
 
+        const collapseAllAttendance = () => {
+            expandedEmployees.value = [];
+        };
+
         // Paginated weekly attendance
         const paginatedWeeklyAttendance = computed(() => {
             const start = (attendancePage.value - 1) * attendancePerPage;
             return weeklyAttendance.value.slice(start, start + attendancePerPage);
         });
+
+        const attendanceAllExpanded = computed(() => {
+            const visible = paginatedWeeklyAttendance.value;
+            if (visible.length === 0) return false;
+            return visible.every(e => expandedEmployees.value.includes(e.employeeId));
+        });
+
+        const toggleExpandAllAttendance = () => {
+            const visibleIds = paginatedWeeklyAttendance.value.map(e => e.employeeId);
+            if (attendanceAllExpanded.value) {
+                expandedEmployees.value = [];
+            } else {
+                expandedEmployees.value = [...visibleIds];
+            }
+        };
 
         // Toggle employee expand
         const toggleEmployeeExpand = (employeeId) => {
@@ -2647,153 +2674,33 @@ const ShiftAttendanceComponent = {
             }
         };
 
-        // Correction Queue data
-        const correctionQueue = ref([
-            { id: 1, name: 'Saeed', issue: 'MISSING OUT', type: 'missing-out' },
-            { id: 2, name: 'Nurhan', issue: 'MISSING IN', type: 'missing-in' }
-        ]);
-
-        // Department Attendance Health data
-        const deptHealthData = ref([
-            { name: 'HOTEL', percent: 85, color: '#f97316' },
-            { name: 'FLIGHT', percent: 92, color: '#3b82f6' },
-            { name: 'IT', percent: 78, color: '#22c55e' },
-            { name: 'FINANCE', percent: 95, color: '#3b82f6' }
-        ]);
-
-        // Deviation Trends Chart
-        const deviationTrendsChart = ref(null);
-        let deviationChartInstance = null;
-
-        const initDeviationChart = () => {
-            if (!deviationTrendsChart.value) return;
-            
-            if (deviationChartInstance) {
-                deviationChartInstance.destroy();
-            }
-
-            const ctx = deviationTrendsChart.value.getContext('2d');
-            
-            deviationChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [
-                        {
-                            label: 'Late Arrivals',
-                            data: [4, 5, 4, 7, 2, 2, 1],
-                            borderColor: '#f97316',
-                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#f97316',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointHoverRadius: 6,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Early Exits',
-                            data: [2, 4, 5, 1, 8, 4, 1],
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#3b82f6',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointHoverRadius: 6,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            titleColor: '#1e293b',
-                            titleFont: { size: 13, weight: 'bold' },
-                            bodyFont: { size: 12 },
-                            bodyColor: '#64748b',
-                            borderColor: '#e2e8f0',
-                            borderWidth: 1,
-                            padding: 12,
-                            cornerRadius: 8,
-                            boxPadding: 4,
-                            usePointStyle: true,
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.dataset.label === 'Early Exits' ? 'early' : 'late';
-                                    const color = context.dataset.label === 'Early Exits' ? '#3b82f6' : '#f97316';
-                                    return label + ' : ' + context.raw;
-                                },
-                                labelTextColor: function(context) {
-                                    return context.dataset.label === 'Early Exits' ? '#3b82f6' : '#f97316';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 8,
-                            ticks: {
-                                stepSize: 2,
-                                font: { size: 11 },
-                                color: '#94a3b8'
-                            },
-                            grid: {
-                                color: '#f1f5f9'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                font: { size: 11 },
-                                color: '#64748b'
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
+        // Day context helpers (all scenarios: workday, weekend, leave, sick, holiday, etc.)
+        const dayContextConfig = {
+            'Regular Workday': { class: 'workday', icon: 'pi pi-sun' },
+            'Weekend Off': { class: 'weekend', icon: 'pi pi-moon' },
+            'Business Trip': { class: 'business', icon: 'pi pi-briefcase' },
+            'Work From Home': { class: 'wfh', icon: 'pi pi-home' },
+            'Annual Leave': { class: 'leave', icon: 'pi pi-calendar' },
+            'Sick Leave': { class: 'sick', icon: 'pi pi-heart' },
+            'On Leave': { class: 'leave', icon: 'pi pi-calendar-minus' },
+            'Eid Holiday': { class: 'holiday', icon: 'pi pi-star' },
+            'Public Holiday': { class: 'holiday', icon: 'pi pi-flag' },
+            'Unpaid Leave': { class: 'leave', icon: 'pi pi-wallet' },
+            'Maternity Leave': { class: 'leave', icon: 'pi pi-users' },
+            'Paternity Leave': { class: 'leave', icon: 'pi pi-user' },
+            'Study Leave': { class: 'leave', icon: 'pi pi-book' },
+            'Bereavement Leave': { class: 'leave', icon: 'pi pi-heart' }
         };
+        const dayContextOptions = Object.keys(dayContextConfig);
 
-        // Day context helpers
         const getDayContextClass = (context) => {
             if (!context) return '';
-            const map = {
-                'Regular Workday': 'workday',
-                'Weekend Off': 'weekend',
-                'Business Trip': 'business',
-                'Work From Home': 'wfh',
-                'Annual Leave': 'leave'
-            };
-            return map[context] || '';
+            return (dayContextConfig[context] && dayContextConfig[context].class) || 'workday';
         };
 
         const getDayContextIcon = (context) => {
             if (!context) return 'pi pi-sun';
-            const map = {
-                'Regular Workday': 'pi pi-sun',
-                'Weekend Off': 'pi pi-moon',
-                'Business Trip': 'pi pi-briefcase',
-                'Work From Home': 'pi pi-home',
-                'Annual Leave': 'pi pi-calendar'
-            };
-            return map[context] || 'pi pi-sun';
+            return (dayContextConfig[context] && dayContextConfig[context].icon) || 'pi pi-sun';
         };
 
         // Status badge class
@@ -2813,7 +2720,8 @@ const ShiftAttendanceComponent = {
             const map = {
                 'COMPLETE': 'complete',
                 'MISSING CLOCK-IN': 'missing',
-                'MISSING CLOCK-OUT': 'missing'
+                'MISSING CLOCK-OUT': 'missing',
+                'OFF-SCHEDULE ATTENDANCE': 'off-schedule'
             };
             return map[flag] || '';
         };
@@ -2832,6 +2740,51 @@ const ShiftAttendanceComponent = {
             return map[violation] || '';
         };
 
+        const formatTimeForFingerprint = (t) => {
+            if (!t || typeof t !== 'string') return '';
+            const s = t.trim();
+            if (/^\d{1,2}:\d{2}\s*am$/i.test(s)) return s.replace(/\s*am$/i, ' AM');
+            if (/^\d{1,2}:\d{2}\s*pm$/i.test(s)) return s.replace(/\s*pm$/i, ' PM');
+            if (/^\d{1,2}\s*am$/i.test(s)) return s.replace(/\s*am$/i, ':00 AM');
+            if (/^\d{1,2}\s*pm$/i.test(s)) return s.replace(/\s*pm$/i, ':00 PM');
+            return s;
+        };
+
+        const getFingerprintsForDay = (day, employeeId, dayIndex) => {
+            const inTime = day && day.actualCheckIn;
+            const outTime = day && day.actualCheckOut;
+            if (!inTime && !outTime) return { count: 0, tooltip: '' };
+            const inStr = inTime ? formatTimeForFingerprint(inTime) : '';
+            const outStr = outTime ? formatTimeForFingerprint(outTime) : '';
+            if (inTime && !outTime) {
+                return { count: 1, tooltip: `${inStr || '8:00 AM'} - IN` };
+            }
+            if (!inTime && outTime) {
+                return { count: 1, tooltip: `${outStr || '5:00 PM'} - OUT` };
+            }
+            const base = (employeeId || 0) + (dayIndex || 0);
+            const numPrints = 2 + (base % 5) * 2;
+            let events = [{ time: inStr, type: 'IN' }];
+            if (numPrints >= 4) events.push({ time: '12:00 PM', type: 'OUT' }, { time: '12:30 PM', type: 'IN' });
+            if (numPrints >= 6) events.push({ time: '10:00 AM', type: 'OUT' }, { time: '10:15 AM', type: 'IN' });
+            if (numPrints >= 8) events.push({ time: '3:00 PM', type: 'OUT' }, { time: '3:10 PM', type: 'IN' });
+            if (numPrints >= 10) events.push({ time: '11:00 AM', type: 'OUT' }, { time: '11:10 AM', type: 'IN' });
+            events.push({ time: outStr, type: 'OUT' });
+            const sortKey = (e) => {
+                const m = e.time.match(/(\d+):?(\d*)\s*(AM|PM)/i);
+                if (!m) return 0;
+                let h = parseInt(m[1], 10);
+                const min = parseInt(m[2] || '0', 10);
+                const pm = (m[3] || '').toUpperCase() === 'PM';
+                if (pm && h < 12) h += 12;
+                if (!pm && h === 12) h = 0;
+                return h * 60 + min;
+            };
+            events = [events[0], ...events.slice(1, -1).sort((a, b) => sortKey(a) - sortKey(b)), events[events.length - 1]];
+            const tooltip = events.map(e => `${e.time} - ${e.type}`).join('<br/>');
+            return { count: events.length, tooltip };
+        };
+
         // Formatted week label
         const weekLabelFormatted = computed(() => {
             const start = new Date(currentWeekStart.value);
@@ -2841,15 +2794,46 @@ const ShiftAttendanceComponent = {
             return `${months[start.getMonth()]} ${start.getDate()}, ${start.getFullYear()} - ${months[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
         });
 
-        // Filtered employee schedules by search
+        // First-layer employee IDs (direct reports of the shift scheduler / line manager). When backend exists, derive from reportTo/managerId.
+        const firstLayerEmployeeIds = ref([1, 2, 3]);
+
+        // Variable-only schedules (fixed schedule employees are not shown in shift scheduling)
+        const variableSchedules = computed(() =>
+            employeeSchedules.value.filter(s => s.scheduleType === 'Variable')
+        );
+
+        // Filtered employee schedules by layer and search (variable only)
         const filteredEmployeeSchedules = computed(() => {
-            if (!scheduleSearch.value) return employeeSchedules.value;
-            const query = scheduleSearch.value.toLowerCase();
-            return employeeSchedules.value.filter(s =>
-                s.employeeName.toLowerCase().includes(query) ||
-                s.scheduleType.toLowerCase().includes(query)
-            );
+            let list = variableSchedules.value;
+            if (schedulerLayer.value === 'first') {
+                list = list.filter(s => firstLayerEmployeeIds.value.includes(s.employeeId));
+            }
+            if (scheduleSearch.value) {
+                const query = scheduleSearch.value.toLowerCase();
+                list = list.filter(s =>
+                    s.employeeName.toLowerCase().includes(query) ||
+                    s.scheduleType.toLowerCase().includes(query)
+                );
+            }
+            return list;
         });
+
+        const schedulePerPage = 10;
+        const schedulePage = ref(1);
+        const paginatedScheduleList = computed(() => {
+            const list = filteredEmployeeSchedules.value;
+            const start = (schedulePage.value - 1) * schedulePerPage;
+            return list.slice(start, start + schedulePerPage);
+        });
+        const schedulePageCount = computed(() => Math.max(1, Math.ceil(filteredEmployeeSchedules.value.length / schedulePerPage)));
+        const schedulePaginationStart = computed(() => filteredEmployeeSchedules.value.length === 0 ? 0 : (schedulePage.value - 1) * schedulePerPage + 1);
+        const schedulePaginationEnd = computed(() => Math.min(schedulePage.value * schedulePerPage, filteredEmployeeSchedules.value.length));
+
+        watch(() => filteredEmployeeSchedules.value.length, () => { schedulePage.value = 1; });
+        watch(() => filteredReviewerSchedules.value.length, () => { reviewerPage.value = 1; });
+        watch(appliedAttendanceFilters, () => { attendancePage.value = 1; }, { deep: true });
+        watch(appliedAttendanceSearchName, () => { attendancePage.value = 1; });
+        watch([attendanceDateRange, () => attendanceDisplayDays.value.length], () => { attendancePage.value = 1; });
 
         // Filtered templates for template selector
         const filteredTemplates = computed(() => {
@@ -2963,12 +2947,19 @@ const ShiftAttendanceComponent = {
             return totalHours;
         };
 
-        // Scheduler footer stats
+        // Scheduler footer stats (variable schedule employees only)
         const schedulerStats = computed(() => {
-            const totalEmployees = employeeSchedules.value.length;
+            const variableIds = new Set(variableSchedules.value.map(s => s.id));
+            const totalEmployees = variableSchedules.value.length;
             const totalSlots = totalEmployees * 7;
-            const assignedShifts = Object.values(scheduleAssignments.value).filter(a => a.type === 'shift').length;
-            const timeOffs = Object.values(scheduleAssignments.value).filter(a => a.type === 'timeoff').length;
+            let assignedShifts = 0;
+            let timeOffs = 0;
+            Object.entries(scheduleAssignments.value).forEach(([key, a]) => {
+                const scheduleId = parseInt(key.split('-')[0], 10);
+                if (!variableIds.has(scheduleId)) return;
+                if (a.type === 'shift') assignedShifts++;
+                else if (a.type === 'timeoff') timeOffs++;
+            });
             const unassigned = totalSlots - assignedShifts - timeOffs;
             const weeklyHours = assignedShifts * 9; // Assume 9 hours per shift
 
@@ -2992,11 +2983,45 @@ const ShiftAttendanceComponent = {
 
         // Get shift duration
         const getShiftDuration = (shift) => {
+            if (!shift) return 0;
             if (shift.shiftType === 'flexible') return shift.requiredHours;
             if (shift.periods && shift.periods.length > 0) {
                 return calculateDuration(shift.periods[0].startTime, shift.periods[0].endTime);
             }
             return calculateDuration(shift.startTime, shift.endTime);
+        };
+
+        const getAssignedShiftPeriod = (shift) => {
+            if (!shift || shift.shiftType === 'flexible') return null;
+            if (shift.periods && shift.periods.length > 0) return shift.periods[0];
+            return { startTime: shift.startTime, endTime: shift.endTime, clockIn: shift.clockIn, clockOut: shift.clockOut };
+        };
+
+        const getAssignedClockInSummary = (shift) => {
+            const period = getAssignedShiftPeriod(shift);
+            if (!period || !period.clockIn) return '';
+            const wStart = period.clockIn.windowStart || subtractMinutes(period.startTime, 60);
+            const wEnd = period.clockIn.windowEnd || addMinutes(period.startTime, 60);
+            const late = period.clockIn.lateThreshold || addMinutes(period.startTime, 15);
+            return `In: ${formatTime12(wStart)}–${formatTime12(wEnd)} · Late ${formatTime12(late)}`;
+        };
+
+        const getAssignedClockOutSummary = (shift) => {
+            const period = getAssignedShiftPeriod(shift);
+            if (!period || !period.clockOut) return '';
+            const wStart = period.clockOut.windowStart || subtractMinutes(period.endTime, 30);
+            const wEnd = period.clockOut.windowEnd || addMinutes(period.endTime, 60);
+            const early = period.clockOut.earlyThreshold != null ? period.clockOut.earlyThreshold : period.endTime;
+            const earlyStr = typeof early === 'string' ? formatTime12(early) : formatTime12(period.endTime);
+            return `Out: ${formatTime12(wStart)}–${formatTime12(wEnd)} · Early ${earlyStr}`;
+        };
+
+        const getAssignedShiftTimeRange = (shift) => {
+            if (!shift) return '';
+            if (shift.shiftType === 'flexible') return `${formatTime12(shift.validFrom)} – ${formatTime12(shift.validTo)}`;
+            const period = getAssignedShiftPeriod(shift);
+            if (!period) return '';
+            return `${formatTime12(period.startTime)} – ${formatTime12(period.endTime)}`;
         };
 
         // Toggle shift rules display
@@ -3116,8 +3141,11 @@ const ShiftAttendanceComponent = {
             filteredAttendance,
             getEmployeeAvatar,
             getEmployeeName,
+            getEmployeeNumber,
+            getEmployeeDepartmentPath,
             getShiftName,
             getShiftColor,
+            getShiftById,
             getShiftTime,
             getShiftCellClass,
             getCheckInClass,
@@ -3156,6 +3184,7 @@ const ShiftAttendanceComponent = {
             deleteShift,
             // Shift Scheduling
             scheduleSearch,
+            schedulerLayer,
             pendingChanges,
             showShiftMenu,
             showTemplateSelector,
@@ -3165,6 +3194,11 @@ const ShiftAttendanceComponent = {
             currentScheduleTarget,
             scheduleAssignments,
             filteredEmployeeSchedules,
+            paginatedScheduleList,
+            schedulePage,
+            schedulePageCount,
+            schedulePaginationStart,
+            schedulePaginationEnd,
             filteredTemplates,
             getAssignment,
             hasAssignment,
@@ -3176,6 +3210,9 @@ const ShiftAttendanceComponent = {
             closeAllMenus,
             getShiftTimeRange,
             getShiftDuration,
+            getAssignedClockInSummary,
+            getAssignedClockOutSummary,
+            getAssignedShiftTimeRange,
             toggleShiftRules,
             expandedShiftRules,
             draftAndReview,
@@ -3195,15 +3232,29 @@ const ShiftAttendanceComponent = {
             reviewerTab,
             reviewerSearch,
             reviewerDepartment,
-            departmentOptions,
+            reviewerSection,
+            reviewerUnit,
+            reviewerDepartmentOptions,
+            reviewerFilteredSections,
+            reviewerFilteredUnits,
+            onReviewerDepartmentChange,
+            onReviewerSectionChange,
+            applyReviewerFilters,
             weekLabelShort,
             summaryStats,
             hourlyDistribution,
             hourlyDistributionChart,
             heatmapHours,
             heatmapData,
+            heatmapChartReady,
+            attemptedHeatmapInit,
             heatmapStats,
             filteredReviewerSchedules,
+            paginatedReviewerSchedules,
+            reviewerPage,
+            reviewerPageCount,
+            reviewerPaginationStart,
+            reviewerPaginationEnd,
             getReviewerShift,
             getShiftBlockClass,
             getShiftBlockStyle,
@@ -3213,26 +3264,47 @@ const ShiftAttendanceComponent = {
             attendancePage,
             attendanceWeekOffset,
             attendanceWeekLabel,
+            attendanceDateRange,
+            attendanceDateRangeActive,
+            attendanceDisplayDays,
+            onAttendanceDateRangeChange,
+            applyAttendanceDateRange,
+            attendanceDatePickerRef,
             prevAttendanceWeek,
             nextAttendanceWeek,
             weekDaysAttendance,
+            attendanceStatCards,
             attendanceStats,
             attendanceLogs,
             filteredAttendanceLogs,
+            attendanceDepartment,
+            attendanceSection,
+            attendanceUnit,
+            attendanceTeam,
+            attendanceSearchName,
+            attendanceDepartmentOptions,
+            attendanceFilteredSections,
+            attendanceFilteredUnits,
+            attendanceFilteredTeams,
+            onAttendanceDepartmentChange,
+            onAttendanceSectionChange,
+            onAttendanceUnitChange,
+            applyAttendanceFilters,
+            collapseAllAttendance,
+            attendanceAllExpanded,
+            toggleExpandAllAttendance,
             totalAttendancePages,
             paginatedAttendance,
             weeklyAttendance,
             paginatedWeeklyAttendance,
             expandedEmployees,
             toggleEmployeeExpand,
-            correctionQueue,
-            deptHealthData,
-            deviationTrendsChart,
             getDayContextClass,
             getDayContextIcon,
             getStatusBadgeClass,
             getPunchFlagClass,
             getViolationClass,
+            getFingerprintsForDay,
             // Legacy
             showAssignDialog,
             assignForm,

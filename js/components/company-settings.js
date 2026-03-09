@@ -58,6 +58,7 @@ const CompanySettingsComponent = {
                         <p-tab value="offices" @click="activeTab = 'offices'">Offices</p-tab>
                         <p-tab value="costcenters" @click="activeTab = 'costcenters'">Cost Centers</p-tab>
                         <p-tab value="workweeks" @click="activeTab = 'workweeks'">Work Weeks</p-tab>
+                        <p-tab value="shiftlibrary" @click="activeTab = 'shiftlibrary'">Shift Library</p-tab>
                         <p-tab value="attendance" @click="activeTab = 'attendance'">Attendance Settings</p-tab>
                     </p-tablist>
                     
@@ -514,6 +515,162 @@ const CompanySettingsComponent = {
                             </div>
                         </p-tabpanel>
                         
+                        <!-- Shift Library Tab -->
+                        <p-tabpanel value="shiftlibrary">
+                            <!-- Shift Library Header -->
+                            <div class="shift-library-header">
+                                <div class="shift-library-info">
+                                    <h2>SHIFT LIBRARY</h2>
+                                    <p>Standardize operational hours across all departments.</p>
+                                </div>
+                                <div class="shift-library-stats">
+                                    <div class="preset-count">
+                                        <span class="count-value">{{ allShifts.length }}</span>
+                                        <span class="count-label">PRESETS</span>
+                                    </div>
+                                    <button class="new-preset-btn" @click="openShiftDialog()">
+                                        <i class="pi pi-plus"></i>
+                                        <span>NEW PRESET</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Shift Type Tabs -->
+                            <div class="shift-type-tabs">
+                                <button class="shift-type-tab" :class="{ active: shiftTypeFilter === 'normal' }" 
+                                        @click="shiftTypeFilter = 'normal'">NORMAL SHIFT</button>
+                                <button class="shift-type-tab" :class="{ active: shiftTypeFilter === 'template' }" 
+                                        @click="shiftTypeFilter = 'template'">TEMPLATE DAY SHIFT</button>
+                                <button class="shift-type-tab" :class="{ active: shiftTypeFilter === 'flexible' }" 
+                                        @click="shiftTypeFilter = 'flexible'">FLEXIBLE SHIFT</button>
+                            </div>
+
+                            <!-- Shift Cards Grid -->
+                            <div class="shift-library-grid">
+                                <!-- Existing Shift Cards -->
+                                <div v-for="shift in filteredShifts" :key="shift.id" class="shift-preset-card">
+                                    <div class="preset-card-header">
+                                        <div class="preset-icon" :style="{ background: shift.color + '20', color: shift.color }">
+                                            <i class="pi pi-calendar"></i>
+                                        </div>
+                                        <div class="preset-info">
+                                            <h3>{{ shift.name }}</h3>
+                                            <div class="preset-meta">
+                                                <span class="preset-type">{{ getShiftTypeLabel(shift.shiftType) }}</span>
+                                                <span class="preset-periods">{{ (shift.periods && shift.periods.length > 0) ? shift.periods.length : 1 }} Period{{ ((shift.periods?.length || 1) > 1) ? 's' : '' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="preset-actions">
+                                            <button class="action-btn edit" @click="editShift(shift)" title="Edit">
+                                                <i class="pi pi-pencil"></i>
+                                            </button>
+                                            <button class="action-btn delete" @click="deleteShift(shift)" title="Delete">
+                                                <i class="pi pi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Period Details (show first period or flexible info) -->
+                                    <template v-if="shift.shiftType === 'flexible'">
+                                        <div class="flexible-shift-details">
+                                            <!-- Required Hours Display -->
+                                            <div class="flexible-hours-display">
+                                                <div class="hours-value">{{ shift.requiredHours }}</div>
+                                                <div class="hours-label">Hours Required Daily</div>
+                                            </div>
+
+                                            <!-- Duration Progress Bar -->
+                                            <div class="duration-bar">
+                                                <div class="duration-bar-fill" :style="{ width: (shift.requiredHours / 12 * 100) + '%', background: shift.color }"></div>
+                                            </div>
+
+                                            <!-- Valid Time Window -->
+                                            <div class="clock-rules-section flexible-window">
+                                                <div class="rules-header">
+                                                    <i class="pi pi-clock"></i>
+                                                    <span>VALID WORK WINDOW:</span>
+                                                </div>
+                                                <div class="rules-content">
+                                                    <div class="rule-line">
+                                                        Punch-in allowed from <strong>{{ formatTime12(shift.validFrom) }}</strong> 
+                                                        to <strong>{{ formatTime12(shift.validTo) }}</strong>
+                                                    </div>
+                                                    <div class="rule-line info-text">
+                                                        <i class="pi pi-info-circle"></i>
+                                                        Total work time calculated based on first and last punch
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                    <template v-else>
+                                        <div v-for="(period, pIndex) in ((shift.periods && shift.periods.length > 0) ? shift.periods : [{ startTime: shift.startTime, endTime: shift.endTime, clockIn: shift.clockIn, clockOut: shift.clockOut }])" 
+                                             :key="pIndex" class="preset-period">
+                                            <div class="preset-time-info">
+                                                <div class="time-display">
+                                                    <i class="pi pi-clock"></i>
+                                                    <span>{{ formatTime12(period.startTime) }} - {{ formatTime12(period.endTime) }}</span>
+                                                </div>
+                                                <div class="duration-display">
+                                                    <i class="pi pi-stopwatch"></i>
+                                                    <span>{{ calculateDuration(period.startTime, period.endTime) }} hrs Duration</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Duration Progress Bar -->
+                                            <div class="duration-bar">
+                                                <div class="duration-bar-fill" :style="{ width: getDurationPercent(period.startTime, period.endTime) + '%', background: shift.color }"></div>
+                                            </div>
+
+                                            <!-- Clock-In Rules -->
+                                            <div class="clock-rules-section">
+                                                <div class="rules-header">
+                                                    <i class="pi pi-sign-in"></i>
+                                                    <span>CLOCK-IN RULES:</span>
+                                                </div>
+                                                <div class="rules-content">
+                                                    <div class="rule-line">
+                                                        Window: <strong>{{ formatTime12(period.clockIn?.windowStart || subtractMinutes(period.startTime, 60)) }}</strong> 
+                                                        to <strong>{{ formatTime12(period.clockIn?.windowEnd || addMinutes(period.startTime, 60)) }}</strong>.
+                                                    </div>
+                                                    <div class="rule-line threshold">
+                                                        Late threshold: <span class="threshold-value">{{ formatTime12(period.clockIn?.lateThreshold || addMinutes(period.startTime, 15)) }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Clock-Out Rules -->
+                                            <div class="clock-rules-section">
+                                                <div class="rules-header out">
+                                                    <i class="pi pi-sign-out"></i>
+                                                    <span>CLOCK-OUT RULES:</span>
+                                                </div>
+                                                <div class="rules-content">
+                                                    <div class="rule-line">
+                                                        Window: <strong>{{ formatTime12(period.clockOut?.windowStart || subtractMinutes(period.endTime, 30)) }}</strong> 
+                                                        to <strong>{{ formatTime12(period.clockOut?.windowEnd || addMinutes(period.endTime, 60)) }}</strong>.
+                                                    </div>
+                                                    <div class="rule-line threshold">
+                                                        Early exit threshold: <span class="threshold-value">{{ formatTime12(period.clockOut?.earlyThreshold || period.endTime) }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Create New Shift Card -->
+                                <div class="shift-preset-card create-new" @click="openShiftDialog()">
+                                    <div class="create-new-content">
+                                        <i class="pi pi-plus"></i>
+                                        <h4>Create New Shift</h4>
+                                        <p>Add a custom shift preset</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-tabpanel>
+                        
                         <!-- Attendance Settings Tab -->
                         <p-tabpanel value="attendance">
                             <div class="card-header">
@@ -738,6 +895,243 @@ const CompanySettingsComponent = {
                 </template>
             </p-dialog>
             
+            <!-- Define New Shift Dialog -->
+            <p-dialog v-model:visible="showShiftDialog" header="" :modal="true" :style="{ width: '1100px', maxWidth: '95vw' }" class="shift-dialog">
+                <template #header>
+                    <div class="shift-dialog-header">
+                        <h2>{{ editingShift ? 'Edit Shift' : 'Define New Shift' }}</h2>
+                        <div class="shift-type-toggle">
+                            <button class="type-btn" :class="{ active: shiftForm.shiftType === 'normal' }" @click="shiftForm.shiftType = 'normal'">Normal</button>
+                            <button class="type-btn" :class="{ active: shiftForm.shiftType === 'template' }" @click="shiftForm.shiftType = 'template'">Template</button>
+                            <button class="type-btn" :class="{ active: shiftForm.shiftType === 'flexible' }" @click="shiftForm.shiftType = 'flexible'">Flexible</button>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="shift-dialog-content">
+                    <!-- Shift Name -->
+                    <div class="form-group">
+                        <label class="form-label">Shift Name (English)</label>
+                        <p-inputtext v-model="shiftForm.name" placeholder="e.g., Morning Shift" style="width: 100%;"></p-inputtext>
+                    </div>
+
+                    <!-- NORMAL SHIFT -->
+                    <template v-if="shiftForm.shiftType === 'normal'">
+                        <div class="shift-details-section">
+                            <h3>Shift Details</h3>
+                            <div class="shift-time-row-compact">
+                                <div class="time-input-group-compact">
+                                    <label class="mini-label">START TIME</label>
+                                    <p-datepicker v-model="shiftForm.startTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
+                                </div>
+                                <div class="time-input-group-compact">
+                                    <label class="mini-label">END TIME</label>
+                                    <p-datepicker v-model="shiftForm.endTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
+                                </div>
+                                <div class="time-input-group-compact color-section">
+                                    <label class="mini-label">SHIFT COLOR</label>
+                                    <div class="color-duration-display">
+                                        <div class="color-box" :style="{ background: shiftForm.color }" @click="showColorPicker = !showColorPicker"></div>
+                                        <span class="duration-badge">{{ computedDuration }} hrs</span>
+                                    </div>
+                                    <div v-if="showColorPicker" class="color-picker-dropdown">
+                                        <div v-for="color in shiftColors" :key="color" 
+                                             class="color-option" 
+                                             :class="{ selected: shiftForm.color === color }"
+                                             :style="{ background: color }"
+                                             @click="shiftForm.color = color; showColorPicker = false"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Clock Rules -->
+                            <div class="clock-rules-grid">
+                                <!-- Clock-In Rules -->
+                                <div class="clock-rules-card">
+                                    <div class="rules-title">
+                                        <span class="rules-dot in"></span>
+                                        <span>Clock-In Rules</span>
+                                        <span class="base-time">Base: {{ formatTimeFromDate(shiftForm.startTimeDate) }}</span>
+                                    </div>
+                                    <div class="rules-inputs-compact">
+                                        <div class="rule-input-group-compact">
+                                            <label>No earlier than (Mins)</label>
+                                            <p-inputnumber v-model="shiftForm.clockIn.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>Allowed delay (Mins)</label>
+                                            <p-inputnumber v-model="shiftForm.clockIn.allowedDelay" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>No later than (Mins)</label>
+                                            <p-inputnumber v-model="shiftForm.clockIn.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                    </div>
+                                    <div class="rules-summary">
+                                        <i class="pi pi-info-circle"></i>
+                                        <span>Window: <strong>{{ computedClockInWindow }}</strong>. Late threshold: <strong>{{ computedClockInLate }}</strong></span>
+                                    </div>
+                                </div>
+
+                                <!-- Clock-Out Rules -->
+                                <div class="clock-rules-card">
+                                    <div class="rules-title">
+                                        <span class="rules-dot out"></span>
+                                        <span>Clock-Out Rules</span>
+                                        <span class="base-time">Base: {{ formatTimeFromDate(shiftForm.endTimeDate) }}</span>
+                                    </div>
+                                    <div class="rules-inputs-compact">
+                                        <div class="rule-input-group-compact">
+                                            <label>No earlier than (Mins)</label>
+                                            <p-inputnumber v-model="shiftForm.clockOut.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>Allowed shortage (Mins)</label>
+                                            <p-inputnumber v-model="shiftForm.clockOut.allowedShortage" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>No later than (Mins)</label>
+                                            <p-inputnumber v-model="shiftForm.clockOut.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                    </div>
+                                    <div class="rules-summary out">
+                                        <i class="pi pi-info-circle"></i>
+                                        <span>Window: <strong>{{ computedClockOutWindow }}</strong>. Early exit threshold: <strong>{{ computedClockOutEarly }}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- TEMPLATE DAY SHIFT -->
+                    <template v-if="shiftForm.shiftType === 'template'">
+                        <div v-for="(period, index) in shiftForm.periods" :key="index" class="shift-details-section period-section">
+                            <div class="period-header">
+                                <h3>Shift Period {{ index + 1 }}</h3>
+                                <button v-if="shiftForm.periods.length > 1" class="remove-period-btn" @click="removePeriod(index)">
+                                    <i class="pi pi-times"></i>
+                                </button>
+                            </div>
+                            <div class="shift-time-row-compact">
+                                <div class="time-input-group-compact">
+                                    <label class="mini-label">START TIME</label>
+                                    <p-datepicker v-model="period.startTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
+                                </div>
+                                <div class="time-input-group-compact">
+                                    <label class="mini-label">END TIME</label>
+                                    <p-datepicker v-model="period.endTimeDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
+                                </div>
+                                <div class="time-input-group-compact color-section">
+                                    <label class="mini-label">SHIFT COLOR</label>
+                                    <div class="color-duration-display">
+                                        <div class="color-box" :style="{ background: shiftForm.color }" @click="showColorPicker = !showColorPicker"></div>
+                                        <span class="duration-badge">{{ calculateDurationFromDates(period.startTimeDate, period.endTimeDate) }} hrs</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Clock Rules for this period -->
+                            <div class="clock-rules-grid">
+                                <div class="clock-rules-card">
+                                    <div class="rules-title">
+                                        <span class="rules-dot in"></span>
+                                        <span>Clock-In Rules</span>
+                                        <span class="base-time">Base: {{ formatTimeFromDate(period.startTimeDate) }}</span>
+                                    </div>
+                                    <div class="rules-inputs-compact">
+                                        <div class="rule-input-group-compact">
+                                            <label>No earlier than (Mins)</label>
+                                            <p-inputnumber v-model="period.clockIn.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>Allowed delay (Mins)</label>
+                                            <p-inputnumber v-model="period.clockIn.allowedDelay" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>No later than (Mins)</label>
+                                            <p-inputnumber v-model="period.clockIn.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                    </div>
+                                    <div class="rules-summary">
+                                        <i class="pi pi-info-circle"></i>
+                                        <span>Window: <strong>{{ computePeriodClockInWindowDate(period) }}</strong>. Late threshold: <strong>{{ computePeriodClockInLateDate(period) }}</strong></span>
+                                    </div>
+                                </div>
+                                <div class="clock-rules-card">
+                                    <div class="rules-title">
+                                        <span class="rules-dot out"></span>
+                                        <span>Clock-Out Rules</span>
+                                        <span class="base-time">Base: {{ formatTimeFromDate(period.endTimeDate) }}</span>
+                                    </div>
+                                    <div class="rules-inputs-compact">
+                                        <div class="rule-input-group-compact">
+                                            <label>No earlier than (Mins)</label>
+                                            <p-inputnumber v-model="period.clockOut.noEarlierThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>Allowed shortage (Mins)</label>
+                                            <p-inputnumber v-model="period.clockOut.allowedShortage" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                        <div class="rule-input-group-compact">
+                                            <label>No later than (Mins)</label>
+                                            <p-inputnumber v-model="period.clockOut.noLaterThan" :min="0" :max="180" showButtons></p-inputnumber>
+                                        </div>
+                                    </div>
+                                    <div class="rules-summary out">
+                                        <i class="pi pi-info-circle"></i>
+                                        <span>Window: <strong>{{ computePeriodClockOutWindowDate(period) }}</strong>. Early exit threshold: <strong>{{ computePeriodClockOutEarlyDate(period) }}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Period Button (max 2 periods) -->
+                        <div class="add-period-btn" :class="{ disabled: shiftForm.periods.length >= 2 }"
+                             @click="shiftForm.periods.length < 2 && addPeriod()">
+                            <i class="pi pi-plus"></i>
+                            <span>{{ shiftForm.periods.length >= 2 ? 'Maximum 2 periods' : 'Add Shift Period' }}</span>
+                        </div>
+                    </template>
+
+                    <!-- FLEXIBLE SHIFT -->
+                    <template v-if="shiftForm.shiftType === 'flexible'">
+                        <div class="flexible-shift-form">
+                            <div class="flexible-row-compact">
+                                <div class="form-group">
+                                    <label class="form-label">Required Daily Hours</label>
+                                    <p-inputnumber v-model="shiftForm.requiredHours" :min="1" :max="24" showButtons suffix=" hrs"></p-inputnumber>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Valid From</label>
+                                    <p-datepicker v-model="shiftForm.validFromDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Valid To</label>
+                                    <p-datepicker v-model="shiftForm.validToDate" timeOnly showIcon iconDisplay="input" hourFormat="12"></p-datepicker>
+                                </div>
+                                <div class="form-group flexible-checkbox-field">
+                                    <div class="checkbox-label-row" v-tooltip.top="'(system calculates clock out after required daily hours)'">
+                                        <p-checkbox v-model="shiftForm.activateAutoClockOut" :binary="true" inputId="activateAutoClockOut" class="checkbox-first"></p-checkbox>
+                                        <label for="activateAutoClockOut" style="cursor: help; margin: 0 0 0 0.5rem; white-space: nowrap;">Activate Auto Clock Out</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flexible-info-box">
+                                <i class="pi pi-info-circle"></i>
+                                <span>Employees can punch in any time within the window. Total work time is calculated based on first and last punch.</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <template #footer>
+                    <div class="shift-dialog-footer">
+                        <p-button label="Cancel" severity="danger" outlined @click="showShiftDialog = false"></p-button>
+                        <p-button label="Save Shift Preset" icon="pi pi-check" @click="saveShift"></p-button>
+                    </div>
+                </template>
+            </p-dialog>
+            
             </div>
     `,
 
@@ -784,6 +1178,384 @@ const CompanySettingsComponent = {
         const workWeeks = ref([...StaticData.workWeeks]);
         const employees = ref([...StaticData.employees]);
         const attendanceSettings = ref({ ...StaticData.attendanceSettings });
+
+        // ========== SHIFT LIBRARY STATE & DATA ==========
+        const showShiftDialog = ref(false);
+        const editingShift = ref(null);
+        const showColorPicker = ref(false);
+        const shiftTypeFilter = ref('normal');
+
+        // Shift data
+        const allShifts = ref([
+            {
+                id: 1,
+                name: 'Standard Morning',
+                shiftType: 'normal',
+                startTime: '08:00',
+                endTime: '17:00',
+                color: '#f59e0b',
+                clockIn: { noEarlierThan: 60, allowedDelay: 15, noLaterThan: 120 },
+                clockOut: { noEarlierThan: 30, allowedShortage: 0, noLaterThan: 60 },
+                active: true
+            },
+            {
+                id: 2,
+                name: 'CS Double Shift',
+                shiftType: 'template',
+                color: '#3b82f6',
+                periods: [
+                    {
+                        startTime: '09:00',
+                        endTime: '13:00',
+                        clockIn: { noEarlierThan: 30, allowedDelay: 0, noLaterThan: 60 },
+                        clockOut: { noEarlierThan: 15, allowedShortage: 0, noLaterThan: 30 }
+                    },
+                    {
+                        startTime: '14:00',
+                        endTime: '18:00',
+                        clockIn: { noEarlierThan: 30, allowedDelay: 0, noLaterThan: 60 },
+                        clockOut: { noEarlierThan: 15, allowedShortage: 0, noLaterThan: 30 }
+                    }
+                ],
+                active: true
+            },
+            {
+                id: 3,
+                name: 'Flex Work Schedule',
+                shiftType: 'flexible',
+                color: '#8b5cf6',
+                requiredHours: 8,
+                validFrom: '07:00',
+                validTo: '22:00',
+                active: true
+            }
+        ]);
+
+        const shiftColors = ['#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#ef4444', '#84cc16'];
+
+        const filteredShifts = computed(() => {
+            return allShifts.value.filter(s => s.shiftType === shiftTypeFilter.value);
+        });
+
+        // Shift helper functions
+        const defaultClockIn = () => ({ noEarlierThan: 60, allowedDelay: 15, noLaterThan: 120 });
+        const defaultClockOut = () => ({ noEarlierThan: 30, allowedShortage: 0, noLaterThan: 60 });
+
+        const timeStringToDate = (timeStr) => {
+            if (!timeStr) return new Date();
+            const [h, m] = timeStr.split(':').map(Number);
+            const d = new Date();
+            d.setHours(h, m, 0, 0);
+            return d;
+        };
+
+        const dateToTimeString = (date) => {
+            if (!date) return '00:00';
+            const h = date.getHours().toString().padStart(2, '0');
+            const m = date.getMinutes().toString().padStart(2, '0');
+            return `${h}:${m}`;
+        };
+
+        const formatTimeFromDate = (date) => {
+            if (!date) return '';
+            const h = date.getHours();
+            const m = date.getMinutes();
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const h12 = h % 12 || 12;
+            return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+        };
+
+        const formatTime12 = (timeStr) => {
+            if (!timeStr || typeof timeStr !== 'string') return '';
+            const parts = timeStr.trim().split(':');
+            const h = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) || 0;
+            if (isNaN(h) || isNaN(m)) return '';
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const h12 = h % 12 || 12;
+            return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+        };
+
+        const calculateDuration = (start, end) => {
+            if (!start || !end) return 0;
+            const [sh, sm] = start.split(':').map(Number);
+            const [eh, em] = end.split(':').map(Number);
+            let mins = (eh * 60 + em) - (sh * 60 + sm);
+            if (mins < 0) mins += 24 * 60;
+            return Math.round(mins / 60);
+        };
+
+        const calculateDurationFromDates = (start, end) => {
+            if (!start || !end) return 0;
+            let mins = (end.getHours() * 60 + end.getMinutes()) - (start.getHours() * 60 + start.getMinutes());
+            if (mins < 0) mins += 24 * 60;
+            return Math.round(mins / 60);
+        };
+
+        const getDurationPercent = (start, end) => {
+            const hours = calculateDuration(start, end);
+            return Math.min((hours / 12) * 100, 100);
+        };
+
+        const addMinutes = (timeStr, mins) => {
+            if (!timeStr) return '';
+            const parts = timeStr.trim().split(':');
+            const h = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) || 0;
+            if (isNaN(h)) return '';
+            const totalMins = h * 60 + m + mins;
+            const normalized = ((totalMins % (24 * 60)) + (24 * 60)) % (24 * 60);
+            const newH = Math.floor(normalized / 60);
+            const newM = normalized % 60;
+            return `${newH.toString().padStart(2, '0')}:${newM.toString().padStart(2, '0')}`;
+        };
+
+        const subtractMinutes = (timeStr, mins) => {
+            return addMinutes(timeStr, -mins);
+        };
+
+        const addMinutesToDate = (date, mins) => {
+            if (!date) return new Date();
+            const d = new Date(date);
+            d.setMinutes(d.getMinutes() + mins);
+            return d;
+        };
+
+        const getShiftTypeLabel = (type) => {
+            const labels = { normal: 'NORMAL', template: 'TEMPLATE', flexible: 'FLEXIBLE' };
+            return labels[type] || type.toUpperCase();
+        };
+
+        // Shift form
+        const shiftForm = ref({
+            name: '',
+            shiftType: 'normal',
+            startTimeDate: timeStringToDate('08:00'),
+            endTimeDate: timeStringToDate('17:00'),
+            startTime: '08:00',
+            endTime: '17:00',
+            color: '#f59e0b',
+            clockIn: defaultClockIn(),
+            clockOut: defaultClockOut(),
+            periods: [],
+            requiredHours: 8,
+            validFromDate: timeStringToDate('07:00'),
+            validToDate: timeStringToDate('22:00'),
+            validFrom: '07:00',
+            validTo: '22:00',
+            active: true,
+            activateAutoClockOut: false
+        });
+
+        // Computed shift values
+        const computedDuration = computed(() => {
+            return calculateDurationFromDates(shiftForm.value.startTimeDate, shiftForm.value.endTimeDate);
+        });
+
+        const computedClockInWindow = computed(() => {
+            const baseTime = shiftForm.value.startTimeDate;
+            if (!baseTime) return '';
+            const start = addMinutesToDate(baseTime, -shiftForm.value.clockIn.noEarlierThan);
+            const end = addMinutesToDate(baseTime, shiftForm.value.clockIn.noLaterThan);
+            return `${formatTimeFromDate(start)} to ${formatTimeFromDate(end)}`;
+        });
+
+        const computedClockInLate = computed(() => {
+            const baseTime = shiftForm.value.startTimeDate;
+            if (!baseTime) return '';
+            return formatTimeFromDate(addMinutesToDate(baseTime, shiftForm.value.clockIn.allowedDelay));
+        });
+
+        const computedClockOutWindow = computed(() => {
+            const baseTime = shiftForm.value.endTimeDate;
+            if (!baseTime) return '';
+            const start = addMinutesToDate(baseTime, -shiftForm.value.clockOut.noEarlierThan);
+            const end = addMinutesToDate(baseTime, shiftForm.value.clockOut.noLaterThan);
+            return `${formatTimeFromDate(start)} to ${formatTimeFromDate(end)}`;
+        });
+
+        const computedClockOutEarly = computed(() => {
+            const baseTime = shiftForm.value.endTimeDate;
+            if (!baseTime) return '';
+            return formatTimeFromDate(addMinutesToDate(baseTime, -shiftForm.value.clockOut.allowedShortage));
+        });
+
+        // Period computed helpers
+        const computePeriodClockInWindowDate = (period) => {
+            if (!period.startTimeDate) return '';
+            const start = addMinutesToDate(period.startTimeDate, -period.clockIn.noEarlierThan);
+            const end = addMinutesToDate(period.startTimeDate, period.clockIn.noLaterThan);
+            return `${formatTimeFromDate(start)} to ${formatTimeFromDate(end)}`;
+        };
+
+        const computePeriodClockInLateDate = (period) => {
+            if (!period.startTimeDate) return '';
+            return formatTimeFromDate(addMinutesToDate(period.startTimeDate, period.clockIn.allowedDelay));
+        };
+
+        const computePeriodClockOutWindowDate = (period) => {
+            if (!period.endTimeDate) return '';
+            const start = addMinutesToDate(period.endTimeDate, -period.clockOut.noEarlierThan);
+            const end = addMinutesToDate(period.endTimeDate, period.clockOut.noLaterThan);
+            return `${formatTimeFromDate(start)} to ${formatTimeFromDate(end)}`;
+        };
+
+        const computePeriodClockOutEarlyDate = (period) => {
+            if (!period.endTimeDate) return '';
+            return formatTimeFromDate(addMinutesToDate(period.endTimeDate, -period.clockOut.allowedShortage));
+        };
+
+        // Shift dialog methods
+        const openShiftDialog = (shift = null) => {
+            if (shift) {
+                editingShift.value = shift;
+                const parsed = JSON.parse(JSON.stringify(shift));
+                parsed.startTimeDate = timeStringToDate(parsed.startTime || '08:00');
+                parsed.endTimeDate = timeStringToDate(parsed.endTime || '17:00');
+                parsed.validFromDate = timeStringToDate(parsed.validFrom || '07:00');
+                parsed.validToDate = timeStringToDate(parsed.validTo || '22:00');
+                if (parsed.periods) {
+                    parsed.periods = parsed.periods.map(p => ({
+                        ...p,
+                        startTimeDate: timeStringToDate(p.startTime || '08:00'),
+                        endTimeDate: timeStringToDate(p.endTime || '17:00'),
+                        clockIn: p.clockIn || defaultClockIn(),
+                        clockOut: p.clockOut || defaultClockOut()
+                    }));
+                }
+                if (!parsed.clockIn) parsed.clockIn = defaultClockIn();
+                if (!parsed.clockOut) parsed.clockOut = defaultClockOut();
+                shiftForm.value = parsed;
+            } else {
+                editingShift.value = null;
+                shiftForm.value = {
+                    name: '',
+                    shiftType: shiftTypeFilter.value,
+                    startTimeDate: timeStringToDate('08:00'),
+                    endTimeDate: timeStringToDate('17:00'),
+                    startTime: '08:00',
+                    endTime: '17:00',
+                    color: '#f59e0b',
+                    clockIn: defaultClockIn(),
+                    clockOut: defaultClockOut(),
+                    periods: shiftTypeFilter.value === 'template' ? [
+                        {
+                            startTimeDate: timeStringToDate('08:00'),
+                            endTimeDate: timeStringToDate('12:00'),
+                            startTime: '08:00',
+                            endTime: '12:00',
+                            clockIn: defaultClockIn(),
+                            clockOut: defaultClockOut()
+                        }
+                    ] : [],
+                    requiredHours: 8,
+                    validFromDate: timeStringToDate('07:00'),
+                    validToDate: timeStringToDate('22:00'),
+                    validFrom: '07:00',
+                    validTo: '22:00',
+                    active: true,
+                    activateAutoClockOut: false
+                };
+            }
+            showShiftDialog.value = true;
+        };
+
+        const editShift = (shift) => {
+            openShiftDialog(shift);
+        };
+
+        const addPeriod = () => {
+            if (shiftForm.value.periods.length >= 2) return;
+            shiftForm.value.periods.push({
+                startTimeDate: timeStringToDate('14:00'),
+                endTimeDate: timeStringToDate('18:00'),
+                startTime: '14:00',
+                endTime: '18:00',
+                clockIn: defaultClockIn(),
+                clockOut: defaultClockOut()
+            });
+        };
+
+        const removePeriod = (index) => {
+            shiftForm.value.periods.splice(index, 1);
+        };
+
+        const saveShift = () => {
+            const startTimeStr = dateToTimeString(shiftForm.value.startTimeDate) || shiftForm.value.startTime;
+            const endTimeStr = dateToTimeString(shiftForm.value.endTimeDate) || shiftForm.value.endTime;
+            const clockInRules = shiftForm.value.clockIn;
+            const clockOutRules = shiftForm.value.clockOut;
+
+            const shiftData = {
+                name: shiftForm.value.name,
+                shiftType: shiftForm.value.shiftType,
+                startTime: startTimeStr,
+                endTime: endTimeStr,
+                color: shiftForm.value.color,
+                clockIn: {
+                    noEarlierThan: clockInRules.noEarlierThan,
+                    allowedDelay: clockInRules.allowedDelay,
+                    noLaterThan: clockInRules.noLaterThan,
+                    windowStart: subtractMinutes(startTimeStr, clockInRules.noEarlierThan),
+                    windowEnd: addMinutes(startTimeStr, clockInRules.noLaterThan),
+                    lateThreshold: addMinutes(startTimeStr, clockInRules.allowedDelay)
+                },
+                clockOut: {
+                    noEarlierThan: clockOutRules.noEarlierThan,
+                    allowedShortage: clockOutRules.allowedShortage,
+                    noLaterThan: clockOutRules.noLaterThan,
+                    windowStart: subtractMinutes(endTimeStr, clockOutRules.noEarlierThan),
+                    windowEnd: addMinutes(endTimeStr, clockOutRules.noLaterThan),
+                    earlyThreshold: subtractMinutes(endTimeStr, clockOutRules.allowedShortage || 0)
+                },
+                periods: shiftForm.value.periods.map(p => {
+                    const pStart = dateToTimeString(p.startTimeDate) || p.startTime;
+                    const pEnd = dateToTimeString(p.endTimeDate) || p.endTime;
+                    const pClockIn = p.clockIn || clockInRules;
+                    const pClockOut = p.clockOut || clockOutRules;
+                    return {
+                        startTime: pStart,
+                        endTime: pEnd,
+                        clockIn: {
+                            ...pClockIn,
+                            windowStart: subtractMinutes(pStart, pClockIn.noEarlierThan),
+                            windowEnd: addMinutes(pStart, pClockIn.noLaterThan),
+                            lateThreshold: addMinutes(pStart, pClockIn.allowedDelay)
+                        },
+                        clockOut: {
+                            ...pClockOut,
+                            windowStart: subtractMinutes(pEnd, pClockOut.noEarlierThan),
+                            windowEnd: addMinutes(pEnd, pClockOut.noLaterThan),
+                            earlyThreshold: subtractMinutes(pEnd, pClockOut.allowedShortage || 0)
+                        }
+                    };
+                }),
+                requiredHours: shiftForm.value.requiredHours,
+                validFrom: dateToTimeString(shiftForm.value.validFromDate) || shiftForm.value.validFrom,
+                validTo: dateToTimeString(shiftForm.value.validToDate) || shiftForm.value.validTo,
+                active: shiftForm.value.active,
+                activateAutoClockOut: !!shiftForm.value.activateAutoClockOut
+            };
+
+            if (editingShift.value) {
+                const index = allShifts.value.findIndex(s => s.id === editingShift.value.id);
+                if (index !== -1) {
+                    allShifts.value[index] = { ...shiftData, id: editingShift.value.id };
+                }
+            } else {
+                const newId = Math.max(...allShifts.value.map(s => s.id), 0) + 1;
+                allShifts.value.push({ ...shiftData, id: newId });
+            }
+            showShiftDialog.value = false;
+        };
+
+        const deleteShift = (shift) => {
+            const index = allShifts.value.findIndex(s => s.id === shift.id);
+            if (index !== -1) {
+                allShifts.value.splice(index, 1);
+            }
+        };
+        // ========== END SHIFT LIBRARY ==========
 
         const weekDaysList = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -1086,15 +1858,17 @@ const CompanySettingsComponent = {
             activeTab, orgTab, gradeTab,
             // Dialogs
             showCountryDialog, showHolidayDialog, showOrgDialog, showGradeDialog,
-            showOfficeDialog, showCostCenterDialog, showWorkWeekDialog,
+            showOfficeDialog, showCostCenterDialog, showWorkWeekDialog, showShiftDialog,
             // Edit states
             editingHoliday, editingOrg, orgType, editingGrade, gradeType,
-            editingOffice, editingCostCenter, editingWorkWeek,
+            editingOffice, editingCostCenter, editingWorkWeek, editingShift,
             // Data
             countriesOfWork, timezones, holidays, departments, sections, units, teams,
             mainGrades, subGrades, jobTitles, offices, costCenters,
             workWeeks, employees, attendanceSettings,
             weekDaysList, availableCountries, countryOptions,
+            // Shift Library data
+            allShifts, filteredShifts, shiftTypeFilter, shiftForm, shiftColors, showColorPicker,
             // Forms
             newCountry, holidayForm, orgForm, gradeForm, officeForm, costCenterForm, costCenterTagOptions,
             workWeekForm,
@@ -1102,6 +1876,14 @@ const CompanySettingsComponent = {
             getCostCenterTagLabel,
             getDepartmentName, getSectionName, getUnitName, getMainGradeName, getSubGradeName,
             getSectionCount, getUnitCount, getTeamCount, getSubGradeCount, getJobTitleCount,
+            // Shift helpers
+            formatTime12, formatTimeFromDate, calculateDuration, calculateDurationFromDates,
+            getDurationPercent, addMinutes, subtractMinutes, getShiftTypeLabel,
+            // Shift computed
+            computedDuration, computedClockInWindow, computedClockInLate,
+            computedClockOutWindow, computedClockOutEarly,
+            computePeriodClockInWindowDate, computePeriodClockInLateDate,
+            computePeriodClockOutWindowDate, computePeriodClockOutEarlyDate,
             // Dialog titles
             orgDialogTitle, gradeDialogTitle,
             // Methods
@@ -1111,6 +1893,8 @@ const CompanySettingsComponent = {
             openOfficeDialog, editOffice, saveOffice, deleteOffice,
             openCostCenterDialog, editCostCenter, saveCostCenter, deleteCostCenter,
             openWorkWeekDialog, editWorkWeek, saveWorkWeek, deleteWorkWeek,
+            // Shift methods
+            openShiftDialog, editShift, saveShift, deleteShift, addPeriod, removePeriod,
         };
     }
 };
