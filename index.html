@@ -234,12 +234,37 @@
                         <button class="header-icon-btn">
                             <i class="pi pi-search"></i>
                         </button>
-                        <button class="header-icon-btn">
-                            <i class="pi pi-bell"></i>
-                            <span class="notification-badge"></span>
-                        </button>
+                        <div class="header-notification-wrapper">
+                            <button class="header-icon-btn" @click="showNotificationPanel = !showNotificationPanel; showUserMenu = false">
+                                <i class="pi pi-bell"></i>
+                                <span class="notification-badge" v-if="notificationNewCount > 0"></span>
+                            </button>
+                            <div class="notification-overlay" v-if="showNotificationPanel" @click="showNotificationPanel = false"></div>
+                            <div class="notification-panel" v-if="showNotificationPanel" @click.stop>
+                                <div class="notification-panel-header">
+                                    <span class="notification-panel-title">Notifications</span>
+                                    <span class="notification-badge-pill" v-if="notificationNewCount > 0">{{ notificationNewCount }} New</span>
+                                </div>
+                                <div class="notification-list">
+                                    <div v-for="n in notifications" :key="n.id" class="notification-item">
+                                        <div class="notification-item-icon" :class="n.iconClass">
+                                            <i :class="'pi ' + n.icon"></i>
+                                        </div>
+                                        <div class="notification-item-content">
+                                            <div class="notification-item-title">{{ n.title }}</div>
+                                            <div class="notification-item-id">{{ n.requestId }}</div>
+                                            <div class="notification-item-desc">{{ n.description }}</div>
+                                        </div>
+                                        <div class="notification-item-time">{{ n.time }}</div>
+                                    </div>
+                                </div>
+                                <div class="notification-panel-footer">
+                                    <a href="#" class="notification-view-all" @click.prevent="showNotificationPanel = false; navigateTo('my-requests')">View All Notifications</a>
+                                </div>
+                            </div>
+                        </div>
                         <div class="user-profile-wrapper">
-                            <div class="user-profile" @click="showUserMenu = !showUserMenu">
+                            <div class="user-profile" @click="showUserMenu = !showUserMenu; showNotificationPanel = false">
                                 <div class="user-avatar">M</div>
                                 <div class="user-info">
                                     <div class="user-name">Mohammed Alsoliman</div>

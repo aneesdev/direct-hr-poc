@@ -57,8 +57,17 @@ const app = createApp({
         // Current page state
         const currentPage = ref('home');
         const showUserMenu = ref(false);
+        const showNotificationPanel = ref(false);
         const selectedHrRequest = ref(null);
         const selectedHrRequestView = ref(null);
+
+        const notifications = [
+            { id: 1, title: 'Leave Request Approved', requestId: 'REQ-001', description: 'Your leave request for March 15-20 has been officially approved.', time: '2 mins ago', icon: 'pi-check', iconClass: 'icon-success' },
+            { id: 2, title: 'New Shift Schedule', requestId: 'REQ-002', description: 'Your schedule for March 10-16 is now available for review.', time: '1 hour ago', icon: 'pi-clock', iconClass: 'icon-info' },
+            { id: 3, title: 'Performance Appraisal Assigned', requestId: 'REQ-003', description: 'Your Appraisal is Assigned.', time: '3 hours ago', icon: 'pi-file', iconClass: 'icon-warning' },
+            { id: 4, title: 'Leave Request Submitted', requestId: 'REQ-004', description: 'Your leave request has been submitted for approval.', time: '5 hours ago', icon: 'pi-plus', iconClass: 'icon-info' }
+        ];
+        const notificationNewCount = 6;
 
         // Page title computed
         const pageTitle = computed(() => {
@@ -69,6 +78,7 @@ const app = createApp({
         const navigateTo = (page) => {
             currentPage.value = page;
             showUserMenu.value = false;
+            showNotificationPanel.value = false;
         };
 
         // Open HR Request form
@@ -88,6 +98,9 @@ const app = createApp({
             pageTitle,
             navigateTo,
             showUserMenu,
+            showNotificationPanel,
+            notifications,
+            notificationNewCount,
             selectedHrRequest,
             openHrRequest,
             selectedHrRequestView,
