@@ -49,6 +49,7 @@
     <script src="js/components/appraisal-tracking.js"></script>
     <script src="js/components/appraisal-results.js"></script>
     <script src="js/components/home.js"></script>
+    <script src="js/components/notifications-center.js"></script>
     <script src="js/components/my-profile.js"></script>
     <script src="js/components/employee-directory.js"></script>
     <script src="js/components/company-news.js"></script>
@@ -259,7 +260,7 @@
                                     </div>
                                 </div>
                                 <div class="notification-panel-footer">
-                                    <a href="#" class="notification-view-all" @click.prevent="showNotificationPanel = false; navigateTo('my-requests')">View All Notifications</a>
+                                    <a href="#" class="notification-view-all" @click.prevent="showNotificationPanel = false; navigateTo('notifications-center')">View All Notifications</a>
                                 </div>
                             </div>
                         </div>
@@ -335,6 +336,9 @@
 
                     <!-- Home Page -->
                     <home v-else-if="currentPage === 'home'"></home>
+
+                    <!-- Notifications Center Page -->
+                    <notifications-center v-else-if="currentPage === 'notifications-center'" @navigate="navigateTo"></notifications-center>
 
                     <!-- My Profile Page -->
                     <my-profile v-else-if="currentPage === 'my-profile'"></my-profile>

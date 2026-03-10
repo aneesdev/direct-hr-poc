@@ -21,6 +21,7 @@ const app = createApp({
         'appraisal-tracking': AppraisalTrackingComponent,
         'appraisal-results': AppraisalResultsComponent,
         'home': HomeComponent,
+        'notifications-center': NotificationsCenterComponent,
         'my-profile': MyProfileComponent,
         'employee-directory': EmployeeDirectoryComponent,
         'company-news': CompanyNewsComponent,

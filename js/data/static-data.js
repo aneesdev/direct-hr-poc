@@ -320,6 +320,7 @@ const StaticData = {
     // Page titles mapping
     pageTitles: {
         'home': 'Home',
+        'notifications-center': 'Notifications Center',
         'my-profile': 'My Profile',
         'employee-directory': 'Employee Directory',
         'company-news': 'Company News & Achievements',
