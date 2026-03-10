@@ -42,7 +42,7 @@ const NotificationsCenterComponent = {
                             </p-tabpanel>
                             <p-tabpanel value="unread">
                                 <div class="notifications-center-list">
-                                    <div v-for="n in unreadNotifications" :key="n.id" class="notification-center-item clickable" @click="openDetail(n)">
+                                    <div v-for="n in unreadNotifications" :key="n.id" class="notification-center-item clickable unread" @click="openDetail(n)">
                                         <div class="notification-item-icon" :class="n.iconClass">
                                             <i :class="'pi ' + n.icon"></i>
                                         </div>
@@ -112,16 +112,16 @@ const NotificationsCenterComponent = {
         const currentYear = new Date().getFullYear();
 
         const allNotifications = ref([
-            { id: 1, title: 'Leave Request Approved', requestId: 'RDD-001', description: 'Your leave request for March 15-20 has been officially approved.', time: '2 mins ago', icon: 'pi-check', iconClass: 'icon-success', read: false },
-            { id: 2, title: 'New Shift Schedule', requestId: 'RDD-002', description: 'Your schedule for March 10-18 is now available for review.', time: '1 hour ago', icon: 'pi-clock', iconClass: 'icon-info', read: false },
-            { id: 3, title: 'Performance Appraisal Assigned', requestId: 'RDD-003', description: 'Your Appraisal is Assigned.', time: '3 hours ago', icon: 'pi-file', iconClass: 'icon-warning', read: false },
-            { id: 4, title: 'Leave Request Submitted', requestId: 'RDD-004', description: 'Your request for emergency leave has been successfully submitted.', time: '5 hours ago', icon: 'pi-plus', iconClass: 'icon-info', read: false },
-            { id: 5, title: 'Training Path Assigned', requestId: 'RDD-005', description: "You have been assigned to 'Advanced Leadership Path'.", time: '1 day ago', icon: 'pi-book', iconClass: 'icon-purple', read: false },
-            { id: 6, title: 'New Company Document', requestId: null, description: "A new document 'Remote Work Policy 2028' has been added to the portal.", time: '1 day ago', icon: 'pi-file', iconClass: 'icon-secondary', read: true },
+            { id: 1, title: 'Leave Request Approved', requestId: 'REQ-001', description: 'Your leave request for March 15-20 has been officially approved.', time: '2 mins ago', icon: 'pi-check', iconClass: 'icon-success', read: false },
+            { id: 2, title: 'New Shift Schedule', requestId: 'REQ-002', description: 'Your schedule for March 10-16 is now available for review.', time: '1 hour ago', icon: 'pi-clock', iconClass: 'icon-info', read: false },
+            { id: 3, title: 'Performance Appraisal Assigned', requestId: 'RDD-003', description: 'Your Appraisal is Assigned.', time: '3 hours ago', icon: 'pi-file', iconClass: 'icon-warning', read: true },
+            { id: 4, title: 'Leave Request Submitted', requestId: 'REQ-004', description: 'Your request for emergency leave has been successfully submitted.', time: '5 hours ago', icon: 'pi-plus', iconClass: 'icon-info', read: false },
+            { id: 5, title: 'Training Path Assigned', requestId: 'RDD-005', description: "You have been assigned to 'Advanced Leadership Path'.", time: '1 day ago', icon: 'pi-book', iconClass: 'icon-purple', read: true },
+            { id: 6, title: 'New Company Document', requestId: null, description: "A new document 'Remote Work Policy 2026' has been added to the portal.", time: '1 day ago', icon: 'pi-file', iconClass: 'icon-secondary', read: false },
             { id: 7, title: 'Happy Birthday!', requestId: null, description: 'The DirectHR team wishes you a wonderful birthday and a great year ahead!', time: '2 days ago', icon: 'pi-gift', iconClass: 'icon-warning', read: true },
-            { id: 8, title: 'Promotion Approved', requestId: 'RDD-006', description: 'Your promotion to Lead Software Engineer has been approved.', time: '3 days ago', icon: 'pi-check', iconClass: 'icon-success', read: true },
+            { id: 8, title: 'Promotion Approved', requestId: 'REQ-006', description: 'Your promotion to Lead Software Engineer has been approved.', time: '3 days ago', icon: 'pi-check', iconClass: 'icon-success', read: false },
             { id: 9, title: 'Disciplinary Action / Warnings', requestId: 'RDD-007', description: 'Your Disciplinary Action / Warnings has been officially approved.', time: '4 days ago', icon: 'pi-exclamation-triangle', iconClass: 'icon-danger', read: true },
-            { id: 10, title: 'Performance Appraisal Assigned', requestId: 'RDD-008', description: 'Your Appraisal is ready for self-evaluation.', time: '5 days ago', icon: 'pi-file', iconClass: 'icon-warning', read: true }
+            { id: 10, title: 'Performance Appraisal Assigned', requestId: 'REQ-008', description: 'Your Appraisal is ready for self-evaluation.', time: '5 days ago', icon: 'pi-file', iconClass: 'icon-warning', read: false }
         ]);
 
         watch(() => props.openNotificationId, (id) => {

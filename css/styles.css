@@ -622,7 +622,7 @@ img {
 }
 
 .notification-center-item.unread {
-    background: rgba(255, 110, 5, 0.04);
+    background: rgba(255, 110, 5, 0.12);
 }
 
 .notification-center-item.clickable {
