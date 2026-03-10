@@ -59,6 +59,7 @@ const app = createApp({
         const currentPage = ref('home');
         const showUserMenu = ref(false);
         const showNotificationPanel = ref(false);
+        const openNotificationId = ref(null);
         const selectedHrRequest = ref(null);
         const selectedHrRequestView = ref(null);
 
@@ -94,12 +95,21 @@ const app = createApp({
             currentPage.value = 'hr-request-view';
         };
 
+        const openNotificationAndGo = (notificationId) => {
+            openNotificationId.value = notificationId;
+            showNotificationPanel.value = false;
+            currentPage.value = 'notifications-center';
+            showUserMenu.value = false;
+        };
+
         return {
             currentPage,
             pageTitle,
             navigateTo,
             showUserMenu,
             showNotificationPanel,
+            openNotificationId,
+            openNotificationAndGo,
             notifications,
             notificationNewCount,
             selectedHrRequest,

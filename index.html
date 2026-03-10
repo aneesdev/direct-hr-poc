@@ -247,7 +247,7 @@
                                     <span class="notification-badge-pill" v-if="notificationNewCount > 0">{{ notificationNewCount }} New</span>
                                 </div>
                                 <div class="notification-list">
-                                    <div v-for="n in notifications" :key="n.id" class="notification-item">
+                                    <div v-for="n in notifications" :key="n.id" class="notification-item notification-item-clickable" @click="openNotificationAndGo(n.id)">
                                         <div class="notification-item-icon" :class="n.iconClass">
                                             <i :class="'pi ' + n.icon"></i>
                                         </div>
@@ -338,7 +338,7 @@
                     <home v-else-if="currentPage === 'home'"></home>
 
                     <!-- Notifications Center Page -->
-                    <notifications-center v-else-if="currentPage === 'notifications-center'" @navigate="navigateTo"></notifications-center>
+                    <notifications-center v-else-if="currentPage === 'notifications-center'" :open-notification-id="openNotificationId" @clear-open-notification="openNotificationId = null" @navigate="navigateTo"></notifications-center>
 
                     <!-- My Profile Page -->
                     <my-profile v-else-if="currentPage === 'my-profile'"></my-profile>
