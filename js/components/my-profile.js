@@ -692,56 +692,14 @@ const MyProfileComponent = {
 
                     <!-- HR Help Desk Sub-tab -->
                     <div v-if="ordersSubTab === 'hrdesk'">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-icon blue">
-                                    <i class="pi pi-list"></i>
-                                </div>
-                                <div>
-                                    <div class="stat-value">{{ hrDeskRequests.length }}</div>
-                                    <div class="stat-label">Total Requests</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon orange">
-                                    <i class="pi pi-clock"></i>
-                                </div>
-                                <div>
-                                    <div class="stat-value">{{ hrDeskPending }}</div>
-                                    <div class="stat-label">Pending</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon green">
-                                    <i class="pi pi-check-circle"></i>
-                                </div>
-                                <div>
-                                    <div class="stat-value">{{ hrDeskApproved }}</div>
-                                    <div class="stat-label">Approved</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon red">
-                                    <i class="pi pi-times-circle"></i>
-                                </div>
-                                <div>
-                                    <div class="stat-value">{{ hrDeskRejected }}</div>
-                                    <div class="stat-label">Rejected</div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="card">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">
                                         <i class="pi pi-list-check"></i>
-                                        HR Requests
+                                        HR Help Desk Requests
                                     </div>
                                     <div class="card-subtitle">Track and manage all HR change requests</div>
-                                </div>
-                                <div class="header-actions">
-                                    <p-select v-model="hrDeskStatusFilter" :options="hrDeskStatusOptions" placeholder="All Statuses" showClear style="width: 180px;"></p-select>
                                 </div>
                             </div>
 
@@ -1474,8 +1432,6 @@ const MyProfileComponent = {
         ]);
 
         // HR Desk Requests (matching hr-requests-tracking.js structure)
-        const hrDeskStatusFilter = ref(null);
-        const hrDeskStatusOptions = ref(['Pending', 'Approved', 'Processing', 'Rejected']);
 
         const hrDeskRequests = ref([
             {
@@ -1570,13 +1526,8 @@ const MyProfileComponent = {
             }
         ]);
 
-        const hrDeskPending = computed(() => hrDeskRequests.value.filter(r => r.status === 'Pending').length);
-        const hrDeskApproved = computed(() => hrDeskRequests.value.filter(r => r.status === 'Approved').length);
-        const hrDeskRejected = computed(() => hrDeskRequests.value.filter(r => r.status === 'Rejected').length);
-
         const filteredHrDeskRequests = computed(() => {
-            if (!hrDeskStatusFilter.value) return hrDeskRequests.value;
-            return hrDeskRequests.value.filter(r => r.status === hrDeskStatusFilter.value);
+            return hrDeskRequests.value.filter(r => r.status === 'Approved');
         });
 
         const getHrDeskStatusClass = (status) => {
@@ -1917,11 +1868,6 @@ const MyProfileComponent = {
             selectedOrder,
             viewOrder,
             hrDeskRequests,
-            hrDeskStatusFilter,
-            hrDeskStatusOptions,
-            hrDeskPending,
-            hrDeskApproved,
-            hrDeskRejected,
             filteredHrDeskRequests,
             getHrDeskStatusClass,
             formatHrDeskDate,

@@ -15,26 +15,29 @@ const AppraisalResultsComponent = {
                 <p-button label="Download Annual Report" icon="pi pi-download" severity="warning"></p-button>
             </div>
 
-            <!-- Filters Section -->
-            <div class="card" style="margin-bottom: 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                    <span class="p-input-icon-left" style="min-width: 200px; flex: 1;">
+            <!-- Filters Section (compact, same style as Employee Directory) -->
+            <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                <div class="filter-row">
+                    <span class="p-input-icon-left" style="width: 180px;">
                         <i class="pi pi-search"></i>
                         <p-inputtext v-model="searchQuery" placeholder="Search Name or ID..." style="width: 100%;"></p-inputtext>
                     </span>
-                    <p-select v-model="filters.grade" :options="gradeOptions" optionLabel="name" optionValue="value" 
-                              placeholder="All Grades" showClear style="width: 140px;"></p-select>
-                    <p-select v-model="filters.cycle" :options="cycleOptions" optionLabel="name" optionValue="value" 
-                              placeholder="All Cycles" showClear style="width: 180px;"></p-select>
-                    <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Departments" showClear style="width: 150px;"></p-select>
-                    <p-select v-model="filters.section" :options="sectionOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Sections" showClear style="width: 150px;"></p-select>
-                    <p-select v-model="filters.unit" :options="unitOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Units" showClear style="width: 140px;"></p-select>
-                    <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="value" 
-                              placeholder="Teams" showClear style="width: 140px;"></p-select>
-                    <p-button label="Clear All" icon="pi pi-times" text severity="danger" @click="clearFilters"></p-button>
+                    <p-select v-model="filters.grade" :options="gradeOptions" optionLabel="name" optionValue="value"
+                              placeholder="Grade" showClear style="width: 120px;"></p-select>
+                    <p-select v-model="filters.cycle" :options="cycleOptions" optionLabel="name" optionValue="value"
+                              placeholder="Cycle" showClear style="width: 140px;"></p-select>
+                    <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="value"
+                              placeholder="Department" showClear style="width: 130px;"></p-select>
+                    <p-select v-model="filters.section" :options="sectionOptions" optionLabel="name" optionValue="value"
+                              placeholder="Section" showClear style="width: 120px;"></p-select>
+                    <p-select v-model="filters.unit" :options="unitOptions" optionLabel="name" optionValue="value"
+                              placeholder="Unit" showClear style="width: 110px;"></p-select>
+                    <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="value"
+                              placeholder="Team" showClear style="width: 110px;"></p-select>
+                </div>
+                <div class="filter-row filter-actions-row">
+                    <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="clearFilters" size="small" v-if="hasActiveFilters"></p-button>
                 </div>
             </div>
 
@@ -318,10 +321,25 @@ const AppraisalResultsComponent = {
             };
         };
 
+        const applyFilters = () => { /* filters are reactive */ };
+
+        const hasActiveFilters = computed(() =>
+            searchQuery.value ||
+            filters.value.grade ||
+            filters.value.cycle ||
+            filters.value.department ||
+            filters.value.section ||
+            filters.value.unit ||
+            filters.value.team
+        );
+
         return {
             appraisalResults,
             searchQuery,
             filters,
+            applyFilters,
+            clearFilters,
+            hasActiveFilters,
             gradeOptions,
             cycleOptions,
             departmentOptions,
@@ -331,8 +349,7 @@ const AppraisalResultsComponent = {
             filteredResults,
             showArchiveModal,
             selectedResult,
-            openArchiveModal,
-            clearFilters
+            openArchiveModal
         };
     }
 };

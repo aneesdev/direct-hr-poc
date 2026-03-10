@@ -72,15 +72,17 @@ const TrainingTrackerComponent = {
                         <input type="text" v-model="searchQuery" placeholder="Search by Employee or Path...">
                     </div>
                 </div>
-                <div class="tracker-filters-row">
-                    <p-select v-model="filters.path" :options="pathOptions" optionLabel="label" optionValue="value"
-                              placeholder="All Paths" showClear style="width: 180px;"></p-select>
-                    <p-select v-model="filters.cycle" :options="cycleOptions" optionLabel="label" optionValue="value"
-                              placeholder="All Cycles" showClear style="width: 150px;"></p-select>
-                    <p-select v-model="filters.department" :options="departmentOptions" optionLabel="label" optionValue="value"
-                              placeholder="All Departments" showClear style="width: 180px;"></p-select>
-                    <p-select v-model="filters.status" :options="statusOptions" optionLabel="label" optionValue="value"
-                              placeholder="All Status" showClear style="width: 150px;"></p-select>
+                <div class="tracker-filters-row compact-filters-grid">
+                    <div class="filter-row">
+                        <p-select v-model="filters.path" :options="pathOptions" optionLabel="label" optionValue="value"
+                                  placeholder="All Paths" showClear style="width: 150px;"></p-select>
+                        <p-select v-model="filters.cycle" :options="cycleOptions" optionLabel="label" optionValue="value"
+                                  placeholder="All Cycles" showClear style="width: 130px;"></p-select>
+                        <p-select v-model="filters.department" :options="departmentOptions" optionLabel="label" optionValue="value"
+                                  placeholder="All Departments" showClear style="width: 150px;"></p-select>
+                        <p-select v-model="filters.status" :options="statusOptions" optionLabel="label" optionValue="value"
+                                  placeholder="All Status" showClear style="width: 130px;"></p-select>
+                    </div>
                 </div>
             </div>
 

@@ -92,21 +92,21 @@ const NewAppraisalComponent = {
                             </button>
                         </div>
 
-                        <div class="employee-filter-section">
+                        <div class="employee-filter-section compact-filters-grid">
                             <h4>Filter {{ selectedGrade.name }}s</h4>
                             <div class="filter-row">
-                                <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Departments" style="width: 180px;" showClear @change="onDepartmentChange"></p-select>
-                                <p-select v-model="filters.section" :options="filteredSectionOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Sections" style="width: 180px;" showClear :disabled="!filters.department"></p-select>
-                                <p-select v-model="filters.unit" :options="unitOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Units" style="width: 160px;" showClear></p-select>
-                                <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Teams" style="width: 160px;" showClear></p-select>
-                                <div class="filter-search">
+                                <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id"
+                                          placeholder="Department" style="width: 130px;" showClear @change="onDepartmentChange"></p-select>
+                                <p-select v-model="filters.section" :options="filteredSectionOptions" optionLabel="name" optionValue="id"
+                                          placeholder="Section" style="width: 120px;" showClear :disabled="!filters.department"></p-select>
+                                <p-select v-model="filters.unit" :options="unitOptions" optionLabel="name" optionValue="id"
+                                          placeholder="Unit" style="width: 110px;" showClear></p-select>
+                                <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="id"
+                                          placeholder="Team" style="width: 110px;" showClear></p-select>
+                                <span class="p-input-icon-left" style="width: 180px;">
                                     <i class="pi pi-search"></i>
-                                    <input type="text" v-model="searchQuery" placeholder="Search by name or ID...">
-                                </div>
+                                    <p-inputtext v-model="searchQuery" placeholder="Search by name or ID..." style="width: 100%;"></p-inputtext>
+                                </span>
                             </div>
                         </div>
 

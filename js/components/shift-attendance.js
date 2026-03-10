@@ -633,17 +633,19 @@ const ShiftAttendanceComponent = {
                                         {{ attendanceAllExpanded ? 'Collapse all' : 'Expand all' }}
                                     </button>
                                 </div>
-                                <div class="attendance-logs-filters">
-                                    <div class="filter-label"><i class="pi pi-filter"></i> FILTER</div>
-                                    <span class="p-input-icon-left attendance-name-search-wrap">
-                                        <i class="pi pi-user"></i>
-                                        <p-inputtext v-model="attendanceSearchName" placeholder="Search by employee name..." style="width: 200px;"></p-inputtext>
-                                    </span>
-                                    <p-select v-model="attendanceDepartment" :options="attendanceDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Select Department" showClear style="width: 160px;" @change="onAttendanceDepartmentChange"></p-select>
-                                    <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Select Section" showClear style="width: 160px;" :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
-                                    <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Select Unit" showClear style="width: 140px;" :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
-                                    <p-select v-model="attendanceTeam" :options="attendanceFilteredTeams" optionLabel="name" optionValue="id" placeholder="Select Team" showClear style="width: 140px;" :disabled="!attendanceUnit"></p-select>
-                                    <p-button label="Search" icon="pi pi-search" @click="applyAttendanceFilters" class="attendance-search-btn"></p-button>
+                                <div class="attendance-logs-filters compact-filters-grid">
+                                    <div class="filter-row">
+                                        <div class="filter-label"><i class="pi pi-filter"></i> FILTER</div>
+                                        <span class="p-input-icon-left attendance-name-search-wrap">
+                                            <i class="pi pi-user"></i>
+                                            <p-inputtext v-model="attendanceSearchName" placeholder="Search by employee name..." style="width: 180px;"></p-inputtext>
+                                        </span>
+                                        <p-select v-model="attendanceDepartment" :options="attendanceDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Department" showClear style="width: 130px;" @change="onAttendanceDepartmentChange"></p-select>
+                                        <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Section" showClear style="width: 120px;" :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
+                                        <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Unit" showClear style="width: 110px;" :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
+                                        <p-select v-model="attendanceTeam" :options="attendanceFilteredTeams" optionLabel="name" optionValue="id" placeholder="Team" showClear style="width: 110px;" :disabled="!attendanceUnit"></p-select>
+                                        <p-button label="Search" icon="pi pi-search" @click="applyAttendanceFilters" size="small"></p-button>
+                                    </div>
                                 </div>
 
                                 <!-- Attendance Table -->

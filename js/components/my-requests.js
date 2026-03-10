@@ -81,52 +81,30 @@ const MyRequestsComponent = {
                         </div>
                     </div>
 
-                    <!-- Top Filters -->
-                    <div class="filters-card" style="margin-bottom: 1rem;">
-                        <div class="filters-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
-                            <div class="form-group">
-                                <label class="form-label">Country of Work</label>
-                                <p-select v-model="filters.countryOfWork" :options="countryOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Countries" showClear style="width: 100%;"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Department</label>
-                                <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Departments" showClear style="width: 100%;" @change="onDepartmentChange"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Section</label>
-                                <p-select v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id" 
-                                          placeholder="All Sections" showClear style="width: 100%;" :disabled="!filters.department" @change="onSectionChange"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Unit</label>
-                                <p-select v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id" 
-                                          placeholder="All Units" showClear style="width: 100%;" :disabled="!filters.section" @change="onUnitChange"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Team</label>
-                                <p-select v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id" 
-                                          placeholder="All Teams" showClear style="width: 100%;" :disabled="!filters.unit"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Entity</label>
-                                <p-select v-model="filters.entity" :options="entityOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Entities" showClear style="width: 100%;"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Office</label>
-                                <p-select v-model="filters.office" :options="officeOptions" optionLabel="name" optionValue="id" 
-                                          placeholder="All Offices" showClear style="width: 100%;"></p-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Submitted Date</label>
-                                <p-datepicker v-model="filters.dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Select date range" showIcon style="width: 100%;"></p-datepicker>
+                    <!-- Top Filters (compact, same style as Employee Directory) -->
+                    <div class="card compact-filters-grid" style="margin-bottom: 1rem; padding: 1rem 1.25rem;">
+                        <div class="filter-row">
+                            <p-select v-model="filters.countryOfWork" :options="countryOptions" optionLabel="name" optionValue="id"
+                                      placeholder="Country of Work" showClear style="width: 140px;"></p-select>
+                            <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id"
+                                      placeholder="Department" showClear style="width: 130px;" @change="onDepartmentChange"></p-select>
+                            <p-select v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id"
+                                      placeholder="Section" showClear style="width: 120px;" :disabled="!filters.department" @change="onSectionChange"></p-select>
+                            <p-select v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id"
+                                      placeholder="Unit" showClear style="width: 110px;" :disabled="!filters.section" @change="onUnitChange"></p-select>
+                            <p-select v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id"
+                                      placeholder="Team" showClear style="width: 110px;" :disabled="!filters.unit"></p-select>
+                            <p-select v-model="filters.entity" :options="entityOptions" optionLabel="name" optionValue="id"
+                                      placeholder="Entity" showClear style="width: 120px;"></p-select>
+                            <p-select v-model="filters.office" :options="officeOptions" optionLabel="name" optionValue="id"
+                                      placeholder="Office" showClear style="width: 120px;"></p-select>
+                            <div class="requests-datepicker-wrap">
+                                <p-datepicker v-model="filters.dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Submitted Date" showIcon iconDisplay="input"></p-datepicker>
                             </div>
                         </div>
-                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
-                            <p-button label="Reset" icon="pi pi-refresh" severity="secondary" outlined @click="resetFilters" v-if="hasActiveFilters"></p-button>
-                            <p-button label="Apply" icon="pi pi-check" @click="applyFilters"></p-button>
+                        <div class="filter-row filter-actions-row">
+                            <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                            <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetFilters" size="small" v-if="hasActiveFilters"></p-button>
                         </div>
                     </div>
 
@@ -457,9 +435,13 @@ const MyRequestsComponent = {
         });
 
         const hasActiveFilters = computed(() => {
-            return appliedFilters.countryOfWork || appliedFilters.department || appliedFilters.section || 
-                   appliedFilters.unit || appliedFilters.team || appliedFilters.entity || appliedFilters.office ||
-                   (appliedFilters.dateRange && appliedFilters.dateRange.length > 0);
+            const hasForm = filters.countryOfWork || filters.department || filters.section ||
+                filters.unit || filters.team || filters.entity || filters.office ||
+                (filters.dateRange && filters.dateRange.length > 0);
+            const hasApplied = appliedFilters.countryOfWork || appliedFilters.department || appliedFilters.section ||
+                appliedFilters.unit || appliedFilters.team || appliedFilters.entity || appliedFilters.office ||
+                (appliedFilters.dateRange && appliedFilters.dateRange.length > 0);
+            return hasForm || hasApplied;
         });
 
         // Filter change handlers
