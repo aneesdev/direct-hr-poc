@@ -15641,7 +15641,7 @@ img {
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     pointer-events: none;
 }
@@ -15655,17 +15655,57 @@ img {
     border-top-color: #1f2937;
 }
 
+/* Extend hover zone so moving mouse to tooltip doesn't hide it */
+.action-btn-wrapper::before,
+.stat-item-wrapper::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: -20px;
+    right: -20px;
+    height: 220px;
+    z-index: 999;
+}
+
 .action-btn-wrapper:hover .social-tooltip,
 .stat-item-wrapper:hover .social-tooltip {
     opacity: 1;
     visibility: visible;
     transform: translateY(-2px);
+    pointer-events: auto;
 }
 
 .tooltip-content {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
+}
+
+.tooltip-content.tooltip-content-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) rgba(255, 255, 255, 0.06);
+}
+
+/* Scrollbar styling to match dark tooltip (WebKit) */
+.tooltip-content.tooltip-content-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tooltip-content.tooltip-content-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+}
+
+.tooltip-content.tooltip-content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 3px;
+}
+
+.tooltip-content.tooltip-content-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .tooltip-content span {

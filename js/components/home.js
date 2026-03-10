@@ -118,9 +118,8 @@ const HomeComponent = {
                                         <i :class="news.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i> {{ news.likes }}
                                     </button>
                                     <div class="social-tooltip" v-if="news.likedBy && news.likedBy.length > 0">
-                                        <div class="tooltip-content">
-                                            <span v-for="(name, idx) in news.likedBy.slice(0, 5)" :key="idx">{{ name }}</span>
-                                            <span v-if="news.likedBy.length > 5" class="tooltip-more">+{{ news.likedBy.length - 5 }} more</span>
+                                        <div class="tooltip-content tooltip-content-scroll">
+                                            <span v-for="(name, idx) in news.likedBy" :key="idx">{{ name }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -129,9 +128,8 @@ const HomeComponent = {
                                         <i class="pi pi-comment"></i> {{ news.commentsList ? news.commentsList.length : 0 }}
                                     </button>
                                     <div class="social-tooltip" v-if="news.commentsList && news.commentsList.length > 0">
-                                        <div class="tooltip-content">
-                                            <span v-for="(comment, idx) in getUniqueCommenters(news.commentsList).slice(0, 5)" :key="idx">{{ comment }}</span>
-                                            <span v-if="getUniqueCommenters(news.commentsList).length > 5" class="tooltip-more">+{{ getUniqueCommenters(news.commentsList).length - 5 }} more</span>
+                                        <div class="tooltip-content tooltip-content-scroll">
+                                            <span v-for="(comment, idx) in getUniqueCommenters(news.commentsList)" :key="idx">{{ comment }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -189,17 +187,16 @@ const HomeComponent = {
                                             <i :class="bday.isLiked ? 'pi pi-heart-fill liked' : 'pi pi-heart'"></i> {{ bday.likes }}
                                         </span>
                                         <div class="social-tooltip" v-if="bday.likedBy && bday.likedBy.length > 0">
-                                            <div class="tooltip-content">
-                                                <span v-for="(name, idx) in bday.likedBy.slice(0, 5)" :key="idx">{{ name }}</span>
-                                                <span v-if="bday.likedBy.length > 5" class="tooltip-more">+{{ bday.likedBy.length - 5 }} more</span>
+                                            <div class="tooltip-content tooltip-content-scroll">
+                                                <span v-for="(name, idx) in bday.likedBy" :key="idx">{{ name }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="stat-item-wrapper">
                                         <span class="stat-item"><i class="pi pi-comment"></i> {{ bday.commentsList.length }} Wishes</span>
                                         <div class="social-tooltip" v-if="bday.commentsList && bday.commentsList.length > 0">
-                                            <div class="tooltip-content">
-                                                <span v-for="(comment, idx) in getUniqueCommenters(bday.commentsList).slice(0, 5)" :key="idx">{{ comment }}</span>
+                                            <div class="tooltip-content tooltip-content-scroll">
+                                                <span v-for="(comment, idx) in getUniqueCommenters(bday.commentsList)" :key="idx">{{ comment }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -253,17 +250,16 @@ const HomeComponent = {
                                             <i :class="anni.isLiked ? 'pi pi-heart-fill liked' : 'pi pi-heart'"></i> {{ anni.likes }}
                                         </span>
                                         <div class="social-tooltip" v-if="anni.likedBy && anni.likedBy.length > 0">
-                                            <div class="tooltip-content">
-                                                <span v-for="(name, idx) in anni.likedBy.slice(0, 5)" :key="idx">{{ name }}</span>
-                                                <span v-if="anni.likedBy.length > 5" class="tooltip-more">+{{ anni.likedBy.length - 5 }} more</span>
+                                            <div class="tooltip-content tooltip-content-scroll">
+                                                <span v-for="(name, idx) in anni.likedBy" :key="idx">{{ name }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="stat-item-wrapper">
                                         <span class="stat-item"><i class="pi pi-comment"></i> {{ anni.commentsList.length }} Wishes</span>
                                         <div class="social-tooltip" v-if="anni.commentsList && anni.commentsList.length > 0">
-                                            <div class="tooltip-content">
-                                                <span v-for="(comment, idx) in getUniqueCommenters(anni.commentsList).slice(0, 5)" :key="idx">{{ comment }}</span>
+                                            <div class="tooltip-content tooltip-content-scroll">
+                                                <span v-for="(comment, idx) in getUniqueCommenters(anni.commentsList)" :key="idx">{{ comment }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -546,10 +542,10 @@ const HomeComponent = {
                 name: 'Sarah Al-Otaibi',
                 date: '03-15',
                 avatar: 'https://i.pravatar.cc/60?img=5',
-                likes: 6,
+                likes: 24,
                 isLiked: false,
                 likeAnimating: false,
-                likedBy: ['Khaled Al-Anazi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi'],
+                likedBy: ['Khaled Al-Anazi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Sarah Al-Otaibi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad', 'Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki', 'Huda Al-Shammari', 'Ali Al-Jaber'],
                 newComment: '',
                 commentsExpanded: false,
                 commentsList: [
@@ -564,10 +560,10 @@ const HomeComponent = {
                 name: 'Khaled Al-Anazi',
                 date: '03-15',
                 avatar: 'https://i.pravatar.cc/60?img=11',
-                likes: 5,
+                likes: 22,
                 isLiked: false,
                 likeAnimating: false,
-                likedBy: ['Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani'],
+                likedBy: ['Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Khaled Al-Anazi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad', 'Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki'],
                 newComment: '',
                 commentsExpanded: false,
                 commentsList: [
@@ -587,10 +583,10 @@ const HomeComponent = {
                 joinedDate: '2021-02-10',
                 years: 5,
                 avatar: 'https://i.pravatar.cc/60?img=14',
-                likes: 12,
+                likes: 23,
                 isLiked: false,
                 likeAnimating: false,
-                likedBy: ['Sarah Al-Otaibi', 'Khaled Al-Anazi', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi'],
+                likedBy: ['Sarah Al-Otaibi', 'Khaled Al-Anazi', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Mohammad Al-Dossari', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad', 'Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki', 'Huda Al-Shammari'],
                 newComment: '',
                 commentsExpanded: false,
                 commentsList: [
@@ -793,7 +789,8 @@ const HomeComponent = {
                 news.showComments = true;
                 news.newComment = '';
                 news.commentsExpanded = false;
-                news.likedBy = ['Khaled Al-Anazi', 'Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie'];
+                news.likedBy = ['Khaled Al-Anazi', 'Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad', 'Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki', 'Huda Al-Shammari', 'Ali Al-Jaber'];
+                news.likes = news.likedBy.length;
                 if (!news.commentsList) {
                     news.commentsList = [
                         {
