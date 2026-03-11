@@ -3429,6 +3429,24 @@ img {
     margin-bottom: 1rem;
 }
 
+.scheduler-publish-bar .publish-schedule-btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+}
+
+.scheduler-publish-bar .publish-schedule-btn i {
+    font-size: 0.95rem;
+}
+
+.scheduler-publish-bar .publish-schedule-btn:not(:disabled) {
+    animation: publish-btn-pulse 2s ease-in-out infinite;
+}
+
+@keyframes publish-btn-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 110, 5, 0.45); }
+    50% { box-shadow: 0 0 0 8px rgba(255, 110, 5, 0); }
+}
+
 .search-filter-group {
     display: flex;
     align-items: center;
@@ -3785,6 +3803,15 @@ img {
 .assigned-shift-card .assigned-card-periods {
     color: var(--primary-color);
     margin-left: 0.25rem;
+}
+
+.assigned-shift-card .assigned-card-info-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.25rem;
+    color: var(--text-color-secondary);
+    font-size: 10px;
+    cursor: help;
 }
 
 .assigned-shift-card .assigned-card-time,

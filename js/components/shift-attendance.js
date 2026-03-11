@@ -118,7 +118,7 @@ const ShiftAttendanceComponent = {
 
                             <!-- Publish Schedule (centered above grid) -->
                             <div class="scheduler-publish-bar">
-                                <button class="scheduler-action-btn primary" :disabled="Object.keys(scheduleAssignments).length === 0">
+                                <button class="scheduler-action-btn primary publish-schedule-btn" :disabled="Object.keys(scheduleAssignments).length === 0">
                                     <i class="pi pi-send"></i>
                                     Publish Schedule
                                 </button>
@@ -169,7 +169,9 @@ const ShiftAttendanceComponent = {
                                                                         <div class="assigned-card-name">{{ getShiftById(getAssignment(schedule, day.dayName).shiftId).name }}</div>
                                                                         <div class="assigned-card-meta">
                                                                             <span class="assigned-card-type">{{ getShiftTypeLabel(getShiftById(getAssignment(schedule, day.dayName).shiftId).shiftType) }}</span>
-                                                                            <span class="assigned-card-periods">{{ (getShiftById(getAssignment(schedule, day.dayName).shiftId).periods && getShiftById(getAssignment(schedule, day.dayName).shiftId).periods.length) || 1 }} Period{{ ((getShiftById(getAssignment(schedule, day.dayName).shiftId).periods?.length || 1) > 1) ? 's' : '' }}</span>
+                                                                            <span class="assigned-card-info-icon" style="color: #94a3b8;" v-tooltip.top="{ value: getAssignedShiftTooltipContent(getShiftById(getAssignment(schedule, day.dayName).shiftId)), escape: false }">
+                                                                                <i class="pi pi-exclamation-circle" style="font-size: 10px;"></i>
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -184,22 +186,6 @@ const ShiftAttendanceComponent = {
                                                                 <div class="assigned-card-bar">
                                                                     <div class="assigned-card-bar-fill" :style="{ width: (getShiftDuration(getShiftById(getAssignment(schedule, day.dayName).shiftId)) / 12 * 100) + '%', background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></div>
                                                                 </div>
-                                                                <template v-if="getShiftById(getAssignment(schedule, day.dayName).shiftId).shiftType === 'flexible'">
-                                                                    <div class="assigned-card-rule">
-                                                                        <i class="pi pi-clock"></i>
-                                                                        <span>Valid: {{ getAssignedShiftTimeRange(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }} · {{ getShiftById(getAssignment(schedule, day.dayName).shiftId).requiredHours }} hrs</span>
-                                                                    </div>
-                                                                </template>
-                                                                <template v-else>
-                                                                    <div class="assigned-card-rule">
-                                                                        <i class="pi pi-sign-in"></i>
-                                                                        <span>{{ getAssignedClockInSummary(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }}</span>
-                                                                    </div>
-                                                                    <div class="assigned-card-rule out">
-                                                                        <i class="pi pi-sign-out"></i>
-                                                                        <span>{{ getAssignedClockOutSummary(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }}</span>
-                                                                    </div>
-                                                                </template>
                                                             </template>
                                                             <template v-else>
                                                                 <div class="shift-card-header">
@@ -1147,7 +1133,7 @@ const ShiftAttendanceComponent = {
         };
 
         const getShiftTypeLabel = (type) => {
-            const labels = { 'normal': 'NORMAL', 'template': 'TEMPLATE DAY', 'flexible': 'FLEXIBLE' };
+            const labels = { 'normal': 'NORMAL', 'template': 'TEMPLATE', 'flexible': 'FLEXIBLE' };
             return labels[type] || type.toUpperCase();
         };
 
@@ -1699,7 +1685,7 @@ const ShiftAttendanceComponent = {
         // Initialize Chart.js
         const initHourlyChart = () => {
             if (!hourlyDistributionChart.value) return;
-            
+
             // Destroy existing chart if any
             if (chartInstance) {
                 chartInstance.destroy();
@@ -1707,7 +1693,7 @@ const ShiftAttendanceComponent = {
 
             const ctx = hourlyDistributionChart.value.getContext('2d');
             const data = hourlyDistribution.value;
-            
+
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1802,7 +1788,7 @@ const ShiftAttendanceComponent = {
             const el = document.getElementById('employee-density-heatmap') || heatmapChartRef.value;
             if (!el || !ApexChartsLib) return;
             if (heatmapChartInstance) {
-                try { heatmapChartInstance.destroy(); } catch (e) {}
+                try { heatmapChartInstance.destroy(); } catch (e) { }
                 heatmapChartInstance = null;
             }
             const data = heatmapData.value;
@@ -1966,7 +1952,7 @@ const ShiftAttendanceComponent = {
                 heatmapChartReady.value = false;
                 attemptedHeatmapInit.value = false;
                 if (heatmapChartInstance) {
-                    try { heatmapChartInstance.destroy(); } catch (e) {}
+                    try { heatmapChartInstance.destroy(); } catch (e) { }
                     heatmapChartInstance = null;
                 }
             }
@@ -2195,20 +2181,20 @@ const ShiftAttendanceComponent = {
 
         // Attendance Stats - values aligned with stats.js customPeriod (attendanceStats, punchStats, violationStats, vacationStats)
         const attendanceStats = computed(() => ({
-                totalStaff: 450,
-                totalPresent: 2410,
-                totalAbsent: 95,
-                missingClockIn: 38,
-                missingClockOut: 29,
-                lateIn: 115,
-                earlyOut: 32,
-                lessEffort: 8,
-                noShiftAssigned: 0,
-                outsideWindow: 5,
-                businessTrip: 18,
-                workFromHome: 60,
-                annualVacation: 42,
-                othersType: 12
+            totalStaff: 450,
+            totalPresent: 2410,
+            totalAbsent: 95,
+            missingClockIn: 38,
+            missingClockOut: 29,
+            lateIn: 115,
+            earlyOut: 32,
+            lessEffort: 8,
+            noShiftAssigned: 0,
+            outsideWindow: 5,
+            businessTrip: 18,
+            workFromHome: 60,
+            annualVacation: 42,
+            othersType: 12
         }));
 
         // Enhanced attendance logs with specific examples
@@ -3026,6 +3012,23 @@ const ShiftAttendanceComponent = {
             return `${formatTime12(period.startTime)} – ${formatTime12(period.endTime)}`;
         };
 
+        const getAssignedShiftTooltipContent = (shift) => {
+            if (!shift) return '';
+            const periodsCount = (shift.periods && shift.periods.length) || 1;
+            const periodLabel = periodsCount === 1 ? '1 Period' : `${periodsCount} Periods`;
+            const parts = [periodLabel];
+            if (shift.shiftType === 'flexible') {
+                const validStr = `Valid: ${getAssignedShiftTimeRange(shift)} · ${shift.requiredHours || 0} hrs`;
+                parts.push(validStr);
+            } else {
+                const inStr = getAssignedClockInSummary(shift);
+                const outStr = getAssignedClockOutSummary(shift);
+                if (inStr) parts.push(inStr);
+                if (outStr) parts.push(outStr);
+            }
+            return parts.join('<br/>');
+        };
+
         // Toggle shift rules display
         const toggleShiftRules = (shiftId) => {
             if (expandedShiftRules.value === shiftId) {
@@ -3215,6 +3218,7 @@ const ShiftAttendanceComponent = {
             getAssignedClockInSummary,
             getAssignedClockOutSummary,
             getAssignedShiftTimeRange,
+            getAssignedShiftTooltipContent,
             toggleShiftRules,
             expandedShiftRules,
             draftAndReview,
