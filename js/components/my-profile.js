@@ -1334,6 +1334,9 @@ const MyProfileComponent = {
                                             {{ slotProps.item.name }}
                                             <span class="timeline-you-badge" v-if="slotProps.item.isCurrent">You</span>
                                         </h4>
+                                        <div class="timeline-card-desc" v-if="slotProps.item.department || slotProps.item.section || slotProps.item.employeeId">
+                                            {{ [slotProps.item.department, slotProps.item.section, slotProps.item.employeeId].filter(Boolean).join(' · ') }}
+                                        </div>
                                     </div>
                                 </template>
                             </p-timeline>
@@ -1395,7 +1398,10 @@ const MyProfileComponent = {
                 avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
                 level: 'professional',
                 levelLabel: 'You',
-                isCurrent: true
+                isCurrent: true,
+                department: 'Product Engineering',
+                section: 'Software Development',
+                employeeId: 'EMP-005'
             },
             {
                 id: 4,
@@ -1403,7 +1409,10 @@ const MyProfileComponent = {
                 avatar: 'https://i.pravatar.cc/80?img=32',
                 level: 'supervisor',
                 levelLabel: 'Manager',
-                isCurrent: false
+                isCurrent: false,
+                department: 'Product Engineering',
+                section: 'Software Development',
+                employeeId: 'EMP-004'
             },
             {
                 id: 3,
@@ -1411,7 +1420,10 @@ const MyProfileComponent = {
                 avatar: 'https://i.pravatar.cc/80?img=52',
                 level: 'management',
                 levelLabel: 'Director',
-                isCurrent: false
+                isCurrent: false,
+                department: 'Engineering',
+                section: 'Technology',
+                employeeId: 'EMP-003'
             },
             {
                 id: 2,
@@ -1419,7 +1431,10 @@ const MyProfileComponent = {
                 avatar: 'https://i.pravatar.cc/80?img=47',
                 level: 'executive',
                 levelLabel: 'CTO',
-                isCurrent: false
+                isCurrent: false,
+                department: 'Technology',
+                section: 'Executive',
+                employeeId: 'EMP-002'
             },
             {
                 id: 1,
@@ -1427,7 +1442,10 @@ const MyProfileComponent = {
                 avatar: 'https://i.pravatar.cc/80?img=68',
                 level: 'executive',
                 levelLabel: 'CEO',
-                isCurrent: false
+                isCurrent: false,
+                department: 'Executive',
+                section: 'Leadership',
+                employeeId: 'EMP-001'
             }
         ]);
 

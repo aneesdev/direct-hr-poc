@@ -18527,6 +18527,13 @@ img {
     margin: 0;
 }
 
+.timeline-card-desc {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    margin: 0.25rem 0 0 0;
+    line-height: 1.35;
+}
+
 .timeline-you-badge {
     font-size: 0.6rem;
     font-weight: 600;
