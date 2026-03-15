@@ -6,14 +6,6 @@
 const TrainingInsightsComponent = {
     template: `
         <div class="training-insights-page">
-            <!-- Page Header -->
-            <div class="page-header-row">
-                <div>
-                    <h1>Analytics Insights</h1>
-                    <p>Deep dive into training performance and engagement metrics.</p>
-                </div>
-            </div>
-
             <!-- Insight Tabs -->
             <div class="insight-tabs-container">
                 <div class="insight-tabs">
@@ -31,38 +23,24 @@ const TrainingInsightsComponent = {
 
             <!-- Cycle Information Tab -->
             <div v-if="activeTab === 'cycle'" class="insight-content">
-                <div class="card filters-card">
-                    <div class="insight-filters">
-                        <div class="filter-field">
-                            <label>TARGET CYCLE *</label>
-                            <p-select v-model="cycleFilters.targetCycle" :options="cycleOptions" 
-                                      placeholder="Select Cycle" style="width: 150px;"></p-select>
-                        </div>
-                        <div class="filter-field">
-                            <label>DEPARTMENT</label>
-                            <p-select v-model="cycleFilters.department" :options="departmentOptions" optionLabel="label" optionValue="value"
-                                      placeholder="All Departments" showClear style="width: 180px;"></p-select>
-                        </div>
-                        <div class="filter-field">
-                            <label>SECTION</label>
-                            <p-select v-model="cycleFilters.section" :options="sectionOptions" optionLabel="label" optionValue="value"
-                                      placeholder="All Sections" showClear style="width: 160px;" :disabled="!cycleFilters.department"></p-select>
-                        </div>
-                        <div class="filter-field">
-                            <label>GRADE</label>
-                            <p-select v-model="cycleFilters.grade" :options="gradeOptions" optionLabel="label" optionValue="value"
-                                      placeholder="All Grades" showClear style="width: 140px;"></p-select>
-                        </div>
-                        <div class="filter-field">
-                            <label>MONTH</label>
-                            <p-select v-model="cycleFilters.month" :options="monthOptions" optionLabel="label" optionValue="value"
-                                      placeholder="All Months" showClear style="width: 140px;"></p-select>
-                        </div>
-                        <div class="filter-field">
-                            <label>YEAR</label>
-                            <p-select v-model="cycleFilters.year" :options="yearOptions" optionLabel="label" optionValue="value"
-                                      placeholder="All Years" showClear style="width: 130px;"></p-select>
-                        </div>
+                <div class="card compact-filters-grid stats-filters-card" style="padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+                    <div class="filter-row stats-filter-row">
+                        <p-select v-model="cycleFilters.targetCycle" :options="cycleOptions" 
+                                  placeholder="Target Cycle" class="stats-filter-field"></p-select>
+                        <p-select v-model="cycleFilters.department" :options="departmentOptions" optionLabel="label" optionValue="value"
+                                  placeholder="Department" showClear class="stats-filter-field"></p-select>
+                        <p-select v-model="cycleFilters.section" :options="sectionOptions" optionLabel="label" optionValue="value"
+                                  placeholder="Section" showClear class="stats-filter-field" :disabled="!cycleFilters.department"></p-select>
+                        <p-select v-model="cycleFilters.grade" :options="gradeOptions" optionLabel="label" optionValue="value"
+                                  placeholder="Grade" showClear class="stats-filter-field"></p-select>
+                        <p-select v-model="cycleFilters.month" :options="monthOptions" optionLabel="label" optionValue="value"
+                                  placeholder="Month" showClear class="stats-filter-field"></p-select>
+                        <p-select v-model="cycleFilters.year" :options="yearOptions" optionLabel="label" optionValue="value"
+                                  placeholder="Year" showClear class="stats-filter-field"></p-select>
+                    </div>
+                    <div class="filter-actions-row">
+                        <p-button label="Apply" icon="pi pi-check" @click="applyCycleFilters" size="small"></p-button>
+                        <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetCycleFilters" size="small"></p-button>
                     </div>
                 </div>
 
@@ -92,13 +70,14 @@ const TrainingInsightsComponent = {
 
             <!-- Path Information Tab -->
             <div v-if="activeTab === 'path'" class="insight-content">
-                <div class="card filters-card">
-                    <div class="insight-filters">
-                        <div class="filter-field">
-                            <label>TRAINING PATH NAME *</label>
-                            <p-select v-model="pathFilters.pathName" :options="pathOptions" optionLabel="label" optionValue="value"
-                                      placeholder="Select Path" style="width: 250px;"></p-select>
-                        </div>
+                <div class="card compact-filters-grid stats-filters-card" style="padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+                    <div class="filter-row stats-filter-row">
+                        <p-select v-model="pathFilters.pathName" :options="pathOptions" optionLabel="label" optionValue="value"
+                                  placeholder="Training Path Name" class="stats-filter-field"></p-select>
+                    </div>
+                    <div class="filter-actions-row">
+                        <p-button label="Apply" icon="pi pi-check" @click="applyPathFilters" size="small"></p-button>
+                        <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetPathFilters" size="small"></p-button>
                     </div>
                 </div>
 
@@ -165,7 +144,7 @@ const TrainingInsightsComponent = {
     `,
 
     setup() {
-        const { ref } = Vue;
+        const { ref, computed } = Vue;
 
         const activeTab = ref('cycle');
 
@@ -264,6 +243,32 @@ const TrainingInsightsComponent = {
             { id: 11, label: 'ON BOARDING', count: 5 }
         ]);
 
+        const hasCycleActiveFilters = computed(() => {
+            const f = cycleFilters.value;
+            return f.department || f.section || f.grade || f.month || f.year;
+        });
+
+        const applyCycleFilters = () => {
+            console.log('Applying cycle filters:', cycleFilters.value);
+        };
+
+        const resetCycleFilters = () => {
+            cycleFilters.value.targetCycle = null;
+            cycleFilters.value.department = null;
+            cycleFilters.value.section = null;
+            cycleFilters.value.grade = null;
+            cycleFilters.value.month = null;
+            cycleFilters.value.year = null;
+        };
+
+        const applyPathFilters = () => {
+            console.log('Applying path filters:', pathFilters.value);
+        };
+
+        const resetPathFilters = () => {
+            pathFilters.value.pathName = null;
+        };
+
         return {
             activeTab,
             cycleFilters,
@@ -278,7 +283,12 @@ const TrainingInsightsComponent = {
             cycleStats,
             pathStats,
             performanceStats,
-            cycleDistribution
+            cycleDistribution,
+            hasCycleActiveFilters,
+            applyCycleFilters,
+            resetCycleFilters,
+            applyPathFilters,
+            resetPathFilters
         };
     }
 };

@@ -29,29 +29,29 @@ const EmployeeDirectoryComponent = {
             </div>
 
             <!-- Search & Filters -->
-            <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
                 <div class="directory-filters-grid">
                     <div class="filter-row">
-                        <span class="p-input-icon-left" style="width: 180px;">
+                        <span class="p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <p-inputtext v-model="searchQuery" placeholder="Search..." style="width: 100%;"></p-inputtext>
+                            <p-inputtext v-model="searchQuery" placeholder="Search..." style="width: 150px;"></p-inputtext>
                         </span>
-                        <p-select v-model="selectedEntity" :options="entityOptions" optionLabel="name" optionValue="value" 
+                        <p-select v-model="selectedEntity" :options="entityOptions" optionLabel="name" optionValue="value"
                                   placeholder="Entity" showClear style="width: 120px;"></p-select>
-                        <p-select v-model="selectedGrade" :options="gradeOptions" optionLabel="name" optionValue="value" 
+                        <p-select v-model="selectedGrade" :options="gradeOptions" optionLabel="name" optionValue="value"
                                   placeholder="Grade" showClear style="width: 120px;"></p-select>
-                        <p-select v-model="selectedLocation" :options="locationOptions" optionLabel="name" optionValue="value" 
+                        <p-select v-model="selectedLocation" :options="locationOptions" optionLabel="name" optionValue="value"
                                   placeholder="Location" showClear style="width: 130px;"></p-select>
-                        <p-select v-model="selectedDepartment" :options="departmentOptions" optionLabel="name" optionValue="value" 
+                        <p-select v-model="selectedDepartment" :options="departmentOptions" optionLabel="name" optionValue="value"
                                   placeholder="Department" showClear style="width: 140px;" @change="onDepartmentChange"></p-select>
-                        <p-select v-model="selectedSection" :options="filteredSections" optionLabel="name" optionValue="id" 
+                        <p-select v-model="selectedSection" :options="filteredSections" optionLabel="name" optionValue="id"
                                   placeholder="Section" showClear style="width: 130px;" :disabled="!selectedDepartment" @change="onSectionChange"></p-select>
-                        <p-select v-model="selectedUnit" :options="filteredUnits" optionLabel="name" optionValue="id" 
+                        <p-select v-model="selectedUnit" :options="filteredUnits" optionLabel="name" optionValue="id"
                                   placeholder="Unit" showClear style="width: 120px;" :disabled="!selectedSection" @change="onUnitChange"></p-select>
-                        <p-select v-model="selectedTeam" :options="filteredTeams" optionLabel="name" optionValue="id" 
+                        <p-select v-model="selectedTeam" :options="filteredTeams" optionLabel="name" optionValue="id"
                                   placeholder="Team" showClear style="width: 120px;" :disabled="!selectedUnit"></p-select>
                     </div>
-                    <div class="filter-row filter-actions-row">
+                    <div class="filter-actions-row">
                         <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
                         <p-button label="Reset" icon="pi pi-refresh" outlined @click="clearFilters" size="small" v-if="hasActiveFilters"></p-button>
                     </div>

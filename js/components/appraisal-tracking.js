@@ -7,20 +7,61 @@
 const AppraisalTrackingComponent = {
     template: `
         <div class="appraisal-tracking-page">
-            <!-- Page Header -->
-            <div class="tracking-header">
-                <div>
-                    <h1>APPRAISAL TRACKER</h1>
-                    <p>Live status monitoring of active evaluation batches.</p>
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="pi pi-users"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.assigned }}</div>
+                        <div class="stat-label">Assigned</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="pi pi-user-edit"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.selfEval }}</div>
+                        <div class="stat-label">Self Evaluation</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="pi pi-users"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.committee }}</div>
+                        <div class="stat-label">Committee</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.completed }}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon teal">
+                        <i class="pi pi-percentage"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ stats.avgScore }}%</div>
+                        <div class="stat-label">Avg Score</div>
+                    </div>
                 </div>
             </div>
 
             <!-- Filters Section (compact, same style as Employee Directory) -->
             <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
                 <div class="filter-row">
-                    <span class="p-input-icon-left" style="width: 180px;">
+                    <span class="p-input-icon-left">
                         <i class="pi pi-search"></i>
-                        <p-inputtext v-model="searchQuery" placeholder="Search Name or ID..." style="width: 100%;"></p-inputtext>
+                        <p-inputtext v-model="searchQuery" placeholder="Search..." style="width: 150px;"></p-inputtext>
                     </span>
                     <p-select v-model="filters.grade" :options="gradeOptions" optionLabel="name" optionValue="value"
                               placeholder="Grade" showClear style="width: 120px;"></p-select>
@@ -35,7 +76,7 @@ const AppraisalTrackingComponent = {
                     <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="value"
                               placeholder="Team" showClear style="width: 110px;"></p-select>
                 </div>
-                <div class="filter-row filter-actions-row">
+                <div class="filter-actions-row">
                     <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
                     <p-button label="Reset" icon="pi pi-refresh" outlined @click="clearFilters" size="small" v-if="hasActiveFilters"></p-button>
                 </div>
@@ -43,6 +84,15 @@ const AppraisalTrackingComponent = {
 
             <!-- Tracking Table -->
             <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="pi pi-chart-line"></i>
+                            Appraisal Tracker
+                        </div>
+                        <div class="card-subtitle">Live status monitoring of active evaluation batches.</div>
+                    </div>
+                </div>
                 <p-datatable :value="filteredAppraisals" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
                     <p-column header="Employee Info" sortable>
                         <template #body="slotProps">
@@ -705,6 +755,20 @@ const AppraisalTrackingComponent = {
             filters.value.team
         );
 
+        // Stats computed
+        const stats = computed(() => {
+            const all = appraisalAssignments.value;
+            const assigned = all.filter(a => a.status === 'assigned').length;
+            const selfEval = all.filter(a => a.status === 'self_evaluation').length;
+            const committee = all.filter(a => a.status === 'committee_evaluation').length;
+            const completed = all.filter(a => a.status === 'completed').length;
+            const completedItems = all.filter(a => a.status === 'completed' && a.finalScore);
+            const avgScore = completedItems.length > 0 
+                ? Math.round(completedItems.reduce((sum, a) => sum + (a.finalScore || 0), 0) / completedItems.length)
+                : 0;
+            return { assigned, selfEval, committee, completed, avgScore };
+        });
+
         return {
             appraisalAssignments,
             searchQuery,
@@ -712,6 +776,7 @@ const AppraisalTrackingComponent = {
             applyFilters,
             clearFilters,
             hasActiveFilters,
+            stats,
             gradeOptions,
             cycleOptions,
             departmentOptions,

@@ -66,6 +66,33 @@ const MyRequestsComponent = {
                     </div>
                 </div>
 
+                <!-- Filters Section (outside the card) -->
+                <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                    <div class="filter-row">
+                        <p-select v-model="filters.countryOfWork" :options="countryOptions" optionLabel="name" optionValue="id"
+                                  placeholder="Country" showClear style="width: 120px;"></p-select>
+                        <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id"
+                                  placeholder="Department" showClear style="width: 130px;" @change="onDepartmentChange"></p-select>
+                        <p-select v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id"
+                                  placeholder="Section" showClear style="width: 120px;" :disabled="!filters.department" @change="onSectionChange"></p-select>
+                        <p-select v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id"
+                                  placeholder="Unit" showClear style="width: 110px;" :disabled="!filters.section" @change="onUnitChange"></p-select>
+                        <p-select v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id"
+                                  placeholder="Team" showClear style="width: 110px;" :disabled="!filters.unit"></p-select>
+                        <p-select v-model="filters.entity" :options="entityOptions" optionLabel="name" optionValue="id"
+                                  placeholder="Entity" showClear style="width: 120px;"></p-select>
+                        <p-select v-model="filters.office" :options="officeOptions" optionLabel="name" optionValue="id"
+                                  placeholder="Office" showClear style="width: 120px;"></p-select>
+                        <div class="requests-datepicker-wrap">
+                            <p-datepicker v-model="filters.dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Submitted Date"></p-datepicker>
+                        </div>
+                    </div>
+                    <div class="filter-actions-row">
+                        <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                        <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetFilters" size="small" v-if="hasActiveFilters"></p-button>
+                    </div>
+                </div>
+
                 <!-- Requests Table -->
                 <div class="card">
                     <div class="card-header">
@@ -78,33 +105,6 @@ const MyRequestsComponent = {
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
                             <p-button label="New Request" icon="pi pi-plus" @click="$emit('new-request')"></p-button>
-                        </div>
-                    </div>
-
-                    <!-- Top Filters (compact, same style as Employee Directory) -->
-                    <div class="card compact-filters-grid" style="margin-bottom: 1rem; padding: 1rem 1.25rem;">
-                        <div class="filter-row">
-                            <p-select v-model="filters.countryOfWork" :options="countryOptions" optionLabel="name" optionValue="id"
-                                      placeholder="Country of Work" showClear style="width: 140px;"></p-select>
-                            <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id"
-                                      placeholder="Department" showClear style="width: 130px;" @change="onDepartmentChange"></p-select>
-                            <p-select v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id"
-                                      placeholder="Section" showClear style="width: 120px;" :disabled="!filters.department" @change="onSectionChange"></p-select>
-                            <p-select v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id"
-                                      placeholder="Unit" showClear style="width: 110px;" :disabled="!filters.section" @change="onUnitChange"></p-select>
-                            <p-select v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id"
-                                      placeholder="Team" showClear style="width: 110px;" :disabled="!filters.unit"></p-select>
-                            <p-select v-model="filters.entity" :options="entityOptions" optionLabel="name" optionValue="id"
-                                      placeholder="Entity" showClear style="width: 120px;"></p-select>
-                            <p-select v-model="filters.office" :options="officeOptions" optionLabel="name" optionValue="id"
-                                      placeholder="Office" showClear style="width: 120px;"></p-select>
-                            <div class="requests-datepicker-wrap">
-                                <p-datepicker v-model="filters.dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Submitted Date" showIcon iconDisplay="input"></p-datepicker>
-                            </div>
-                        </div>
-                        <div class="filter-row filter-actions-row">
-                            <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
-                            <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetFilters" size="small" v-if="hasActiveFilters"></p-button>
                         </div>
                     </div>
 

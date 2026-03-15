@@ -6,21 +6,12 @@
 const AppraisalResultsComponent = {
     template: `
         <div class="appraisal-results-page">
-            <!-- Page Header -->
-            <div class="results-header">
-                <div>
-                    <h1>APPRAISAL RESULTS</h1>
-                    <p>Archive of all finalized and signed performance evaluations.</p>
-                </div>
-                <p-button label="Download Annual Report" icon="pi pi-download" severity="warning"></p-button>
-            </div>
-
             <!-- Filters Section (compact, same style as Employee Directory) -->
             <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
                 <div class="filter-row">
-                    <span class="p-input-icon-left" style="width: 180px;">
+                    <span class="p-input-icon-left">
                         <i class="pi pi-search"></i>
-                        <p-inputtext v-model="searchQuery" placeholder="Search Name or ID..." style="width: 100%;"></p-inputtext>
+                        <p-inputtext v-model="searchQuery" placeholder="Search..." style="width: 150px;"></p-inputtext>
                     </span>
                     <p-select v-model="filters.grade" :options="gradeOptions" optionLabel="name" optionValue="value"
                               placeholder="Grade" showClear style="width: 120px;"></p-select>
@@ -35,7 +26,7 @@ const AppraisalResultsComponent = {
                     <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="value"
                               placeholder="Team" showClear style="width: 110px;"></p-select>
                 </div>
-                <div class="filter-row filter-actions-row">
+                <div class="filter-actions-row">
                     <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
                     <p-button label="Reset" icon="pi pi-refresh" outlined @click="clearFilters" size="small" v-if="hasActiveFilters"></p-button>
                 </div>
@@ -43,6 +34,15 @@ const AppraisalResultsComponent = {
 
             <!-- Results Table -->
             <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="pi pi-file-check"></i>
+                            Appraisal Results
+                        </div>
+                        <div class="card-subtitle">Archive of all finalized and signed performance evaluations.</div>
+                    </div>
+                </div>
                 <p-datatable :value="filteredResults" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
                     <p-column header="Employee" sortable>
                         <template #body="slotProps">

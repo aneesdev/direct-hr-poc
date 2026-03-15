@@ -6,15 +6,6 @@
 const TrainingTrackerComponent = {
     template: `
         <div class="training-tracker-page">
-            <!-- Page Header -->
-            <div class="page-header-row">
-                <div>
-                    <h1>Training Tracker</h1>
-                    <p>Monitor progress, filter by organization hierarchy, and manage cycles.</p>
-                </div>
-                <p-button label="Export to Excel" icon="pi pi-file-excel" outlined @click="exportToExcel"></p-button>
-            </div>
-
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -65,29 +56,38 @@ const TrainingTrackerComponent = {
             </div>
 
             <!-- Search & Filters -->
-            <div class="card">
-                <div class="tracker-search-row">
-                    <div class="search-box large">
+            <div class="card compact-filters-grid" style="padding: 1rem 1.25rem;">
+                <div class="filter-row">
+                    <span class="p-input-icon-left">
                         <i class="pi pi-search"></i>
-                        <input type="text" v-model="searchQuery" placeholder="Search by Employee or Path...">
-                    </div>
+                        <p-inputtext v-model="searchQuery" placeholder="Search..." style="width: 150px;"></p-inputtext>
+                    </span>
+                    <p-select v-model="filters.path" :options="pathOptions" optionLabel="label" optionValue="value"
+                              placeholder="All Paths" showClear style="width: 140px;"></p-select>
+                    <p-select v-model="filters.cycle" :options="cycleOptions" optionLabel="label" optionValue="value"
+                              placeholder="All Cycles" showClear style="width: 130px;"></p-select>
+                    <p-select v-model="filters.department" :options="departmentOptions" optionLabel="label" optionValue="value"
+                              placeholder="Department" showClear style="width: 140px;"></p-select>
+                    <p-select v-model="filters.status" :options="statusOptions" optionLabel="label" optionValue="value"
+                              placeholder="All Status" showClear style="width: 130px;"></p-select>
                 </div>
-                <div class="tracker-filters-row compact-filters-grid">
-                    <div class="filter-row">
-                        <p-select v-model="filters.path" :options="pathOptions" optionLabel="label" optionValue="value"
-                                  placeholder="All Paths" showClear style="width: 150px;"></p-select>
-                        <p-select v-model="filters.cycle" :options="cycleOptions" optionLabel="label" optionValue="value"
-                                  placeholder="All Cycles" showClear style="width: 130px;"></p-select>
-                        <p-select v-model="filters.department" :options="departmentOptions" optionLabel="label" optionValue="value"
-                                  placeholder="All Departments" showClear style="width: 150px;"></p-select>
-                        <p-select v-model="filters.status" :options="statusOptions" optionLabel="label" optionValue="value"
-                                  placeholder="All Status" showClear style="width: 130px;"></p-select>
-                    </div>
+                <div class="filter-actions-row">
+                    <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetFilters" size="small" v-if="hasActiveFilters"></p-button>
                 </div>
             </div>
 
             <!-- Tracker Table -->
             <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="pi pi-book"></i>
+                            Training Tracker
+                        </div>
+                        <div class="card-subtitle">Monitor progress, filter by organization hierarchy, and manage cycles.</div>
+                    </div>
+                </div>
                 <p-datatable :value="filteredTrainings" stripedRows paginator :rows="10" 
                              :rowsPerPageOptions="[5, 10, 20]"
                              tableStyle="min-width: 60rem">
@@ -416,6 +416,24 @@ const TrainingTrackerComponent = {
             alert('Exporting to Excel...');
         };
 
+        const hasActiveFilters = computed(() => {
+            return searchQuery.value || Object.values(filters.value).some(v => v !== null && v !== '');
+        });
+
+        const applyFilters = () => {
+            console.log('Applying filters:', filters.value);
+        };
+
+        const resetFilters = () => {
+            searchQuery.value = '';
+            filters.value = {
+                path: null,
+                cycle: null,
+                department: null,
+                status: null
+            };
+        };
+
         return {
             searchQuery,
             showLogsDialog,
@@ -442,7 +460,10 @@ const TrainingTrackerComponent = {
             sendReminder,
             openLifecycleMenu,
             updateStatus,
-            exportToExcel
+            exportToExcel,
+            hasActiveFilters,
+            applyFilters,
+            resetFilters
         };
     }
 };

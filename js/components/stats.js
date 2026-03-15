@@ -997,113 +997,49 @@ const StatsComponent = {
             </div>
 
             <!-- Filters Section -->
-            <div class="stats-filters" v-if="activeModule !== 'appraisals' && activeModule !== 'training'">
-                <div class="module-filters">
+            <div class="card compact-filters-grid stats-filters-card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;" v-if="activeModule !== 'appraisals' && activeModule !== 'training'">
+                <div class="filter-row stats-filter-row">
                     <!-- Type/Month/Year Date Filters (for Payroll, Demography, Directory, Settings) -->
                     <template v-if="usesTypeDateFilter">
-                        <div class="filter-group">
-                            <label>Type</label>
-                            <p-select v-model="dynamicFilters.type" :options="['Monthly', 'Quarterly', 'Yearly']" 
-                                      placeholder="Monthly"></p-select>
-                        </div>
-                        <div class="filter-group" v-if="dynamicFilters.type === 'Monthly'">
-                            <label>Month</label>
-                            <p-select v-model="dynamicFilters.month" :options="months" 
-                                      placeholder="Select month" showClear></p-select>
-                        </div>
-                        <div class="filter-group" v-if="dynamicFilters.type === 'Quarterly'">
-                            <label>Quarter</label>
-                            <p-select v-model="dynamicFilters.quarter" :options="quarters" 
-                                      placeholder="Select quarter" showClear></p-select>
-                        </div>
-                        <div class="filter-group">
-                            <label>Year</label>
-                            <p-select v-model="dynamicFilters.year" :options="years" 
-                                      placeholder="Select year" showClear></p-select>
-                        </div>
+                        <p-select v-model="dynamicFilters.type" :options="['Monthly', 'Quarterly', 'Yearly']" 
+                                  placeholder="Type" class="stats-filter-field"></p-select>
+                        <p-select v-if="dynamicFilters.type === 'Monthly'" v-model="dynamicFilters.month" :options="months" 
+                                  placeholder="Month" showClear class="stats-filter-field"></p-select>
+                        <p-select v-if="dynamicFilters.type === 'Quarterly'" v-model="dynamicFilters.quarter" :options="quarters" 
+                                  placeholder="Quarter" showClear class="stats-filter-field"></p-select>
+                        <p-select v-model="dynamicFilters.year" :options="years" 
+                                  placeholder="Year" showClear class="stats-filter-field"></p-select>
                     </template>
 
-                    <!-- Custom Date Range Filter (for Attendance, Requests, HR Desk only) -->
-                    <div class="filter-group date-range-trigger" v-if="usesCustomDateRange">
-                        <label>Date Range</label>
-                        <button class="date-range-button" :class="{ active: showDateRangePicker, 'has-dates': customRange.from || customRange.to }" @click="toggleDateRangePicker">
-                            <i class="pi pi-calendar"></i>
-                            <span v-if="customRange.from && customRange.to">{{ formatDateRange }}</span>
-                            <span v-else>Select dates</span>
-                            <i class="pi pi-chevron-down"></i>
-                        </button>
-                        <!-- Date Range Dropdown -->
-                        <div class="date-range-dropdown" v-if="showDateRangePicker">
-                            <div class="date-range-dropdown-content">
-                                <div class="date-field">
-                                    <label>From Date</label>
-                                    <p-datepicker v-model="customRange.from" dateFormat="dd/mm/yy" placeholder="Start date" :inline="false"></p-datepicker>
-                                </div>
-                                <div class="date-field">
-                                    <label>To Date</label>
-                                    <p-datepicker v-model="customRange.to" dateFormat="dd/mm/yy" placeholder="End date" :inline="false"></p-datepicker>
-                                </div>
-                            </div>
-                            <div class="date-range-dropdown-actions">
-                                <p-button label="Clear" text size="small" @click="clearDateRange"></p-button>
-                                <p-button label="Apply" size="small" @click="applyDateRange"></p-button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Common Filters -->
-                    <div class="filter-group" v-if="showDepartmentFilter">
-                        <label>Department</label>
-                        <p-select v-model="filters.department" :options="departments" optionLabel="name" optionValue="id"
-                                  placeholder="All Departments" showClear style="width: 150px;" @change="onDepartmentChange"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="showSectionFilter">
-                        <label>Section</label>
-                        <p-select v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id"
-                                  placeholder="All Sections" showClear style="width: 140px;" @change="onSectionChange" 
-                                  :disabled="!filters.department"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="showUnitFilter">
-                        <label>Unit</label>
-                        <p-select v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id"
-                                  placeholder="All Units" showClear style="width: 120px;" @change="onUnitChange"
-                                  :disabled="!filters.section"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="showTeamFilter">
-                        <label>Team</label>
-                        <p-select v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id"
-                                  placeholder="All Teams" showClear style="width: 120px;"
-                                  :disabled="!filters.unit"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="showEntityFilter">
-                        <label>Entity</label>
-                        <p-select v-model="filters.entity" :options="entities" optionLabel="name" optionValue="id"
-                                  placeholder="All Entities" showClear style="width: 130px;"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="showCostCenterFilter">
-                        <label>Cost Center</label>
-                        <p-select v-model="filters.costCenter" :options="costCenters" optionLabel="name" optionValue="id"
-                                  placeholder="All Cost Centers" showClear style="width: 150px;"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="showCountryFilter">
-                        <label>Country Work</label>
-                        <p-select v-model="filters.country" :options="countries" optionLabel="name" optionValue="id"
-                                  placeholder="All Countries" showClear style="width: 140px;"></p-select>
-                    </div>
-                    <div class="filter-group" v-if="showOfficeFilter">
-                        <label>Office Work</label>
-                        <p-select v-model="filters.office" :options="offices" optionLabel="name" optionValue="id"
-                                  placeholder="All Offices" showClear style="width: 130px;"></p-select>
-                    </div>
+                    <p-select v-if="showDepartmentFilter" v-model="filters.department" :options="departments" optionLabel="name" optionValue="id"
+                              placeholder="Department" showClear class="stats-filter-field" @change="onDepartmentChange"></p-select>
+                    <p-select v-if="showSectionFilter" v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id"
+                              placeholder="Section" showClear class="stats-filter-field" @change="onSectionChange" 
+                              :disabled="!filters.department"></p-select>
+                    <p-select v-if="showUnitFilter" v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id"
+                              placeholder="Unit" showClear class="stats-filter-field" @change="onUnitChange"
+                              :disabled="!filters.section"></p-select>
+                    <p-select v-if="showTeamFilter" v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id"
+                              placeholder="Team" showClear class="stats-filter-field"
+                              :disabled="!filters.unit"></p-select>
+                    <p-select v-if="showEntityFilter" v-model="filters.entity" :options="entities" optionLabel="name" optionValue="id"
+                              placeholder="Entity" showClear class="stats-filter-field"></p-select>
+                    <p-select v-if="showCostCenterFilter" v-model="filters.costCenter" :options="costCenters" optionLabel="name" optionValue="id"
+                              placeholder="Cost Center" showClear class="stats-filter-field"></p-select>
+                    <p-select v-if="showCountryFilter" v-model="filters.country" :options="countries" optionLabel="name" optionValue="id"
+                              placeholder="Country" showClear class="stats-filter-field"></p-select>
+                    <p-select v-if="showOfficeFilter" v-model="filters.office" :options="offices" optionLabel="name" optionValue="id"
+                              placeholder="Office" showClear class="stats-filter-field"></p-select>
 
-                    <!-- Search and Reset Buttons -->
-                    <div class="filter-group filter-action">
-                        <label>&nbsp;</label>
-                        <div class="filter-buttons">
-                            <p-button label="Search" icon="pi pi-search" class="search-btn" @click="applyFilters"></p-button>
-                            <p-button label="Reset" icon="pi pi-refresh" class="reset-btn" outlined @click="resetFilters"></p-button>
-                        </div>
+                    <!-- Date Range Filter (for Attendance, Requests, HR Desk only) -->
+                    <div class="requests-datepicker-wrap stats-filter-field" v-if="usesCustomDateRange">
+                        <p-datepicker v-model="dateRangeArray" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Date Range"></p-datepicker>
                     </div>
+                </div>
+                <div class="filter-actions-row">
+                    <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetFilters" size="small" v-if="hasActiveFilters"></p-button>
                 </div>
             </div>
 
@@ -1116,7 +1052,7 @@ const StatsComponent = {
             </div>
 
             <!-- Export Actions -->
-            <div class="stats-actions" v-if="insightTab === 'static'">
+            <div class="stats-actions" v-if="insightTab === 'static' && activeModule !== 'training'">
                 <p-button v-if="activeModule === 'directory'" label="Export Directory Data" icon="pi pi-download" outlined size="small"></p-button>
                 <p-button v-else-if="activeModule === 'requests'" label="Download PDF Report" icon="pi pi-file-pdf" outlined size="small"></p-button>
                 <p-button v-else label="Export Report" icon="pi pi-download" outlined size="small"></p-button>
@@ -1286,6 +1222,37 @@ const StatsComponent = {
         const hasModuleFilters = computed(() => ['attendance', 'requests', 'hrdesk'].includes(activeModule.value));
         const usesCustomDateRange = computed(() => ['attendance', 'requests', 'hrdesk'].includes(activeModule.value));
         const usesTypeDateFilter = computed(() => ['payroll', 'demography', 'directory', 'settings'].includes(activeModule.value));
+
+        // Date range array for the simple range picker
+        const dateRangeArray = computed({
+            get: () => {
+                const range = customRange.value;
+                if (range.from && range.to) {
+                    return [range.from, range.to];
+                }
+                return null;
+            },
+            set: (val) => {
+                const state = moduleStates[activeModule.value];
+                if (val && val.length === 2) {
+                    state.customRange.from = val[0];
+                    state.customRange.to = val[1];
+                    state.customRangeApplied = true;
+                } else {
+                    state.customRange.from = null;
+                    state.customRange.to = null;
+                    state.customRangeApplied = false;
+                }
+            }
+        });
+
+        // Check if any filters are active
+        const hasActiveFilters = computed(() => {
+            const f = filters.value;
+            const hasFilterValues = Object.values(f).some(v => v !== null);
+            const hasDateRange = customRange.value.from || customRange.value.to;
+            return hasFilterValues || hasDateRange;
+        });
         const showDepartmentFilter = computed(() => hasModuleFilters.value);
         const showSectionFilter = computed(() => hasModuleFilters.value);
         const showUnitFilter = computed(() => hasModuleFilters.value);
@@ -1355,7 +1322,7 @@ const StatsComponent = {
             filters, departments, sections, units, teams, entities, costCenters, countries, offices,
             appraisalCycles, selectedAppraisalCycle, appraisalCycleApplied, customRangeApplied, currentModuleTitle,
             filteredSections, filteredUnits, filteredTeams, hasModuleFilters, showDateRangePicker, formatDateRange,
-            usesCustomDateRange, usesTypeDateFilter,
+            usesCustomDateRange, usesTypeDateFilter, dateRangeArray, hasActiveFilters,
             showDepartmentFilter, showSectionFilter, showUnitFilter, showTeamFilter, showEntityFilter, showCostCenterFilter, showCountryFilter, showOfficeFilter,
             onDepartmentChange, onSectionChange, onUnitChange, applyAppraisalCycle, toggleDateRangePicker, clearDateRange, applyDateRange, applyFilters, resetFilters
         };

@@ -46,18 +46,43 @@ const HrRequestsTrackingComponent = {
                 </div>
             </div>
 
+            <!-- Filters Section (same style as Requests Tracker) -->
+            <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                <div class="filter-row">
+                    <p-select v-model="filters.country" :options="countryOptions" optionLabel="name" optionValue="id"
+                              placeholder="Country" showClear style="width: 120px;"></p-select>
+                    <p-select v-model="filters.department" :options="departmentOptions" optionLabel="name" optionValue="id"
+                              placeholder="Department" showClear style="width: 130px;" @change="onDepartmentChange"></p-select>
+                    <p-select v-model="filters.section" :options="filteredSections" optionLabel="name" optionValue="id"
+                              placeholder="Section" showClear style="width: 120px;" :disabled="!filters.department" @change="onSectionChange"></p-select>
+                    <p-select v-model="filters.unit" :options="filteredUnits" optionLabel="name" optionValue="id"
+                              placeholder="Unit" showClear style="width: 110px;" :disabled="!filters.section" @change="onUnitChange"></p-select>
+                    <p-select v-model="filters.team" :options="filteredTeams" optionLabel="name" optionValue="id"
+                              placeholder="Team" showClear style="width: 110px;" :disabled="!filters.unit"></p-select>
+                    <p-select v-model="filters.entity" :options="entityOptions" optionLabel="name" optionValue="id"
+                              placeholder="Entity" showClear style="width: 120px;"></p-select>
+                    <p-select v-model="filters.office" :options="officeOptions" optionLabel="name" optionValue="id"
+                              placeholder="Office" showClear style="width: 120px;"></p-select>
+                    <p-select v-model="statusFilter" :options="statusOptions" placeholder="All Statuses" showClear style="width: 140px;"></p-select>
+                    <div class="requests-datepicker-wrap">
+                        <p-datepicker v-model="filters.dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Submitted Date"></p-datepicker>
+                    </div>
+                </div>
+                <div class="filter-actions-row">
+                    <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetFilters" size="small" v-if="hasActiveFilters"></p-button>
+                </div>
+            </div>
+
             <!-- Requests Table -->
             <div class="card">
                 <div class="card-header">
                     <div>
                         <div class="card-title">
                             <i class="pi pi-list-check"></i>
-                            HR Requests
+                            Help Desk Requests
                         </div>
-                        <div class="card-subtitle">Track and manage all HR change requests</div>
-                    </div>
-                    <div class="header-actions">
-                        <p-select v-model="statusFilter" :options="statusOptions" placeholder="All Statuses" showClear style="width: 180px;"></p-select>
+                        <div class="card-subtitle">Track and manage all Help Desk requests</div>
                     </div>
                 </div>
 
@@ -134,6 +159,114 @@ const HrRequestsTrackingComponent = {
             'Processing',
             'Rejected'
         ]);
+
+        // Filters
+        const filters = ref({
+            country: null,
+            department: null,
+            section: null,
+            unit: null,
+            team: null,
+            entity: null,
+            office: null,
+            dateRange: null
+        });
+
+        const countryOptions = ref([
+            { id: 1, name: 'Saudi Arabia' },
+            { id: 2, name: 'UAE' },
+            { id: 3, name: 'Egypt' }
+        ]);
+
+        const departmentOptions = ref([
+            { id: 1, name: 'Engineering' },
+            { id: 2, name: 'Finance' },
+            { id: 3, name: 'HR' },
+            { id: 4, name: 'Marketing' },
+            { id: 5, name: 'Operations' },
+            { id: 6, name: 'Sales' }
+        ]);
+
+        const sectionOptions = ref([
+            { id: 1, name: 'Development', departmentId: 1 },
+            { id: 2, name: 'QA', departmentId: 1 },
+            { id: 3, name: 'Accounting', departmentId: 2 },
+            { id: 4, name: 'Recruitment', departmentId: 3 }
+        ]);
+
+        const unitOptions = ref([
+            { id: 1, name: 'Frontend', sectionId: 1 },
+            { id: 2, name: 'Backend', sectionId: 1 },
+            { id: 3, name: 'Testing', sectionId: 2 }
+        ]);
+
+        const teamOptions = ref([
+            { id: 1, name: 'Team A', unitId: 1 },
+            { id: 2, name: 'Team B', unitId: 1 },
+            { id: 3, name: 'Team C', unitId: 2 }
+        ]);
+
+        const entityOptions = ref([
+            { id: 1, name: 'Direct HR' },
+            { id: 2, name: 'Direct Tech' }
+        ]);
+
+        const officeOptions = ref([
+            { id: 1, name: 'Riyadh HQ' },
+            { id: 2, name: 'Jeddah Office' },
+            { id: 3, name: 'Dubai Office' }
+        ]);
+
+        const filteredSections = computed(() => {
+            if (!filters.value.department) return [];
+            return sectionOptions.value.filter(s => s.departmentId === filters.value.department);
+        });
+
+        const filteredUnits = computed(() => {
+            if (!filters.value.section) return [];
+            return unitOptions.value.filter(u => u.sectionId === filters.value.section);
+        });
+
+        const filteredTeams = computed(() => {
+            if (!filters.value.unit) return [];
+            return teamOptions.value.filter(t => t.unitId === filters.value.unit);
+        });
+
+        const hasActiveFilters = computed(() => {
+            return Object.values(filters.value).some(v => v !== null && v !== '');
+        });
+
+        const onDepartmentChange = () => {
+            filters.value.section = null;
+            filters.value.unit = null;
+            filters.value.team = null;
+        };
+
+        const onSectionChange = () => {
+            filters.value.unit = null;
+            filters.value.team = null;
+        };
+
+        const onUnitChange = () => {
+            filters.value.team = null;
+        };
+
+        const applyFilters = () => {
+            console.log('Applying filters:', filters.value);
+        };
+
+        const resetFilters = () => {
+            filters.value = {
+                country: null,
+                department: null,
+                section: null,
+                unit: null,
+                team: null,
+                entity: null,
+                office: null,
+                dateRange: null
+            };
+        };
 
         // Sample HR Requests data
         const hrRequests = ref([
@@ -305,7 +438,21 @@ const HrRequestsTrackingComponent = {
             getTypeIconStyle,
             getStatusClass,
             formatDate,
-            viewRequest
+            viewRequest,
+            filters,
+            countryOptions,
+            departmentOptions,
+            entityOptions,
+            officeOptions,
+            filteredSections,
+            filteredUnits,
+            filteredTeams,
+            hasActiveFilters,
+            onDepartmentChange,
+            onSectionChange,
+            onUnitChange,
+            applyFilters,
+            resetFilters
         };
     }
 };

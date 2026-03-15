@@ -6,17 +6,18 @@
 const TrainingPathsComponent = {
     template: `
         <div class="training-paths-page">
-            <!-- Page Header -->
-            <div class="page-header-row">
-                <div>
-                    <h1>Training Paths</h1>
-                    <p>Manage and organize your training curriculum.</p>
-                </div>
-                <p-button label="Add New Path" icon="pi pi-plus" @click="openDialog(null)"></p-button>
-            </div>
-
             <!-- Paths Table -->
             <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            <i class="pi pi-book"></i>
+                            Training Paths
+                        </div>
+                        <div class="card-subtitle">Manage and organize your training curriculum.</div>
+                    </div>
+                    <p-button label="Add New Path" icon="pi pi-plus" @click="openDialog(null)"></p-button>
+                </div>
                 <p-datatable :value="paths" stripedRows paginator :rows="10" 
                              :rowsPerPageOptions="[5, 10, 20]"
                              tableStyle="min-width: 50rem">
