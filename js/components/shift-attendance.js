@@ -27,75 +27,67 @@ const ShiftAttendanceComponent = {
                     <p-tabpanels>
                         <!-- Shift Scheduling Tab -->
                         <p-tabpanel value="schedule">
-                            <!-- Scheduler Header -->
-                            <div class="scheduler-header">
-                                <div class="scheduler-title-section">
-                                    <div class="scheduler-icon">
+                            <!-- Stats Cards -->
+                            <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 1.5rem;">
+                                <div class="stat-card">
+                                    <div class="stat-icon blue">
                                         <i class="pi pi-users"></i>
                                     </div>
-                                    <div class="scheduler-title-info">
-                                        <h2>SHIFT SCHEDULING</h2>
-                                        <p>Manage individual assignments</p>
+                                    <div>
+                                        <div class="stat-value">{{ scheduleStats.totalEmployees }}</div>
+                                        <div class="stat-label">Total Employees</div>
                                     </div>
                                 </div>
-                                <div class="scheduler-actions">
-                                    <div class="dropdown-btn-wrapper">
-                                        <button class="scheduler-action-btn" @click="showCopyWeekMenu = !showCopyWeekMenu; showCustomWeekPicker = false">
-                                            <i class="pi pi-copy"></i>
-                                            Copy Week
-                                            <i class="pi pi-chevron-down dropdown-arrow"></i>
-                                        </button>
-                                        <div v-if="showCopyWeekMenu" class="dropdown-menu">
-                                            <div class="dropdown-item" @click="copyLastWeek">
-                                                <i class="pi pi-history"></i>
-                                                Last Week
-                                            </div>
-                                            <div class="dropdown-item has-submenu" @click.stop="showCustomWeekPicker = !showCustomWeekPicker">
-                                                <i class="pi pi-calendar"></i>
-                                                Custom Week
-                                                <i class="pi pi-chevron-right submenu-arrow"></i>
-                                            </div>
-                                            <!-- Custom Week Picker Submenu -->
-                                            <div v-if="showCustomWeekPicker" class="week-picker-submenu">
-                                                <div class="week-picker-header">Select Week</div>
-                                                <div class="week-picker-list">
-                                                    <div v-for="week in availableWeeks" :key="week.id" 
-                                                         class="week-picker-item" 
-                                                         @click="selectCustomWeek(week)">
-                                                        <span class="week-range">{{ week.range }}</span>
-                                                        <span class="week-label">{{ week.label }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon green">
+                                        <i class="pi pi-check-circle"></i>
                                     </div>
-                                    <button class="scheduler-action-btn" @click="showHistoryDrawer = true">
-                                        <i class="pi pi-history"></i>
-                                        History
-                                    </button>
-                                    <button class="scheduler-action-btn outlined" :disabled="Object.keys(scheduleAssignments).length === 0">
-                                        <i class="pi pi-save"></i>
-                                        Save as Draft
-                                    </button>
-                                    <div v-if="pendingChanges.length > 0" class="pending-badge">
-                                        {{ pendingChanges.length }} PENDING CHANGES
+                                    <div>
+                                        <div class="stat-value">{{ scheduleStats.assignedShifts }}</div>
+                                        <div class="stat-label">Assigned Shifts</div>
                                     </div>
                                 </div>
-                                <div class="scheduler-date-nav">
-                                    <button class="nav-arrow" @click="previousWeek"><i class="pi pi-chevron-left"></i></button>
-                                    <span class="date-range">{{ weekLabelFormatted }}</span>
-                                    <button class="nav-arrow" @click="nextWeek"><i class="pi pi-chevron-right"></i></button>
+                                <div class="stat-card">
+                                    <div class="stat-icon orange">
+                                        <i class="pi pi-exclamation-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value">{{ scheduleStats.unassigned }}</div>
+                                        <div class="stat-label">Unassigned</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon purple">
+                                        <i class="pi pi-clock"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value">{{ scheduleStats.totalHours }}</div>
+                                        <div class="stat-label">Total Hours</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon teal">
+                                        <i class="pi pi-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value">{{ scheduleStats.pendingChanges }}</div>
+                                        <div class="stat-label">Pending Changes</div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Search and Layer Bar -->
-                            <div class="scheduler-toolbar">
-                                <div class="search-filter-group">
+                            <!-- Filters Section -->
+                            <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                                <div class="filter-row">
                                     <span class="p-input-icon-left">
                                         <i class="pi pi-search"></i>
-                                        <p-inputtext v-model="scheduleSearch" placeholder="Search by name or role..." style="width: 250px;"></p-inputtext>
+                                        <p-inputtext v-model="scheduleSearch" placeholder="Search..." style="width: 150px;"></p-inputtext>
                                     </span>
-                                    <div class="scheduler-layer-tabs">
+                                    <p-select v-model="scheduleFilterDepartment" :options="departmentOptions" optionLabel="name" optionValue="id"
+                                              placeholder="Department" showClear style="width: 130px;"></p-select>
+                                    <p-select v-model="scheduleFilterShift" :options="shiftFilterOptions" optionLabel="name" optionValue="id"
+                                              placeholder="Shift" showClear style="width: 120px;"></p-select>
+                                    <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
                                         <button class="layer-tab" :class="{ active: schedulerLayer === 'first' }" @click="schedulerLayer = 'first'">
                                             First Layer
                                         </button>
@@ -104,27 +96,60 @@ const ShiftAttendanceComponent = {
                                         </button>
                                     </div>
                                 </div>
-                                <div class="scheduler-legend">
-                                    <div class="legend-item-new">
-                                        <span class="legend-dot active"></span>
-                                        <span>ACTIVE SHIFTS</span>
-                                    </div>
-                                    <div class="legend-item-new">
-                                        <span class="legend-dot unassigned"></span>
-                                        <span>UNASSIGNED</span>
-                                    </div>
+                                <div class="filter-actions-row">
+                                    <p-button label="Apply" icon="pi pi-check" @click="applyScheduleFilters" size="small"></p-button>
+                                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetScheduleFilters" size="small" v-if="hasScheduleActiveFilters"></p-button>
                                 </div>
                             </div>
 
-                            <!-- Publish Schedule (centered above grid) -->
-                            <div class="scheduler-publish-bar">
-                                <button class="scheduler-action-btn primary publish-schedule-btn" :disabled="Object.keys(scheduleAssignments).length === 0">
-                                    <i class="pi pi-send"></i>
-                                    Publish Schedule
-                                </button>
-                            </div>
+                            <!-- Schedule Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="card-title">
+                                            <i class="pi pi-calendar"></i>
+                                            Shift Scheduling
+                                        </div>
+                                        <div class="card-subtitle">Manage individual assignments for {{ weekLabelFormatted }}</div>
+                                    </div>
+                                    <div class="header-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div class="scheduler-date-nav" style="margin-right: 1rem;">
+                                            <button class="nav-arrow" @click="previousWeek"><i class="pi pi-chevron-left"></i></button>
+                                            <span class="date-range" style="font-size: 0.85rem; min-width: 180px; text-align: center;">{{ weekLabelFormatted }}</span>
+                                            <button class="nav-arrow" @click="nextWeek"><i class="pi pi-chevron-right"></i></button>
+                                        </div>
+                                        <div class="dropdown-btn-wrapper">
+                                            <p-button label="Copy Week" icon="pi pi-copy" outlined size="small" @click="showCopyWeekMenu = !showCopyWeekMenu; showCustomWeekPicker = false"></p-button>
+                                            <div v-if="showCopyWeekMenu" class="dropdown-menu">
+                                                <div class="dropdown-item" @click="copyLastWeek">
+                                                    <i class="pi pi-history"></i>
+                                                    Last Week
+                                                </div>
+                                                <div class="dropdown-item has-submenu" @click.stop="showCustomWeekPicker = !showCustomWeekPicker">
+                                                    <i class="pi pi-calendar"></i>
+                                                    Custom Week
+                                                    <i class="pi pi-chevron-right submenu-arrow"></i>
+                                                </div>
+                                                <div v-if="showCustomWeekPicker" class="week-picker-submenu">
+                                                    <div class="week-picker-header">Select Week</div>
+                                                    <div class="week-picker-list">
+                                                        <div v-for="week in availableWeeks" :key="week.id" 
+                                                             class="week-picker-item" 
+                                                             @click="selectCustomWeek(week)">
+                                                            <span class="week-range">{{ week.range }}</span>
+                                                            <span class="week-label">{{ week.label }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p-button label="History" icon="pi pi-history" outlined size="small" @click="showHistoryDrawer = true"></p-button>
+                                        <p-button label="Save Draft" icon="pi pi-save" outlined size="small" :disabled="Object.keys(scheduleAssignments).length === 0"></p-button>
+                                        <p-button label="Publish" icon="pi pi-send" size="small" :disabled="Object.keys(scheduleAssignments).length === 0"></p-button>
+                                    </div>
+                                </div>
 
-                            <!-- Schedule Grid -->
+                                <!-- Schedule Grid -->
                             <div class="scheduler-grid-container">
                                 <table class="scheduler-grid">
                                     <thead>
@@ -220,20 +245,21 @@ const ShiftAttendanceComponent = {
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="scheduler-pagination">
-                                <span class="pagination-info">Showing {{ schedulePaginationStart }}-{{ schedulePaginationEnd }} of {{ filteredEmployeeSchedules.length }}</span>
-                                <div class="pagination-controls">
-                                    <button type="button" class="pagination-btn" :disabled="schedulePage <= 1" @click="schedulePage = Math.max(1, schedulePage - 1)">
-                                        <i class="pi pi-chevron-left"></i>
-                                    </button>
-                                    <button type="button" class="pagination-btn" :disabled="schedulePage >= schedulePageCount" @click="schedulePage = Math.min(schedulePageCount, schedulePage + 1)">
-                                        <i class="pi pi-chevron-right"></i>
-                                    </button>
+                                <div class="scheduler-pagination" style="padding: 1rem;">
+                                    <span class="pagination-info">Showing {{ schedulePaginationStart }}-{{ schedulePaginationEnd }} of {{ filteredEmployeeSchedules.length }}</span>
+                                    <div class="pagination-controls">
+                                        <button type="button" class="pagination-btn" :disabled="schedulePage <= 1" @click="schedulePage = Math.max(1, schedulePage - 1)">
+                                            <i class="pi pi-chevron-left"></i>
+                                        </button>
+                                        <button type="button" class="pagination-btn" :disabled="schedulePage >= schedulePageCount" @click="schedulePage = Math.min(schedulePageCount, schedulePage + 1)">
+                                            <i class="pi pi-chevron-right"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Scheduler Footer Stats -->
-                            <div class="scheduler-footer-stats">
+                            <div class="scheduler-footer-stats" style="margin-top: 1.5rem;">
                                 <div class="footer-stat">
                                     <div class="footer-stat-icon orange">
                                         <i class="pi pi-clock"></i>
@@ -2952,6 +2978,43 @@ const ShiftAttendanceComponent = {
             return totalHours;
         };
 
+        // Schedule filter dropdowns
+        const scheduleFilterDepartment = ref(null);
+        const scheduleFilterShift = ref(null);
+        const departmentOptions = ref([...StaticData.departments]);
+        const shiftFilterOptions = computed(() => allShifts.value.filter(s => s.active));
+        const applyScheduleFilters = () => {
+            console.log('Applying schedule filters');
+        };
+
+        const resetScheduleFilters = () => {
+            scheduleFilterDepartment.value = null;
+            scheduleFilterShift.value = null;
+            scheduleSearch.value = '';
+        };
+
+        const hasScheduleActiveFilters = computed(() => {
+            return scheduleFilterDepartment.value || scheduleFilterShift.value || scheduleSearch.value;
+        });
+
+        // Schedule stats for top stat cards
+        const scheduleStats = computed(() => {
+            const totalEmployees = variableSchedules.value.length;
+            const totalSlots = totalEmployees * 7;
+            let assignedShifts = 0;
+            Object.entries(scheduleAssignments.value).forEach(([key, a]) => {
+                if (a.type === 'shift') assignedShifts++;
+            });
+            const totalHours = assignedShifts * 9;
+            return {
+                totalEmployees,
+                assignedShifts,
+                unassigned: totalSlots - assignedShifts,
+                totalHours: totalHours + 'h',
+                pendingChanges: pendingChanges.value.length
+            };
+        });
+
         // Scheduler footer stats (variable schedule employees only)
         const schedulerStats = computed(() => {
             const variableIds = new Set(variableSchedules.value.map(s => s.id));
@@ -3251,6 +3314,14 @@ const ShiftAttendanceComponent = {
             versionHistory,
             getEmployeeWeeklyHours,
             schedulerStats,
+            scheduleStats,
+            scheduleFilterDepartment,
+            scheduleFilterShift,
+            departmentOptions,
+            shiftFilterOptions,
+            applyScheduleFilters,
+            resetScheduleFilters,
+            hasScheduleActiveFilters,
             // Weekly Shift Summary
             reviewerTab,
             reviewerSearch,
