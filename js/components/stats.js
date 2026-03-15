@@ -196,7 +196,7 @@ const AttendanceStaticInsights = {
                 id: 'yesterday', title: 'YESTERDAY', date: 'Feb 09', highlighted: false, totalStaff: 450,
                 attendanceStats: [{ label: 'Total Present', value: 412, color: 'green' }, { label: 'Total Absent', value: 5, color: 'red' }, { label: 'Total Business Trip', value: 5, color: 'blue' }, { label: 'Total Work From Home', value: 0, color: 'purple' }, { label: 'Total Working Hours', value: '3,456h', color: 'orange' }],
                 vacationStats: [{ label: 'Total in Annual Vacation', value: 8, color: 'blue' }, { label: 'Total in Others Type', value: 3, color: 'purple' }, { label: 'Total Working on Public Holiday', value: 0, color: 'green' }, { label: 'Total Day Off', value: 5, color: 'gray' }],
-                punchStats: [{ label: 'Total Missing Clock In', value: 2, color: 'red' }, { label: 'Total Missing Clock Out', value: 3, color: 'orange' }],
+                punchStats: [{ label: 'Total Missing Clock In', value: 2, color: 'red' }, { label: 'Total Missing Clock Out', value: 3, color: 'orange' }, { label: 'Total Off-Schedule Attendance', value: 1, color: 'cyan' }],
                 violationStats: [{ label: 'Total LATE In', value: 45, color: 'orange' }, { label: 'Total EARLY Out', value: 12, color: 'red' }, { label: 'Total Less Effort', value: 5, color: 'purple' }, { label: 'Total NO SHIFT ASSIGNED', value: 0, color: 'gray' }, { label: 'Total OUTSIDE WINDOW', value: 2, color: 'blue' }],
                 performanceStats: [{ label: 'Attendance Rate', value: '91.6%', color: 'green' }, { label: 'Absent Rate', value: '1.1%', color: 'red' }, { label: 'Day Off Rate', value: '1.1%', color: 'gray' }, { label: 'Leave Utilization', value: '2.4%', color: 'blue' }, { label: 'Missing Punch Rate', value: '3.6%', color: 'orange' }, { label: 'Violation Rate', value: '10%', color: 'red' }]
             },
@@ -204,7 +204,7 @@ const AttendanceStaticInsights = {
                 id: 'this_month', title: 'THIS MONTH', date: 'February', highlighted: false, totalStaff: 450,
                 attendanceStats: [{ label: 'Total Present', value: 8540, color: 'green' }, { label: 'Total Absent', value: 102, color: 'red' }, { label: 'Total Business Trip', value: 45, color: 'blue' }, { label: 'Total Work From Home', value: 210, color: 'purple' }, { label: 'Total Working Hours', value: '89,320h', color: 'orange' }],
                 vacationStats: [{ label: 'Total in Annual Vacation', value: 560, color: 'blue' }, { label: 'Total in Others Type', value: 45, color: 'purple' }, { label: 'Total Working on Public Holiday', value: 12, color: 'green' }, { label: 'Total Day Off', value: 120, color: 'gray' }],
-                punchStats: [{ label: 'Total Missing Clock In', value: 160, color: 'red' }, { label: 'Total Missing Clock Out', value: 185, color: 'orange' }],
+                punchStats: [{ label: 'Total Missing Clock In', value: 160, color: 'red' }, { label: 'Total Missing Clock Out', value: 185, color: 'orange' }, { label: 'Total Off-Schedule Attendance', value: 24, color: 'cyan' }],
                 violationStats: [{ label: 'Total LATE In', value: 650, color: 'orange' }, { label: 'Total EARLY Out', value: 320, color: 'red' }, { label: 'Total Less Effort', value: 85, color: 'purple' }, { label: 'Total NO SHIFT ASSIGNED', value: 0, color: 'gray' }, { label: 'Total OUTSIDE WINDOW', value: 25, color: 'blue' }],
                 performanceStats: [{ label: 'Attendance Rate', value: '86.0%', color: 'green' }, { label: 'Absent Rate', value: '2.3%', color: 'red' }, { label: 'Day Off Rate', value: '26.7%', color: 'gray' }, { label: 'Leave Utilization', value: '1.8%', color: 'blue' }, { label: 'Missing Punch Rate', value: '2.9%', color: 'orange' }, { label: 'Violation Rate', value: '8%', color: 'red' }]
             },
@@ -212,7 +212,7 @@ const AttendanceStaticInsights = {
                 id: 'last_month', title: 'LAST MONTH', date: 'Rajab/Shaban', highlighted: false, totalStaff: 448,
                 attendanceStats: [{ label: 'Total Present', value: 8120, color: 'green' }, { label: 'Total Absent', value: 260, color: 'red' }, { label: 'Total Business Trip', value: 45, color: 'blue' }, { label: 'Total Work From Home', value: 0, color: 'purple' }, { label: 'Total Working Hours', value: '72,450h', color: 'orange' }],
                 vacationStats: [{ label: 'Total in Annual Vacation', value: 160, color: 'blue' }, { label: 'Total in Others Type', value: 0, color: 'purple' }, { label: 'Total Working on Public Holiday', value: 0, color: 'green' }, { label: 'Total Day Off', value: 115, color: 'gray' }],
-                punchStats: [{ label: 'Total Missing Clock In', value: 28, color: 'red' }, { label: 'Total Missing Clock Out', value: 105, color: 'orange' }],
+                punchStats: [{ label: 'Total Missing Clock In', value: 28, color: 'red' }, { label: 'Total Missing Clock Out', value: 105, color: 'orange' }, { label: 'Total Off-Schedule Attendance', value: 18, color: 'cyan' }],
                 violationStats: [{ label: 'Total LATE In', value: 680, color: 'orange' }, { label: 'Total EARLY Out', value: 245, color: 'red' }, { label: 'Total Less Effort', value: 140, color: 'purple' }, { label: 'Total NO SHIFT ASSIGNED', value: 1, color: 'gray' }, { label: 'Total OUTSIDE WINDOW', value: 29, color: 'blue' }],
                 performanceStats: [{ label: 'Attendance Rate', value: '90.5%', color: 'green' }, { label: 'Absent Rate', value: '3.2%', color: 'red' }, { label: 'Day Off Rate', value: '2.5%', color: 'gray' }, { label: 'Leave Utilization', value: '2.5%', color: 'blue' }, { label: 'Missing Punch Rate', value: '0.7%', color: 'orange' }, { label: 'Violation Rate', value: '6.4%', color: 'red' }]
             }
@@ -222,7 +222,7 @@ const AttendanceStaticInsights = {
             id: 'custom', title: 'CUSTOM RANGE', date: 'Selected', highlighted: false, totalStaff: 450,
             attendanceStats: [{ label: 'Total Present', value: 2410, color: 'green' }, { label: 'Total Absent', value: 95, color: 'red' }, { label: 'Total Business Trip', value: 18, color: 'blue' }, { label: 'Total Work From Home', value: 60, color: 'purple' }, { label: 'Total Working Hours', value: '19,280h', color: 'orange' }],
             vacationStats: [{ label: 'Total in Annual Vacation', value: 42, color: 'blue' }, { label: 'Total in Others Type Vacation', value: 12, color: 'purple' }, { label: 'Total Working on Public Holiday', value: 0, color: 'green' }, { label: 'Total Day Off', value: 35, color: 'gray' }],
-            punchStats: [{ label: 'Total Missing Clock In', value: 38, color: 'red' }, { label: 'Total Missing Clock Out', value: 29, color: 'orange' }],
+            punchStats: [{ label: 'Total Missing Clock In', value: 38, color: 'red' }, { label: 'Total Missing Clock Out', value: 29, color: 'orange' }, { label: 'Total Off-Schedule Attendance', value: 6, color: 'cyan' }],
             violationStats: [{ label: 'Total LATE IN', value: 115, color: 'orange' }, { label: 'Total EARLY OUT', value: 32, color: 'red' }, { label: 'Total Less Effort', value: 8, color: 'purple' }, { label: 'Total NO SHIFT ASSIGNED', value: 0, color: 'gray' }, { label: 'Total OUTSIDE WINDOW', value: 5, color: 'blue' }],
             performanceStats: [{ label: 'Attendance Rate', value: '88.4%', color: 'green' }, { label: 'Absent Rate', value: '3.5%', color: 'red' }, { label: 'Day Off Rate', value: '1.3%', color: 'gray' }, { label: 'Leave Utilization', value: '2.0%', color: 'blue' }, { label: 'Missing Punch Rate', value: '2.5%', color: 'orange' }, { label: 'Violation Rate', value: '5.8%', color: 'red' }]
         });
@@ -347,10 +347,11 @@ const AttendanceDynamicInsights = {
                 const chart4 = new ApexCharts(punchFlagChart.value, {
                     ...apexDefaultOptions,
                     chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 },
-                    colors: ['#ef4444', '#f97316'],
+                    colors: ['#ef4444', '#f97316', '#06b6d4'],
                     series: [
                         { name: 'Missing Clock In', data: [25, 22, 20, 18, 15, 12, 10, 8, 6, 5, 4, 3] },
-                        { name: 'Missing Clock Out', data: [30, 28, 25, 22, 20, 18, 15, 12, 10, 8, 6, 5] }
+                        { name: 'Missing Clock Out', data: [30, 28, 25, 22, 20, 18, 15, 12, 10, 8, 6, 5] },
+                        { name: 'Off-Schedule Attendance', data: [8, 10, 12, 9, 7, 11, 14, 10, 8, 6, 5, 4] }
                     ],
                     xaxis: { ...apexDefaultOptions.xaxis, categories: months }
                 });

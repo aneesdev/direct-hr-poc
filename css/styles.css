@@ -622,7 +622,7 @@ img {
 }
 
 .notification-center-item.unread {
-    background: rgba(255, 110, 5, 0.12);
+    background: rgba(255, 110, 5, 0.06);
 }
 
 .notification-center-item.clickable {
@@ -1327,8 +1327,7 @@ img {
     color: #ffffff !important;
 }
 
-.p-button:hover,
-.p-button:focus {
+.p-button:hover {
     background: #ea580c !important;
     border-color: #ea580c !important;
 }
@@ -1351,6 +1350,13 @@ img {
     background: rgba(255, 110, 5, 0.1) !important;
 }
 
+.p-button-text:focus,
+.p-button[text]:focus {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
 /* Outlined Button Variant */
 .p-button-outlined,
 .p-button[outlined] {
@@ -1362,6 +1368,31 @@ img {
 .p-button-outlined:hover,
 .p-button[outlined]:hover {
     background: rgba(255, 110, 5, 0.1) !important;
+}
+
+.p-button-outlined:focus,
+.p-button[outlined]:focus {
+    background: transparent !important;
+    border-color: #ff6e05 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.p-button-outlined:active,
+.p-button[outlined]:active {
+    background: rgba(255, 110, 5, 0.15) !important;
+    border-color: #ff6e05 !important;
+}
+
+/* Remove focus ring from all buttons */
+.p-button:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.p-button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 110, 5, 0.2) !important;
+    outline: none !important;
 }
 
 /* Secondary Button */
@@ -22946,6 +22977,10 @@ img {
 
 .stat-dot.gray {
     background: #9ca3af;
+}
+
+.stat-dot.cyan {
+    background: #06b6d4;
 }
 
 .stat-row span:nth-child(2) {

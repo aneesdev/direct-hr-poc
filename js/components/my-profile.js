@@ -1131,9 +1131,9 @@ const MyProfileComponent = {
                             <p-column header="Reviewers">
                                 <template #body="slotProps">
                                     <div>
-                                        <div v-for="reviewer in slotProps.data.reviewers" :key="reviewer" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                        <div v-for="reviewer in slotProps.data.reviewers" :key="reviewer.id || reviewer" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
                                             <span style="width: 6px; height: 6px; border-radius: 50%; background: #3b82f6;"></span>
-                                            <span style="font-size: 0.85rem;">{{ reviewer }}</span>
+                                            <span style="font-size: 0.85rem;">{{ reviewer.name || reviewer }}</span>
                                         </div>
                                     </div>
                                 </template>
@@ -1143,9 +1143,9 @@ const MyProfileComponent = {
                                     <div>
                                         <div style="font-weight: 600;">{{ slotProps.data.grade }}</div>
                                         <div style="font-size: 0.75rem; color: var(--text-color-secondary);">
-                                            C: {{ slotProps.data.weights.c }}% 
-                                            P: {{ slotProps.data.weights.p }}% 
-                                            K: {{ slotProps.data.weights.k }}%
+                                            C: {{ slotProps.data.weights.corporateObjectives || slotProps.data.weights.c || 0 }}% 
+                                            P: {{ slotProps.data.weights.personalKpis || slotProps.data.weights.p || 0 }}% 
+                                            K: {{ slotProps.data.weights.competency || slotProps.data.weights.k || 0 }}%
                                         </div>
                                     </div>
                                 </template>
@@ -1212,53 +1212,96 @@ const MyProfileComponent = {
                         </p-datatable>
                     </div>
 
-                    <!-- Appraisal View Modal -->
-                    <p-dialog v-model:visible="showAppraisalModal" :header="'Appraisal Details'" :style="{ width: '700px' }" modal>
-                        <div v-if="selectedAppraisal" class="appraisal-view-content">
-                            <div class="appraisal-header-info">
-                                <img :src="selectedAppraisal.avatar" style="width: 60px; height: 60px; border-radius: 50%;">
-                                <div>
-                                    <h3>{{ selectedAppraisal.name }}</h3>
-                                    <p>{{ selectedAppraisal.empId }} • {{ selectedAppraisal.department || 'N/A' }}</p>
+                    <!-- Appraisal View Modal (matching appraisal-tracking Batch Assignment style) -->
+                    <p-dialog v-model:visible="showAppraisalModal" header="Batch Assignment" :modal="true" :style="{ width: '850px' }">
+                        <div v-if="selectedAppraisal" class="assigned-layout">
+                            <!-- Header with Employee Info and Status -->
+                            <div class="self-eval-header">
+                                <div class="header-left">
+                                    <img :src="selectedAppraisal.employeeAvatar || selectedAppraisal.avatar" class="detail-avatar">
+                                    <div>
+                                        <h3>{{ selectedAppraisal.employeeName || selectedAppraisal.name }}</h3>
+                                        <p>{{ selectedAppraisal.employeeNumber || selectedAppraisal.empId }} | {{ selectedAppraisal.department }}</p>
+                                    </div>
                                 </div>
-                                <span class="appraisal-status-btn" :class="selectedAppraisal.statusClass">{{ selectedAppraisal.status }}</span>
-                            </div>
-                            <div class="appraisal-details-grid">
-                                <div class="appraisal-detail-item">
-                                    <label>Appraisal Cycle</label>
-                                    <span>{{ selectedAppraisal.cycle }}</span>
-                                </div>
-                                <div class="appraisal-detail-item" v-if="selectedAppraisal.grade">
-                                    <label>Grade</label>
-                                    <span>{{ selectedAppraisal.grade }}</span>
-                                </div>
-                                <div class="appraisal-detail-item" v-if="selectedAppraisal.selfScore">
-                                    <label>Self Score</label>
-                                    <span>{{ selectedAppraisal.selfScore }}%</span>
-                                </div>
-                                <div class="appraisal-detail-item" v-if="selectedAppraisal.finalScore">
-                                    <label>Final Score</label>
-                                    <span class="final-score-badge">{{ selectedAppraisal.finalScore }}%</span>
-                                </div>
-                                <div class="appraisal-detail-item" v-if="selectedAppraisal.rating">
-                                    <label>Performance Rating</label>
-                                    <span class="performance-tag" :class="selectedAppraisal.ratingClass">{{ selectedAppraisal.rating }}</span>
-                                </div>
-                                <div class="appraisal-detail-item" v-if="selectedAppraisal.evaluator">
-                                    <label>Evaluator</label>
-                                    <span>{{ selectedAppraisal.evaluator }}</span>
+                                <div class="header-right">
+                                    <p-tag value="CURRENT STATUS: ASSIGNED" severity="success"></p-tag>
                                 </div>
                             </div>
-                            <div v-if="selectedAppraisal.reviewers" class="appraisal-reviewers">
-                                <label>Reviewers</label>
-                                <div v-for="reviewer in selectedAppraisal.reviewers" :key="reviewer" class="reviewer-item">
-                                    <span class="reviewer-dot"></span>
-                                    <span>{{ reviewer }}</span>
+
+                            <!-- Two Column Layout -->
+                            <div class="assigned-grid">
+                                <!-- Left Column: Package Configuration & Weight Allocation -->
+                                <div class="left-column">
+                                    <!-- Package Configuration Card -->
+                                    <div class="info-card">
+                                        <div class="card-header-label">PACKAGE CONFIGURATION</div>
+                                        
+                                        <div class="config-row">
+                                            <label>EVALUATION CYCLE</label>
+                                            <div class="config-value"><i class="pi pi-calendar"></i> {{ selectedAppraisal.cycleName || selectedAppraisal.cycle }}</div>
+                                        </div>
+                                        
+                                        <div class="config-row">
+                                            <label>GRADE FOCUS</label>
+                                            <div class="config-value"><i class="pi pi-users"></i> {{ selectedAppraisal.gradeName || selectedAppraisal.grade }} Level</div>
+                                        </div>
+                                        
+                                        <div class="config-row">
+                                            <label>BASELINE OBJECTIVES (KPIS)</label>
+                                            <div class="config-value file"><i class="pi pi-file-excel"></i> {{ selectedAppraisal.kpiFile || 'HR_Core_Appraisal_FY25.xlsx' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Weight Allocation Matrix Card -->
+                                    <div class="info-card">
+                                        <div class="card-header-label">WEIGHT ALLOCATION MATRIX</div>
+                                        <div class="weight-boxes-row">
+                                            <div class="weight-box-mini">
+                                                <span class="val">{{ selectedAppraisal.weights?.corporateObjectives || selectedAppraisal.weights?.c || 5 }}%</span>
+                                                <span class="lbl">CORP.</span>
+                                            </div>
+                                            <div class="weight-box-mini primary">
+                                                <span class="val">{{ selectedAppraisal.weights?.personalKpis || selectedAppraisal.weights?.p || 60 }}%</span>
+                                                <span class="lbl">PERSONAL</span>
+                                            </div>
+                                            <div class="weight-box-mini">
+                                                <span class="val">{{ selectedAppraisal.weights?.competency || selectedAppraisal.weights?.k || 35 }}%</span>
+                                                <span class="lbl">COMP.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Committee Assignment -->
+                                <div class="right-column">
+                                    <div class="committee-card">
+                                        <div class="committee-card-header">
+                                            <i class="pi pi-users"></i>
+                                            <span>COMMITTEE ASSIGNMENT</span>
+                                        </div>
+
+                                        <div class="committee-members">
+                                            <div v-for="reviewer in selectedAppraisal.reviewers" :key="reviewer.id || reviewer" class="committee-member-row">
+                                                <img :src="'https://i.pravatar.cc/40?img=' + ((reviewer.id || 1) + 30)" class="member-avatar">
+                                                <div>
+                                                    <div class="member-name">{{ reviewer.name || reviewer }}</div>
+                                                    <div class="member-role">COMMITTEE MEMBER</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Authorization Note -->
+                                        <div class="authorization-note">
+                                            <div class="note-header">AUTHORIZATION NOTE</div>
+                                            <p>"This committee is authorized to conduct the performance review for the {{ selectedAppraisal.cycleName || selectedAppraisal.cycle }} period. Notification sent on {{ selectedAppraisal.notificationSentAt || '01/04/2025' }}."</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <template #footer>
-                            <p-button label="Close" severity="secondary" @click="showAppraisalModal = false"></p-button>
+                            <p-button label="Close Details" icon="pi pi-times" @click="showAppraisalModal = false"></p-button>
                         </template>
                     </p-dialog>
                 </div>
@@ -1777,18 +1820,28 @@ const MyProfileComponent = {
             return 'warning';
         };
 
-        // Appraisal Data - This Year
+        // Appraisal Data - This Year (matching appraisal-tracking structure)
         const myAppraisals = ref([
             {
                 id: 1,
                 avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+                employeeAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
                 name: 'Mohammed Alsoliman',
+                employeeName: 'Mohammed Alsoliman',
                 empId: 'EMP-005',
+                employeeNumber: 'EMP-005',
                 department: 'PRODUCT ENGINEERING',
                 cycle: 'April 2025 - April 2026',
-                reviewers: ['HR Director', 'Talent Lead'],
+                cycleName: 'April 2025 - April 2026',
+                reviewers: [
+                    { id: 1, name: 'Khalid Al-Faisal' },
+                    { id: 2, name: 'Tariq Al-Mutairi' }
+                ],
                 grade: 'PROFESSIONAL',
-                weights: { c: 5, p: 60, k: 35 },
+                gradeName: 'Professional',
+                weights: { corporateObjectives: 5, personalKpis: 60, competency: 35 },
+                kpiFile: 'HR_Core_Appraisal_FY25.xlsx',
+                notificationSentAt: '01/04/2025',
                 status: 'APPRAISAL ASSIGNED',
                 statusClass: 'assigned'
             }
