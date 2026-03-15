@@ -3742,128 +3742,169 @@ img {
     background: rgba(255, 110, 5, 0.05);
 }
 
-/* Assigned Shift Card */
+/* Assigned Shift Card - Matching Template Card Design */
 .assigned-shift-card {
     background: var(--surface-card);
-    border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    padding: 0.5rem;
     transition: all 0.2s ease;
     position: relative;
     width: 100%;
     min-height: 100%;
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem;
 }
 
 .assigned-shift-card:hover {
-    box-shadow: var(--shadow-sm);
+    background: rgba(255, 110, 5, 0.05);
 }
 
-.assigned-shift-card .assigned-card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.35rem;
-    margin-bottom: 0.4rem;
+.assigned-shift-card .assigned-color-bar {
+    width: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    align-self: stretch;
 }
 
-.assigned-shift-card .assigned-card-icon {
-    width: 22px;
-    height: 22px;
-    min-width: 22px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-}
-
-.assigned-shift-card .assigned-card-info {
-    min-width: 0;
+.assigned-shift-card .assigned-card-content {
     flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .assigned-shift-card .assigned-card-name {
-    font-size: 0.65rem;
-    font-weight: 700;
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--text-color);
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.assigned-shift-card .assigned-card-meta {
-    font-size: 0.55rem;
-    color: var(--text-color-secondary);
-    margin-top: 0.1rem;
-}
-
-.assigned-shift-card .assigned-card-periods {
-    color: var(--primary-color);
-    margin-left: 0.25rem;
-}
-
-.assigned-shift-card .assigned-card-info-icon {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 0.25rem;
-    color: var(--text-color-secondary);
-    font-size: 10px;
-    cursor: help;
-}
-
-.assigned-shift-card .assigned-card-time,
-.assigned-shift-card .assigned-card-duration {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.55rem;
-    color: var(--text-color-secondary);
-    margin-bottom: 0.2rem;
-}
-
-.assigned-shift-card .assigned-card-time i,
-.assigned-shift-card .assigned-card-duration i {
-    font-size: 0.5rem;
-    opacity: 0.8;
-}
-
-.assigned-shift-card .assigned-card-bar {
-    height: 3px;
-    background: var(--surface-200);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: 0.35rem;
-}
-
-.assigned-shift-card .assigned-card-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.2s ease;
-}
-
-.assigned-shift-card .assigned-card-rule {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.25rem;
-    font-size: 0.5rem;
-    color: var(--text-color-secondary);
     line-height: 1.3;
     margin-bottom: 0.15rem;
 }
 
-.assigned-shift-card .assigned-card-rule i {
+.assigned-shift-card .assigned-card-time {
+    font-size: 0.7rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.assigned-shift-card .assigned-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.assigned-shift-card .assigned-card-duration {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.65rem;
+    color: var(--text-color-secondary);
+}
+
+.assigned-shift-card .assigned-card-duration i {
+    font-size: 0.6rem;
+    opacity: 0.8;
+}
+
+.assigned-shift-card .assigned-show-rules {
+    font-size: 0.6rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    white-space: nowrap;
+}
+
+.assigned-shift-card .assigned-show-rules:hover {
+    text-decoration: underline;
+}
+
+.assigned-shift-card .assigned-show-rules i {
     font-size: 0.5rem;
-    margin-top: 0.1rem;
-    flex-shrink: 0;
+}
+
+/* Assigned Shift Rules Expanded */
+.assigned-shift-card .assigned-shift-rules {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.assigned-shift-card .rules-section {
+    margin-bottom: 0.35rem;
+}
+
+.assigned-shift-card .rules-section:last-child {
+    margin-bottom: 0;
+}
+
+.assigned-shift-card .rules-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.2rem;
+}
+
+.assigned-shift-card .rules-section.clock-in .rules-section-header {
     color: var(--primary-color);
 }
 
-.assigned-shift-card .assigned-card-rule.out i {
+.assigned-shift-card .rules-section.clock-out .rules-section-header {
     color: var(--blue-500);
+}
+
+.assigned-shift-card .rules-section-header i {
+    font-size: 0.5rem;
+}
+
+.assigned-shift-card .rules-mini-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+}
+
+.assigned-shift-card .rule-mini-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.assigned-shift-card .rule-mini-item .rule-label {
+    font-size: 0.45rem;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+}
+
+.assigned-shift-card .rule-mini-item .rule-value {
+    font-size: 0.55rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Readonly shift cards (for summary view) */
+.assigned-shift-card.readonly,
+.time-off-card.readonly {
+    cursor: default;
+}
+
+.assigned-shift-card.readonly .remove-assignment-btn,
+.time-off-card.readonly .remove-assignment-btn {
+    display: none;
+}
+
+/* Empty cell placeholder */
+.empty-cell-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 60px;
 }
 
 .shift-card-header {

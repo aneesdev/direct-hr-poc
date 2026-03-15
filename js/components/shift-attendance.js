@@ -186,38 +186,24 @@ const ShiftAttendanceComponent = {
                                                                 <i class="pi pi-times"></i>
                                                             </button>
                                                             <template v-if="getShiftById(getAssignment(schedule, day.dayName).shiftId)">
-                                                                <div class="assigned-card-header">
-                                                                    <div class="assigned-card-icon" :style="{ background: (getAssignment(schedule, day.dayName).color || '#f59e0b') + '20', color: getAssignment(schedule, day.dayName).color || '#f59e0b' }">
-                                                                        <i class="pi pi-calendar"></i>
+                                                                <div class="assigned-color-bar" :style="{ background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></div>
+                                                                <div class="assigned-card-content">
+                                                                    <div class="assigned-card-name">{{ getShiftById(getAssignment(schedule, day.dayName).shiftId).name }}</div>
+                                                                    <div class="assigned-card-time">{{ getAssignedShiftTimeRange(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }}</div>
+                                                                    <div class="assigned-card-meta">
+                                                                        <span class="assigned-card-duration">
+                                                                            <i class="pi pi-clock"></i>
+                                                                            {{ getShiftDuration(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }} hrs
+                                                                        </span>
                                                                     </div>
-                                                                    <div class="assigned-card-info">
-                                                                        <div class="assigned-card-name">{{ getShiftById(getAssignment(schedule, day.dayName).shiftId).name }}</div>
-                                                                        <div class="assigned-card-meta">
-                                                                            <span class="assigned-card-type">{{ getShiftTypeLabel(getShiftById(getAssignment(schedule, day.dayName).shiftId).shiftType) }}</span>
-                                                                            <span class="assigned-card-info-icon" style="color: #94a3b8;" v-tooltip.top="{ value: getAssignedShiftTooltipContent(getShiftById(getAssignment(schedule, day.dayName).shiftId)), escape: false }">
-                                                                                <i class="pi pi-exclamation-circle" style="font-size: 10px;"></i>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="assigned-card-time">
-                                                                    <i class="pi pi-clock"></i>
-                                                                    <span>{{ getAssignedShiftTimeRange(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }}</span>
-                                                                </div>
-                                                                <div class="assigned-card-duration">
-                                                                    <i class="pi pi-stopwatch"></i>
-                                                                    <span>{{ getShiftDuration(getShiftById(getAssignment(schedule, day.dayName).shiftId)) }} hrs Duration</span>
-                                                                </div>
-                                                                <div class="assigned-card-bar">
-                                                                    <div class="assigned-card-bar-fill" :style="{ width: (getShiftDuration(getShiftById(getAssignment(schedule, day.dayName).shiftId)) / 12 * 100) + '%', background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></div>
                                                                 </div>
                                                             </template>
                                                             <template v-else>
-                                                                <div class="shift-card-header">
-                                                                    <span class="shift-indicator" :style="{ background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></span>
-                                                                    <span class="shift-name-assigned">{{ getAssignment(schedule, day.dayName).shiftName }}</span>
+                                                                <div class="assigned-color-bar" :style="{ background: getAssignment(schedule, day.dayName).color || '#f59e0b' }"></div>
+                                                                <div class="assigned-card-content">
+                                                                    <div class="assigned-card-name">{{ getAssignment(schedule, day.dayName).shiftName }}</div>
+                                                                    <div class="assigned-card-time">{{ getAssignment(schedule, day.dayName).startTime || '08:00' }}</div>
                                                                 </div>
-                                                                <div class="shift-time-display">{{ getAssignment(schedule, day.dayName).startTime || '08:00' }}</div>
                                                             </template>
                                                         </div>
                                                         <div v-else class="time-off-card">
@@ -390,151 +376,152 @@ const ShiftAttendanceComponent = {
 
                         <!-- Weekly Shift Summary Tab -->
                         <p-tabpanel value="summary">
-                            <!-- Weekly Summary Header -->
-                            <div class="summary-header-card">
-                                <div class="summary-title-section">
-                                    <div class="summary-icon">
-                                        <span>{{ weekDays[0]?.dateLabel?.split('/')[0] || '26' }}</span>
+                            <!-- Stats Cards -->
+                            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1.5rem;">
+                                <div class="stat-card">
+                                    <div class="stat-icon orange">
+                                        <i class="pi pi-clock"></i>
                                     </div>
-                                    <div class="summary-title-info">
-                                        <h2>WEEKLY SUMMARY</h2>
-                                        <p>REAL-TIME STATS FOR {{ weekLabelFormatted }}</p>
+                                    <div>
+                                        <div class="stat-value">{{ summaryStats.totalHours }}</div>
+                                        <div class="stat-label">Total Hours</div>
                                     </div>
                                 </div>
-                                <div class="summary-stats-row">
-                                    <div class="summary-stat">
-                                        <div class="stat-icon-circle orange">
-                                            <i class="pi pi-clock"></i>
-                                        </div>
-                                        <div class="stat-content">
-                                            <div class="stat-value-lg">{{ summaryStats.totalHours }}</div>
-                                            <div class="stat-label-sm">TOTAL HOURS</div>
-                                        </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon blue">
+                                        <i class="pi pi-calendar"></i>
                                     </div>
-                                    <div class="summary-stat">
-                                        <div class="stat-icon-circle blue">
-                                            <i class="pi pi-calendar"></i>
-                                        </div>
-                                        <div class="stat-content">
-                                            <div class="stat-value-lg">{{ summaryStats.scheduledShifts }}</div>
-                                            <div class="stat-label-sm">SCHEDULED SHIFTS</div>
-                                        </div>
+                                    <div>
+                                        <div class="stat-value">{{ summaryStats.scheduledShifts }}</div>
+                                        <div class="stat-label">Scheduled Shifts</div>
                                     </div>
-                                    <div class="summary-stat">
-                                        <div class="stat-icon-circle green">
-                                            <i class="pi pi-users"></i>
-                                        </div>
-                                        <div class="stat-content">
-                                            <div class="stat-value-lg">{{ summaryStats.staffOnDuty }}</div>
-                                            <div class="stat-label-sm">STAFF ON DUTY</div>
-                                        </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon green">
+                                        <i class="pi pi-users"></i>
                                     </div>
-                                    <div class="summary-stat">
-                                        <div class="stat-icon-circle gray">
-                                            <i class="pi pi-exclamation-circle"></i>
-                                        </div>
-                                        <div class="stat-content">
-                                            <div class="stat-value-lg">{{ summaryStats.unassigned }}</div>
-                                            <div class="stat-label-sm">UNASSIGNED</div>
-                                        </div>
+                                    <div>
+                                        <div class="stat-value">{{ summaryStats.staffOnDuty }}</div>
+                                        <div class="stat-label">Staff On Duty</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon gray">
+                                        <i class="pi pi-exclamation-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value">{{ summaryStats.unassigned }}</div>
+                                        <div class="stat-label">Unassigned</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Shift Reviewer Section -->
-                            <div class="shift-reviewer-card">
-                                <div class="reviewer-header">
-                                    <div class="reviewer-title">
-                                        <div class="reviewer-icon">
+                            <!-- Filters Section -->
+                            <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                                <div class="filter-row">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <p-inputtext v-model="reviewerSearch" placeholder="Search..." style="width: 150px;"></p-inputtext>
+                                    </span>
+                                    <p-select v-model="reviewerDepartment" :options="reviewerDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Department" showClear style="width: 130px;" @change="onReviewerDepartmentChange"></p-select>
+                                    <p-select v-model="reviewerSection" :options="reviewerFilteredSections" optionLabel="name" optionValue="id" placeholder="Section" showClear style="width: 120px;" :disabled="!reviewerDepartment" @change="onReviewerSectionChange"></p-select>
+                                    <p-select v-model="reviewerUnit" :options="reviewerFilteredUnits" optionLabel="name" optionValue="id" placeholder="Unit" showClear style="width: 110px;" :disabled="!reviewerSection"></p-select>
+                                </div>
+                                <div class="filter-actions-row">
+                                    <p-button label="Apply" icon="pi pi-check" @click="applyReviewerFilters" size="small"></p-button>
+                                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetReviewerFilters" size="small" v-if="hasReviewerActiveFilters"></p-button>
+                                </div>
+                            </div>
+
+                            <!-- Shift Reviewer Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="card-title">
                                             <i class="pi pi-eye"></i>
+                                            Shift Reviewer
                                         </div>
-                                        <span>SHIFT REVIEWER</span>
+                                        <div class="card-subtitle">Review staff shift assignments for {{ weekLabelFormatted }}</div>
                                     </div>
-                                </div>
-                                
-                                <!-- Filter Controls Bar -->
-                                <div class="filter-controls-bar">
-                                    <div class="filter-controls-left">
-                                        <div class="filter-label">
-                                            <i class="pi pi-filter"></i>
-                                            <span>FILTER</span>
-                                        </div>
-                                        <p-select v-model="reviewerDepartment" :options="reviewerDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Select Department" showClear style="width: 160px;" @change="onReviewerDepartmentChange"></p-select>
-                                        <p-select v-model="reviewerSection" :options="reviewerFilteredSections" optionLabel="name" optionValue="id" placeholder="Select Section" showClear style="width: 160px;" :disabled="!reviewerDepartment" @change="onReviewerSectionChange"></p-select>
-                                        <p-select v-model="reviewerUnit" :options="reviewerFilteredUnits" optionLabel="name" optionValue="id" placeholder="Select Unit" showClear style="width: 140px;" :disabled="!reviewerSection"></p-select>
-                                        <span class="p-input-icon-left">
-                                            <i class="pi pi-search"></i>
-                                            <p-inputtext v-model="reviewerSearch" placeholder="Search staff members..." style="width: 200px;"></p-inputtext>
-                                        </span>
-                                        <p-button label="Search" icon="pi pi-search" @click="applyReviewerFilters" class="reviewer-search-btn"></p-button>
-                                    </div>
-                                    <div class="filter-controls-right">
-                                        <div class="week-selector-pill">
-                                            <button class="week-nav-btn" @click="previousWeek"><i class="pi pi-chevron-left"></i></button>
-                                            <span class="week-range-label">{{ weekLabelShort }}</span>
-                                            <button class="week-nav-btn" @click="nextWeek"><i class="pi pi-chevron-right"></i></button>
+                                    <div class="header-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div class="scheduler-date-nav">
+                                            <button class="nav-arrow" @click="previousWeek"><i class="pi pi-chevron-left"></i></button>
+                                            <span class="date-range" style="font-size: 0.85rem; min-width: 180px; text-align: center;">{{ weekLabelFormatted }}</span>
+                                            <button class="nav-arrow" @click="nextWeek"><i class="pi pi-chevron-right"></i></button>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <!-- Reviewer Grid -->
-                                <div class="reviewer-grid-container">
-                                    <table class="reviewer-grid">
+                                <!-- Summary Grid (same as Scheduler) -->
+                                <div class="scheduler-grid-container">
+                                    <table class="scheduler-grid">
                                         <thead>
                                             <tr>
-                                                <th class="employee-col-rev">EMPLOYEE</th>
-                                                <th v-for="day in weekDays" :key="day.date" class="day-col-rev">
-                                                    <div class="day-header-rev">
-                                                        <span class="day-name-rev">{{ day.dayName.substring(0, 3) }}</span>
-                                                        <span class="day-num-rev">{{ day.dateLabel?.split('/')[0] }}</span>
+                                                <th class="staff-col">TEAM MEMBER</th>
+                                                <th v-for="day in weekDays" :key="day.date" class="day-col-new">
+                                                    <div class="day-header-new">
+                                                        <span class="day-abbr">{{ day.dayName.substring(0, 3).toUpperCase() }}</span>
+                                                        <span class="day-num">{{ day.dateLabel }}</span>
                                                     </div>
                                                 </th>
-                                                <th class="percent-col"></th>
+                                                <th class="total-col">TOTAL<br>Hrs</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="schedule in paginatedReviewerSchedules" :key="schedule.id">
-                                                <td class="employee-col-rev">
-                                                    <div class="employee-info-rev">
-                                                        <img :src="getEmployeeAvatar(schedule.employeeId, schedule.employeeName)" :alt="schedule.employeeName" class="avatar-rev">
-                                                        <div class="employee-details-rev">
-                                                            <div class="employee-name-rev">{{ schedule.employeeName }}</div>
-                                                            <div v-if="getEmployeeNumber(schedule.employeeId)" class="employee-id-rev">{{ getEmployeeNumber(schedule.employeeId) }}</div>
-                                                            <div v-if="getEmployeeDepartmentPath(schedule.employeeId)" class="employee-dept-rev">{{ getEmployeeDepartmentPath(schedule.employeeId) }}</div>
-                                                            <div class="employee-role-rev">{{ schedule.scheduleType }}</div>
+                                                <td class="staff-col">
+                                                    <div class="staff-info">
+                                                        <img :src="getEmployeeAvatar(schedule.employeeId, schedule.employeeName)" :alt="schedule.employeeName" class="staff-avatar">
+                                                        <div class="staff-details">
+                                                            <div class="staff-name">{{ schedule.employeeName }}</div>
+                                                            <div v-if="getEmployeeNumber(schedule.employeeId)" class="staff-id">{{ getEmployeeNumber(schedule.employeeId) }}</div>
+                                                            <div v-if="getEmployeeDepartmentPath(schedule.employeeId)" class="staff-dept">{{ getEmployeeDepartmentPath(schedule.employeeId) }}</div>
+                                                            <div class="staff-role">{{ schedule.scheduleType }}</div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td v-for="(day, dIndex) in weekDays" :key="day.date" class="day-col-rev">
-                                                    <div class="shift-block" 
-                                                         :class="getShiftBlockClass(schedule, day.dayName, dIndex)"
-                                                         :style="getShiftBlockStyle(schedule, day.dayName)">
-                                                        <template v-if="getReviewerShift(schedule, day.dayName)">
-                                                            <template v-if="getReviewerShift(schedule, day.dayName).type === 'dayoff'">
-                                                                <div class="shift-block-name dayoff-label">Day Off</div>
-                                                            </template>
-                                                            <template v-else-if="getReviewerShift(schedule, day.dayName).type === 'leave'">
-                                                                <div class="shift-block-name">{{ getReviewerShift(schedule, day.dayName).name }}</div>
-                                                                <div class="shift-block-time">Leave</div>
+                                                <td v-for="day in weekDays" :key="day.date" class="day-col-new">
+                                                    <div class="schedule-cell" :class="{ 'has-assignment': getSummaryShift(schedule, day.dayName) }">
+                                                        <!-- Assigned Shift (read-only) -->
+                                                        <template v-if="getSummaryShift(schedule, day.dayName)">
+                                                            <template v-if="getSummaryShift(schedule, day.dayName).type === 'dayoff'">
+                                                                <div class="time-off-card readonly">
+                                                                    <i class="pi pi-sun"></i>
+                                                                    <span>DAY OFF</span>
+                                                                </div>
                                                             </template>
                                                             <template v-else>
-                                                                <div class="shift-block-name">{{ getReviewerShift(schedule, day.dayName).name }}</div>
-                                                                <div class="shift-block-time">{{ getReviewerShift(schedule, day.dayName).time }}</div>
+                                                                <div class="assigned-shift-card readonly">
+                                                                    <div class="assigned-color-bar" style="background: #f59e0b;"></div>
+                                                                    <div class="assigned-card-content">
+                                                                        <div class="assigned-card-name">{{ getSummaryShift(schedule, day.dayName).name }}</div>
+                                                                        <div class="assigned-card-time">{{ getSummaryShift(schedule, day.dayName).time || '' }}</div>
+                                                                        <div class="assigned-card-meta" v-if="getSummaryShift(schedule, day.dayName).duration">
+                                                                            <span class="assigned-card-duration">
+                                                                                <i class="pi pi-clock"></i>
+                                                                                {{ getSummaryShift(schedule, day.dayName).duration }} hrs
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </template>
                                                         </template>
+                                                        <!-- Empty Cell -->
                                                         <template v-else>
-                                                            <span class="no-shift">-</span>
+                                                            <div class="empty-cell-placeholder">
+                                                                <i class="pi pi-plus" style="color: #cbd5e1; font-size: 0.75rem;"></i>
+                                                            </div>
                                                         </template>
                                                     </div>
                                                 </td>
-                                                <td class="percent-col">
-                                                    <span class="coverage-percent">{{ getEmployeeCoverage(schedule) }}%</span>
+                                                <td class="total-col">
+                                                    <span class="total-hours">{{ getSummaryTotalHours(schedule) }}</span>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="reviewer-pagination">
+                                <div class="scheduler-pagination" style="padding: 1rem;">
                                     <span class="pagination-info">Showing {{ reviewerPaginationStart }}-{{ reviewerPaginationEnd }} of {{ filteredReviewerSchedules.length }}</span>
                                     <div class="pagination-controls">
                                         <button type="button" class="pagination-btn" :disabled="reviewerPage <= 1" @click="reviewerPage = Math.max(1, reviewerPage - 1)">
@@ -547,34 +534,27 @@ const ShiftAttendanceComponent = {
                                 </div>
                             </div>
 
-                            <!-- Operational Insights Section -->
-                            <div class="insights-section">
-                                <div class="section-title-row">
-                                    <div class="section-bar orange"></div>
-                                    <h3>OPERATIONAL INSIGHTS</h3>
-                                </div>
-                            </div>
-
-                            <!-- Employee Density Heatmap -->
-                            <div class="heatmap-section">
-                                <div class="heatmap-header-new">
-                                    <div class="heatmap-title-row">
-                                        <div class="heatmap-title-left">
-                                            <i class="pi pi-clock heatmap-icon"></i>
-                                            <h3>Employee Density Heatmap (24h)</h3>
+                            <!-- Employee Density Heatmap Card -->
+                            <div class="card" style="margin-top: 1.5rem;">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="card-title">
+                                            <i class="pi pi-th-large"></i>
+                                            Employee Density Heatmap
                                         </div>
-                                        <div class="density-legend">
-                                            <span>DENSITY</span>
-                                            <div class="density-gradient">
-                                                <span class="density-min"></span>
-                                                <span class="density-low"></span>
-                                                <span class="density-med"></span>
-                                                <span class="density-high"></span>
-                                            </div>
+                                        <div class="card-subtitle">Staff distribution across every hour of the day</div>
+                                    </div>
+                                    <div class="density-legend" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="font-size: 0.75rem; color: var(--text-secondary);">DENSITY</span>
+                                        <div class="density-gradient" style="display: flex; gap: 2px;">
+                                            <span class="density-min"></span>
+                                            <span class="density-low"></span>
+                                            <span class="density-med"></span>
+                                            <span class="density-high"></span>
                                         </div>
                                     </div>
-                                    <p class="heatmap-subtitle">STAFF DISTRIBUTION ACROSS EVERY HOUR OF THE DAY</p>
                                 </div>
+                            <div class="heatmap-section" style="padding: 0;">
                                 <div id="employee-density-heatmap" ref="heatmapChartRef" class="heatmap-chart-container" :class="{ 'heatmap-chart-collapsed': attemptedHeatmapInit && !heatmapChartReady }"></div>
                                 <div v-if="!heatmapChartReady" class="heatmap-grid-container heatmap-fallback">
                                     <table class="heatmap-grid">
@@ -593,36 +573,11 @@ const ShiftAttendanceComponent = {
                                     </table>
                                 </div>
                             </div>
+                            </div>
                         </p-tabpanel>
 
                         <!-- Attendance Tab -->
                         <p-tabpanel value="attendance">
-                            <!-- Date range and Week Filter Header (only one active at a time) -->
-                            <div class="attendance-week-header">
-                                <div class="attendance-range-and-week">
-                                    <div class="date-range-picker-wrap">
-                                        <p-datepicker ref="attendanceDatePickerRef" v-model="attendanceDateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Select date range" showIcon :showButtonBar="true" :manualInput="false" @update:modelValue="onAttendanceDateRangeChange" class="attendance-datepicker-inline">
-                                            <template #buttonbar="{ todayCallback, clearCallback }">
-                                                <div class="attendance-datepicker-buttonbar">
-                                                    <button type="button" class="attendance-datepicker-btn today" @click="todayCallback">Today</button>
-                                                    <button type="button" class="attendance-datepicker-btn clear" @click="clearCallback">Clear</button>
-                                                    <button type="button" class="attendance-datepicker-btn apply" @click="applyAttendanceDateRange">Apply</button>
-                                                </div>
-                                            </template>
-                                        </p-datepicker>
-                                    </div>
-                                    <div class="week-filter-section" :class="{ 'secondary-control': attendanceDateRangeActive }">
-                                        <button class="week-nav-btn" @click="prevAttendanceWeek">
-                                            <i class="pi pi-chevron-left"></i>
-                                        </button>
-                                        <span class="week-label-display">WEEK OF {{ attendanceWeekLabel }}</span>
-                                        <button class="week-nav-btn" @click="nextAttendanceWeek">
-                                            <i class="pi pi-chevron-right"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Attendance Stats Row 1 -->
                             <div class="stats-grid" style="grid-template-columns: repeat(7, 1fr); margin-bottom: 1rem;">
                                 <div class="stat-card" v-for="stat in attendanceStatCardsRow1" :key="stat.key">
@@ -649,27 +604,43 @@ const ShiftAttendanceComponent = {
                                 </div>
                             </div>
 
-                            <!-- Attendance Logs Section -->
-                            <div class="attendance-logs-card">
-                                <div class="logs-header">
-                                    <h3>ATTENDANCE LOGS</h3>
-                                    <button type="button" class="collapse-all-attendance-btn" @click.stop="toggleExpandAllAttendance">
-                                        <i :class="attendanceAllExpanded ? 'pi pi-chevron-double-up' : 'pi pi-chevron-double-down'"></i>
-                                        {{ attendanceAllExpanded ? 'Collapse all' : 'Expand all' }}
-                                    </button>
+                            <!-- Filters Section -->
+                            <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                                <div class="filter-row">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <p-inputtext v-model="attendanceSearchName" placeholder="Search..." style="width: 150px;"></p-inputtext>
+                                    </span>
+                                    <p-select v-model="attendanceDepartment" :options="attendanceDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Department" showClear @change="onAttendanceDepartmentChange"></p-select>
+                                    <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Section" showClear :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
+                                    <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Unit" showClear :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
+                                    <p-select v-model="attendanceTeam" :options="attendanceFilteredTeams" optionLabel="name" optionValue="id" placeholder="Team" showClear :disabled="!attendanceUnit"></p-select>
                                 </div>
-                                <div class="attendance-logs-filters compact-filters-grid">
-                                    <div class="filter-row">
-                                        <div class="filter-label"><i class="pi pi-filter"></i> FILTER</div>
-                                        <span class="p-input-icon-left attendance-name-search-wrap">
-                                            <i class="pi pi-user"></i>
-                                            <p-inputtext v-model="attendanceSearchName" placeholder="Search by employee name..." style="width: 180px;"></p-inputtext>
-                                        </span>
-                                        <p-select v-model="attendanceDepartment" :options="attendanceDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Department" showClear style="width: 130px;" @change="onAttendanceDepartmentChange"></p-select>
-                                        <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Section" showClear style="width: 120px;" :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
-                                        <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Unit" showClear style="width: 110px;" :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
-                                        <p-select v-model="attendanceTeam" :options="attendanceFilteredTeams" optionLabel="name" optionValue="id" placeholder="Team" showClear style="width: 110px;" :disabled="!attendanceUnit"></p-select>
-                                        <p-button label="Search" icon="pi pi-search" @click="applyAttendanceFilters" size="small"></p-button>
+                                <div class="filter-actions-row">
+                                    <p-button label="Apply" icon="pi pi-check" @click="applyAttendanceFilters" size="small"></p-button>
+                                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetAttendanceFilters" size="small" v-if="hasAttendanceActiveFilters"></p-button>
+                                </div>
+                            </div>
+
+                            <!-- Attendance Logs Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="card-title">
+                                            <i class="pi pi-clock"></i>
+                                            Attendance Logs
+                                        </div>
+                                        <div class="card-subtitle">Track employee attendance records for week of {{ attendanceWeekLabel }}</div>
+                                    </div>
+                                    <div class="header-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div class="scheduler-date-nav">
+                                            <button class="nav-arrow" @click="prevAttendanceWeek"><i class="pi pi-chevron-left"></i></button>
+                                            <span class="date-range" style="font-size: 0.85rem; min-width: 140px; text-align: center;">WEEK OF {{ attendanceWeekLabel }}</span>
+                                            <button class="nav-arrow" @click="nextAttendanceWeek"><i class="pi pi-chevron-right"></i></button>
+                                        </div>
+                                        <p-button :label="attendanceAllExpanded ? 'Collapse All' : 'Expand All'" 
+                                                  :icon="attendanceAllExpanded ? 'pi pi-chevron-double-up' : 'pi pi-chevron-double-down'" 
+                                                  outlined size="small" @click="toggleExpandAllAttendance"></p-button>
                                     </div>
                                 </div>
 
@@ -828,7 +799,7 @@ const ShiftAttendanceComponent = {
                                 </div>
 
                                 <!-- Pagination -->
-                                <div class="attendance-pagination">
+                                <div class="attendance-pagination" style="padding: 1rem;">
                                     <div class="pagination-info">{{ filteredAttendanceLogs.length }} ACTIVE LOGS</div>
                                     <div class="pagination-controls">
                                         <button class="page-btn" :disabled="attendancePage === 1" @click="attendancePage--">PREV</button>
@@ -1582,6 +1553,7 @@ const ShiftAttendanceComponent = {
         const templateSearch = ref('');
         const selectedTemplateId = ref(null);
         const expandedShiftRules = ref(null);
+        const expandedAssignedShiftRules = ref({});
         const currentScheduleTarget = ref({ schedule: null, day: null });
         const scheduleAssignments = ref({});
 
@@ -1656,6 +1628,20 @@ const ShiftAttendanceComponent = {
             appliedAttendanceSearchName.value = (attendanceSearchName.value || '').trim();
         };
 
+        const resetAttendanceFilters = () => {
+            attendanceDepartment.value = null;
+            attendanceSection.value = null;
+            attendanceUnit.value = null;
+            attendanceTeam.value = null;
+            attendanceSearchName.value = '';
+            appliedAttendanceFilters.value = { departmentId: null, sectionId: null, unitId: null, teamId: null };
+            appliedAttendanceSearchName.value = '';
+        };
+
+        const hasAttendanceActiveFilters = computed(() => {
+            return attendanceDepartment.value || attendanceSection.value || attendanceUnit.value || attendanceTeam.value || attendanceSearchName.value;
+        });
+
         const onReviewerDepartmentChange = () => {
             reviewerSection.value = null;
             reviewerUnit.value = null;
@@ -1673,6 +1659,19 @@ const ShiftAttendanceComponent = {
             };
             appliedReviewerSearch.value = (reviewerSearch.value || '').trim();
         };
+
+        const resetReviewerFilters = () => {
+            reviewerDepartment.value = null;
+            reviewerSection.value = null;
+            reviewerUnit.value = null;
+            reviewerSearch.value = '';
+            appliedReviewerFilters.value = { departmentId: null, sectionId: null, unitId: null };
+            appliedReviewerSearch.value = '';
+        };
+
+        const hasReviewerActiveFilters = computed(() => {
+            return reviewerDepartment.value || reviewerSection.value || reviewerUnit.value || reviewerSearch.value;
+        });
 
         // Week label short format
         const weekLabelShort = computed(() => {
@@ -2023,6 +2022,72 @@ const ShiftAttendanceComponent = {
 
             const cached = reviewerShiftsCache.value[key] || null;
             return cached;
+        };
+
+        // Get summary shift for Weekly Shift Summary (same structure as scheduler)
+        const getSummaryShift = (schedule, dayName) => {
+            const key = `${schedule.id}-${dayName}`;
+
+            const assignment = scheduleAssignments.value[key];
+            if (assignment && assignment.type === 'shift') {
+                const shift = assignment.shiftId != null ? getShiftById(assignment.shiftId) : null;
+                if (shift) {
+                    const time = getShiftDisplayTime(shift);
+                    const duration = getShiftDuration(shift);
+                    return { type: 'shift', name: shift.name, time, duration };
+                }
+                return { type: 'shift', name: assignment.shiftName, time: `${assignment.startTime} - ${assignment.endTime}`, duration: null };
+            }
+
+            const cached = reviewerShiftsCache.value[key] || null;
+            if (cached) {
+                if (cached.type === 'dayoff') {
+                    return { type: 'dayoff', name: 'Day Off' };
+                }
+                const duration = cached.time ? calculateDurationFromTime(cached.time) : null;
+                return { ...cached, duration };
+            }
+            return null;
+        };
+
+        // Calculate duration from time string like "8:00 AM - 5:00 PM"
+        const calculateDurationFromTime = (timeStr) => {
+            if (!timeStr || !timeStr.includes('-')) return null;
+            const parts = timeStr.split('-').map(t => t.trim());
+            if (parts.length !== 2) return null;
+            try {
+                const parseTime = (t) => {
+                    const match = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                    if (!match) return null;
+                    let hours = parseInt(match[1]);
+                    const mins = parseInt(match[2]);
+                    const period = match[3].toUpperCase();
+                    if (period === 'PM' && hours !== 12) hours += 12;
+                    if (period === 'AM' && hours === 12) hours = 0;
+                    return hours * 60 + mins;
+                };
+                const start = parseTime(parts[0]);
+                const end = parseTime(parts[1]);
+                if (start === null || end === null) return null;
+                let diff = end - start;
+                if (diff < 0) diff += 24 * 60;
+                return Math.round(diff / 60);
+            } catch {
+                return null;
+            }
+        };
+
+        // Get total hours for a schedule in summary
+        const getSummaryTotalHours = (schedule) => {
+            let total = 0;
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            days.forEach(day => {
+                const shift = getSummaryShift(schedule, day);
+                if (shift && shift.type !== 'dayoff' && shift.duration) {
+                    total += shift.duration;
+                }
+            });
+            return total;
         };
 
         // Get shift block class
@@ -3118,6 +3183,23 @@ const ShiftAttendanceComponent = {
             }
         };
 
+        // Toggle assigned shift rules display
+        const toggleAssignedShiftRules = (scheduleId, dayName) => {
+            const key = `${scheduleId}-${dayName}`;
+            const current = { ...expandedAssignedShiftRules.value };
+            if (current[key]) {
+                delete current[key];
+            } else {
+                current[key] = true;
+            }
+            expandedAssignedShiftRules.value = current;
+        };
+
+        const isAssignedShiftRulesExpanded = (scheduleId, dayName) => {
+            const key = `${scheduleId}-${dayName}`;
+            return !!expandedAssignedShiftRules.value[key];
+        };
+
         // Scheduler actions
         const draftAndReview = () => {
             console.log('Draft & Review');
@@ -3301,6 +3383,9 @@ const ShiftAttendanceComponent = {
             getAssignedShiftTooltipContent,
             toggleShiftRules,
             expandedShiftRules,
+            toggleAssignedShiftRules,
+            isAssignedShiftRulesExpanded,
+            expandedAssignedShiftRules,
             draftAndReview,
             publishLater,
             publishAndLaunch,
@@ -3334,6 +3419,8 @@ const ShiftAttendanceComponent = {
             onReviewerDepartmentChange,
             onReviewerSectionChange,
             applyReviewerFilters,
+            resetReviewerFilters,
+            hasReviewerActiveFilters,
             weekLabelShort,
             summaryStats,
             hourlyDistribution,
@@ -3350,6 +3437,8 @@ const ShiftAttendanceComponent = {
             reviewerPaginationStart,
             reviewerPaginationEnd,
             getReviewerShift,
+            getSummaryShift,
+            getSummaryTotalHours,
             getShiftBlockClass,
             getShiftBlockStyle,
             getEmployeeCoverage,
@@ -3385,6 +3474,8 @@ const ShiftAttendanceComponent = {
             onAttendanceSectionChange,
             onAttendanceUnitChange,
             applyAttendanceFilters,
+            resetAttendanceFilters,
+            hasAttendanceActiveFilters,
             collapseAllAttendance,
             attendanceAllExpanded,
             toggleExpandAllAttendance,
