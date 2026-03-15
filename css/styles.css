@@ -927,12 +927,13 @@ img {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.04);
     transition: all 0.2s ease;
 }
 
 .stat-card:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     transform: translateY(-2px);
 }
 

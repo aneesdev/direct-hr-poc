@@ -597,15 +597,28 @@ const ShiftAttendanceComponent = {
                                 </div>
                             </div>
 
-                            <!-- Attendance Stats Row (aligned with stats.js attendance tab: totalStaff, attendanceStats, punchStats, violationStats, vacationStats) -->
-                            <div class="attendance-stats-row">
-                                <div v-for="stat in attendanceStatCards" :key="stat.key" class="att-stat-card">
-                                    <div class="att-stat-icon" :class="stat.iconClass">
+                            <!-- Attendance Stats Row 1 -->
+                            <div class="stats-grid" style="grid-template-columns: repeat(7, 1fr); margin-bottom: 1rem;">
+                                <div class="stat-card" v-for="stat in attendanceStatCardsRow1" :key="stat.key">
+                                    <div class="stat-icon" :class="stat.iconClass">
                                         <i :class="stat.icon"></i>
                                     </div>
-                                    <div class="att-stat-content">
-                                        <div class="att-stat-label">{{ stat.label }}</div>
-                                        <div class="att-stat-value">{{ attendanceStats[stat.key] }}</div>
+                                    <div>
+                                        <div class="stat-value">{{ attendanceStats[stat.key] }}</div>
+                                        <div class="stat-label">{{ stat.label }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Attendance Stats Row 2 -->
+                            <div class="stats-grid" style="grid-template-columns: repeat(7, 1fr); margin-bottom: 1.5rem;">
+                                <div class="stat-card" v-for="stat in attendanceStatCardsRow2" :key="stat.key">
+                                    <div class="stat-icon" :class="stat.iconClass">
+                                        <i :class="stat.icon"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value">{{ attendanceStats[stat.key] }}</div>
+                                        <div class="stat-label">{{ stat.label }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -2161,22 +2174,26 @@ const ShiftAttendanceComponent = {
             });
         });
 
-        // Attendance stat cards config (order and labels match stats.js attendance tab)
-        const attendanceStatCards = [
-            { key: 'totalStaff', label: 'Total Staff', iconClass: '', icon: 'pi pi-users' },
-            { key: 'totalPresent', label: 'Total Present', iconClass: 'green', icon: 'pi pi-check' },
-            { key: 'totalAbsent', label: 'Total Absent', iconClass: 'pink', icon: 'pi pi-times' },
-            { key: 'missingClockIn', label: 'Total Missing Clock In', iconClass: 'red', icon: 'pi pi-sign-in' },
-            { key: 'missingClockOut', label: 'Total Missing Clock Out', iconClass: 'red', icon: 'pi pi-sign-out' },
-            { key: 'lateIn', label: 'Total LATE In', iconClass: 'orange', icon: 'pi pi-clock' },
-            { key: 'earlyOut', label: 'Total EARLY Out', iconClass: 'yellow', icon: 'pi pi-sign-out' },
+        // Attendance stat cards config - Row 1 (first 7 cards)
+        const attendanceStatCardsRow1 = [
+            { key: 'totalStaff', label: 'Total Staff', iconClass: 'blue', icon: 'pi pi-users' },
+            { key: 'totalPresent', label: 'Total Present', iconClass: 'green', icon: 'pi pi-check-circle' },
+            { key: 'totalAbsent', label: 'Total Absent', iconClass: 'red', icon: 'pi pi-times-circle' },
+            { key: 'missingClockIn', label: 'Missing Clock In', iconClass: 'orange', icon: 'pi pi-sign-in' },
+            { key: 'missingClockOut', label: 'Missing Clock Out', iconClass: 'orange', icon: 'pi pi-sign-out' },
+            { key: 'lateIn', label: 'Total Late In', iconClass: 'red', icon: 'pi pi-clock' },
+            { key: 'earlyOut', label: 'Total Early Out', iconClass: 'purple', icon: 'pi pi-arrow-circle-left' }
+        ];
+
+        // Attendance stat cards config - Row 2 (remaining 7 cards)
+        const attendanceStatCardsRow2 = [
             { key: 'lessEffort', label: 'Total Less Effort', iconClass: 'purple', icon: 'pi pi-chart-line' },
-            { key: 'noShiftAssigned', label: 'Total NO SHIFT ASSIGNED', iconClass: 'gray', icon: 'pi pi-calendar-times' },
-            { key: 'outsideWindow', label: 'Total OUTSIDE WINDOW', iconClass: 'blue', icon: 'pi pi-exclamation-triangle' },
-            { key: 'businessTrip', label: 'Total Business Trip', iconClass: 'teal', icon: 'pi pi-briefcase' },
-            { key: 'workFromHome', label: 'Total Work From Home', iconClass: 'blue', icon: 'pi pi-home' },
-            { key: 'annualVacation', label: 'Total in Annual Vacation', iconClass: 'purple', icon: 'pi pi-calendar' },
-            { key: 'othersType', label: 'Total in Others Type', iconClass: 'purple', icon: 'pi pi-tag' }
+            { key: 'noShiftAssigned', label: 'No Shift Assigned', iconClass: 'gray', icon: 'pi pi-calendar-times' },
+            { key: 'outsideWindow', label: 'Outside Window', iconClass: 'orange', icon: 'pi pi-exclamation-triangle' },
+            { key: 'businessTrip', label: 'Business Trip', iconClass: 'teal', icon: 'pi pi-briefcase' },
+            { key: 'workFromHome', label: 'Work From Home', iconClass: 'blue', icon: 'pi pi-home' },
+            { key: 'annualVacation', label: 'Annual Vacation', iconClass: 'purple', icon: 'pi pi-calendar' },
+            { key: 'othersType', label: 'Others Type', iconClass: 'gray', icon: 'pi pi-tag' }
         ];
 
         // Attendance Stats - values aligned with stats.js customPeriod (attendanceStats, punchStats, violationStats, vacationStats)
@@ -3279,7 +3296,8 @@ const ShiftAttendanceComponent = {
             prevAttendanceWeek,
             nextAttendanceWeek,
             weekDaysAttendance,
-            attendanceStatCards,
+            attendanceStatCardsRow1,
+            attendanceStatCardsRow2,
             attendanceStats,
             attendanceLogs,
             filteredAttendanceLogs,
