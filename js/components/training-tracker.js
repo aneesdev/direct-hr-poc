@@ -144,7 +144,8 @@ const TrainingTrackerComponent = {
                                 <button class="action-icon-btn" @click="viewHistory(slotProps.data)" v-tooltip.top="'View History'">
                                     <i class="pi pi-eye"></i>
                                 </button>
-                                <button class="action-icon-btn reminder" @click="openReminderDialog(slotProps.data)" v-tooltip.top="'Send Reminder'">
+                                <button class="action-icon-btn reminder reminder-btn-wrapper" @click="openReminderDialog(slotProps.data)" v-tooltip.top="'Send Reminder'">
+                                    <span v-if="slotProps.data.reminderCount > 0" class="reminder-count-badge">{{ slotProps.data.reminderCount }}</span>
                                     <i class="pi pi-bell"></i>
                                 </button>
                                 <button class="action-icon-btn" @click="openLifecycleMenu($event, slotProps.data)" v-tooltip.top="'Update Status'">
@@ -164,7 +165,13 @@ const TrainingTrackerComponent = {
                         <p-tag :value="'CYCLE ' + selectedTraining.cycle" severity="info" size="small"></p-tag>
                     </div>
                     <div class="logs-path">{{ selectedTraining.path }}</div>
-                    <div class="logs-assigned">ASSIGNED BY: <strong>SYSTEM ADMINISTRATOR</strong></div>
+                    <div class="logs-header-row">
+                        <div class="logs-assigned">ASSIGNED BY: <strong>SYSTEM ADMINISTRATOR</strong></div>
+                        <div class="logs-reminder-count" v-if="selectedTraining.reminderCount > 0">
+                            <i class="pi pi-bell"></i>
+                            <span>{{ selectedTraining.reminderCount }} Reminder{{ selectedTraining.reminderCount > 1 ? 's' : '' }} Sent</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="logs-timeline">
                     <div class="log-item" v-for="log in activityLogs" :key="log.id">
@@ -249,10 +256,10 @@ const TrainingTrackerComponent = {
         });
 
         const trainings = ref([
-            { id: 1, employee: { name: 'Employee 1', empId: 'EMP-1000', department: 'ENGINEERING > FRONTEND > REACT UNIT' }, path: 'Cybersecurity Essentials', totalHours: 10, cycle: 1, period: 'JANUARY 2024 — JUNE 2024', status: 'Failed', progress: 0 },
-            { id: 2, employee: { name: 'Employee 2', empId: 'EMP-1001', department: 'SALES > INSIDE SALES > INSIDE ACCOUNTS' }, path: 'Leadership & Management', totalHours: 40, cycle: 2, period: 'JANUARY 2024 — JUNE 2024', status: 'Assigned', progress: 10 },
-            { id: 3, employee: { name: 'Employee 3', empId: 'EMP-1002', department: 'MARKETING > PAID MEDIA > SEM UNIT' }, path: 'Python for Data Analysis', totalHours: 60, cycle: 3, period: 'JANUARY 2024 — JUNE 2024', status: 'In Progress', progress: 50 },
-            { id: 4, employee: { name: 'Employee 4', empId: 'EMP-1003', department: 'HUMAN RESOURCES > RECRUITMENT > EXEC SEARCH' }, path: 'Workplace Safety & Health', totalHours: 5, cycle: 4, period: 'JANUARY 2024 — JUNE 2024', status: 'Completed', progress: 100 }
+            { id: 1, employee: { name: 'Employee 1', empId: 'EMP-1000', department: 'ENGINEERING > FRONTEND > REACT UNIT' }, path: 'Cybersecurity Essentials', totalHours: 10, cycle: 1, period: 'JANUARY 2024 — JUNE 2024', status: 'Failed', progress: 0, reminderCount: 1 },
+            { id: 2, employee: { name: 'Employee 2', empId: 'EMP-1001', department: 'SALES > INSIDE SALES > INSIDE ACCOUNTS' }, path: 'Leadership & Management', totalHours: 40, cycle: 2, period: 'JANUARY 2024 — JUNE 2024', status: 'Assigned', progress: 10, reminderCount: 0 },
+            { id: 3, employee: { name: 'Employee 3', empId: 'EMP-1002', department: 'MARKETING > PAID MEDIA > SEM UNIT' }, path: 'Python for Data Analysis', totalHours: 60, cycle: 3, period: 'JANUARY 2024 — JUNE 2024', status: 'In Progress', progress: 50, reminderCount: 2 },
+            { id: 4, employee: { name: 'Employee 4', empId: 'EMP-1003', department: 'HUMAN RESOURCES > RECRUITMENT > EXEC SEARCH' }, path: 'Workplace Safety & Health', totalHours: 5, cycle: 4, period: 'JANUARY 2024 — JUNE 2024', status: 'Completed', progress: 100, reminderCount: 0 }
         ]);
 
         const activityLogs = ref([
@@ -335,11 +342,14 @@ const TrainingTrackerComponent = {
 
         const sendReminder = () => {
             if (!reminderMessage.value || !selectedTraining.value) return;
-            
+
+            // Increment reminder count
+            selectedTraining.value.reminderCount = (selectedTraining.value.reminderCount || 0) + 1;
+
             const now = new Date();
-            const formattedDate = now.toLocaleString('en-US', { 
-                month: 'numeric', 
-                day: 'numeric', 
+            const formattedDate = now.toLocaleString('en-US', {
+                month: 'numeric',
+                day: 'numeric',
                 year: 'numeric', 
                 hour: 'numeric', 
                 minute: '2-digit', 

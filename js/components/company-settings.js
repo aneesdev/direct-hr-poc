@@ -433,48 +433,117 @@ const CompanySettingsComponent = {
                         
                         <!-- Cost Centers Tab -->
                         <p-tabpanel value="costcenters">
-                            <div class="card-header">
-                                <div>
-                                    <div class="card-title">
-                                        <i class="pi pi-wallet"></i>
-                                        Cost Center Management
-                                    </div>
-                                    <div class="card-subtitle">Manage organization cost centers with head counts</div>
+                            <div class="cost-center-sub-tabs">
+                                <div class="sub-tab-list">
+                                    <button class="sub-tab" :class="{ active: costCenterSubTab === 'main' }" @click="costCenterSubTab = 'main'">
+                                        <i class="pi pi-wallet"></i> Main Cost Centers
+                                    </button>
+                                    <button class="sub-tab" :class="{ active: costCenterSubTab === 'sub' }" @click="costCenterSubTab = 'sub'">
+                                        <i class="pi pi-sitemap"></i> Sub Cost Centers
+                                    </button>
                                 </div>
-                                <p-button label="Add Cost Center" icon="pi pi-plus" @click="openCostCenterDialog()"></p-button>
                             </div>
-                            
-                            <p-datatable :value="costCenters" striped-rows>
-                                <p-column field="code" header="Code"></p-column>
-                                <p-column field="name" header="Name"></p-column>
-                                <p-column field="country" header="Country"></p-column>
-                                <p-column header="Tag">
-                                    <template #body="slotProps">
-                                        <span v-if="slotProps.data.tag" class="cost-center-type-tag" :class="slotProps.data.tag">
-                                            {{ getCostCenterTagLabel(slotProps.data.tag) }}
-                                        </span>
-                                        <span v-else class="text-muted">—</span>
-                                    </template>
-                                </p-column>
-                                <p-column header="Head Count">
-                                    <template #body="slotProps">
-                                        <p-tag :value="slotProps.data.headCount + ' employees'" :severity="slotProps.data.headCount > 0 ? 'info' : 'secondary'"></p-tag>
-                                    </template>
-                                </p-column>
-                                <p-column header="Status">
-                                    <template #body="slotProps">
-                                        <span class="status-tag" :class="slotProps.data.active ? 'active' : 'inactive'">
-                                            {{ slotProps.data.active ? 'Active' : 'Inactive' }}
-                                        </span>
-                                    </template>
-                                </p-column>
-                                <p-column header="Actions" style="width: 100px">
-                                    <template #body="slotProps">
-                                        <button class="action-btn edit" @click="editCostCenter(slotProps.data)"><i class="pi pi-pencil"></i></button>
-                                        <button class="action-btn delete" @click="deleteCostCenter(slotProps.data.id)"><i class="pi pi-trash"></i></button>
-                                    </template>
-                                </p-column>
-                            </p-datatable>
+
+                            <!-- Main Cost Centers Sub-Tab -->
+                            <div v-if="costCenterSubTab === 'main'">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="card-title">
+                                            <i class="pi pi-wallet"></i>
+                                            Main Cost Center Management
+                                        </div>
+                                        <div class="card-subtitle">Manage organization main cost centers with head counts</div>
+                                    </div>
+                                    <p-button label="Add Cost Center" icon="pi pi-plus" @click="openCostCenterDialog()"></p-button>
+                                </div>
+                                
+                                <p-datatable :value="costCenters" striped-rows>
+                                    <p-column field="code" header="Code"></p-column>
+                                    <p-column field="name" header="Name"></p-column>
+                                    <p-column field="country" header="Country"></p-column>
+                                    <p-column header="Tag">
+                                        <template #body="slotProps">
+                                            <span v-if="slotProps.data.tag" class="cost-center-type-tag" :class="slotProps.data.tag">
+                                                {{ getCostCenterTagLabel(slotProps.data.tag) }}
+                                            </span>
+                                            <span v-else class="text-muted">—</span>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Sub Centers">
+                                        <template #body="slotProps">
+                                            <p-tag :value="getSubCostCenterCount(slotProps.data.id) + ' sub centers'" :severity="getSubCostCenterCount(slotProps.data.id) > 0 ? 'info' : 'secondary'"></p-tag>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Head Count">
+                                        <template #body="slotProps">
+                                            <p-tag :value="slotProps.data.headCount + ' employees'" :severity="slotProps.data.headCount > 0 ? 'info' : 'secondary'"></p-tag>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Status">
+                                        <template #body="slotProps">
+                                            <span class="status-tag" :class="slotProps.data.active ? 'active' : 'inactive'">
+                                                {{ slotProps.data.active ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Actions" style="width: 100px">
+                                        <template #body="slotProps">
+                                            <button class="action-btn edit" @click="editCostCenter(slotProps.data)"><i class="pi pi-pencil"></i></button>
+                                            <button class="action-btn delete" @click="deleteCostCenter(slotProps.data.id)"><i class="pi pi-trash"></i></button>
+                                        </template>
+                                    </p-column>
+                                </p-datatable>
+                            </div>
+
+                            <!-- Sub Cost Centers Sub-Tab -->
+                            <div v-if="costCenterSubTab === 'sub'">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="card-title">
+                                            <i class="pi pi-sitemap"></i>
+                                            Sub Cost Center Management
+                                        </div>
+                                        <div class="card-subtitle">Manage sub cost centers linked to main cost centers</div>
+                                    </div>
+                                    <p-button label="Add Sub Cost Center" icon="pi pi-plus" @click="openSubCostCenterDialog()"></p-button>
+                                </div>
+                                
+                                <p-datatable :value="subCostCenters" striped-rows>
+                                    <p-column field="code" header="Code"></p-column>
+                                    <p-column field="name" header="Name"></p-column>
+                                    <p-column header="Parent Cost Center">
+                                        <template #body="slotProps">
+                                            <span class="parent-cc-badge">{{ getParentCostCenterName(slotProps.data.parentCostCenterId) }}</span>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Tag">
+                                        <template #body="slotProps">
+                                            <span v-if="slotProps.data.tag" class="cost-center-type-tag" :class="slotProps.data.tag">
+                                                {{ getCostCenterTagLabel(slotProps.data.tag) }}
+                                            </span>
+                                            <span v-else class="text-muted">—</span>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Head Count">
+                                        <template #body="slotProps">
+                                            <p-tag :value="slotProps.data.headCount + ' employees'" :severity="slotProps.data.headCount > 0 ? 'info' : 'secondary'"></p-tag>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Status">
+                                        <template #body="slotProps">
+                                            <span class="status-tag" :class="slotProps.data.active ? 'active' : 'inactive'">
+                                                {{ slotProps.data.active ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </template>
+                                    </p-column>
+                                    <p-column header="Actions" style="width: 100px">
+                                        <template #body="slotProps">
+                                            <button class="action-btn edit" @click="editSubCostCenter(slotProps.data)"><i class="pi pi-pencil"></i></button>
+                                            <button class="action-btn delete" @click="deleteSubCostCenter(slotProps.data.id)"><i class="pi pi-trash"></i></button>
+                                        </template>
+                                    </p-column>
+                                </p-datatable>
+                            </div>
                         </p-tabpanel>
                         
                         <!-- Work Weeks Tab (CRUD like Bayzat) -->
@@ -863,6 +932,38 @@ const CompanySettingsComponent = {
                     <p-button :label="editingCostCenter ? 'Update' : 'Save'" @click="saveCostCenter"></p-button>
                 </template>
             </p-dialog>
+
+            <!-- Sub Cost Center Dialog -->
+            <p-dialog v-model:visible="showSubCostCenterDialog" :header="editingSubCostCenter ? 'Edit Sub Cost Center' : 'Add Sub Cost Center'" :modal="true" :style="{ width: '500px' }">
+                <div class="form-grid" style="grid-template-columns: 1fr;">
+                    <div class="form-group">
+                        <label class="form-label">Parent Cost Center <span class="required">*</span></label>
+                        <p-select v-model="subCostCenterForm.parentCostCenterId" :options="costCenters" optionLabel="name" optionValue="id" placeholder="Select parent cost center" style="width: 100%;"></p-select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Code <span class="required">*</span></label>
+                        <p-inputtext v-model="subCostCenterForm.code" placeholder="e.g. SCC-001" style="width: 100%;"></p-inputtext>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Name <span class="required">*</span></label>
+                        <p-inputtext v-model="subCostCenterForm.name" placeholder="Enter sub cost center name" style="width: 100%;"></p-inputtext>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tag</label>
+                        <p-select v-model="subCostCenterForm.tag" :options="costCenterTagOptions" optionLabel="label" optionValue="value" placeholder="Select tag" style="width: 100%;"></p-select>
+                    </div>
+                    <div class="form-group">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <p-toggleswitch v-model="subCostCenterForm.active"></p-toggleswitch>
+                            <label class="form-label" style="margin: 0;">Active</label>
+                        </div>
+                    </div>
+                </div>
+                <template #footer>
+                    <p-button label="Cancel" severity="danger" outlined @click="showSubCostCenterDialog = false"></p-button>
+                    <p-button :label="editingSubCostCenter ? 'Update' : 'Save'" @click="saveSubCostCenter"></p-button>
+                </template>
+            </p-dialog>
             
             <!-- Work Week Dialog -->
             <p-dialog v-model:visible="showWorkWeekDialog" :header="editingWorkWeek ? 'Edit Work Week' : 'Add Work Week'" :modal="true" :style="{ width: '550px' }">
@@ -1142,6 +1243,7 @@ const CompanySettingsComponent = {
         const activeTab = ref('countries');
         const orgTab = ref('departments');
         const gradeTab = ref('mainGrades');
+        const costCenterSubTab = ref('main');
 
         // Dialog states
         const showCountryDialog = ref(false);
@@ -1150,6 +1252,7 @@ const CompanySettingsComponent = {
         const showGradeDialog = ref(false);
         const showOfficeDialog = ref(false);
         const showCostCenterDialog = ref(false);
+        const showSubCostCenterDialog = ref(false);
         const showWorkWeekDialog = ref(false);
 
         // Edit states
@@ -1160,6 +1263,7 @@ const CompanySettingsComponent = {
         const gradeType = ref('main');
         const editingOffice = ref(null);
         const editingCostCenter = ref(null);
+        const editingSubCostCenter = ref(null);
         const editingWorkWeek = ref(null);
 
         // Data
@@ -1175,6 +1279,7 @@ const CompanySettingsComponent = {
         const jobTitles = ref([...StaticData.jobTitles]);
         const offices = ref([...StaticData.offices]);
         const costCenters = ref([...StaticData.costCenters]);
+        const subCostCenters = ref([...StaticData.subCostCenters]);
         const workWeeks = ref([...StaticData.workWeeks]);
         const employees = ref([...StaticData.employees]);
         const attendanceSettings = ref({ ...StaticData.attendanceSettings });
@@ -1575,6 +1680,7 @@ const CompanySettingsComponent = {
         const gradeForm = ref({ name: '', description: '', parentId: null });
         const officeForm = ref({ name: '', country: null, googleMapsLink: '', active: true });
         const costCenterForm = ref({ code: '', name: '', country: null, tag: null, active: true });
+        const subCostCenterForm = ref({ code: '', name: '', parentCostCenterId: null, tag: null, active: true });
         const costCenterTagOptions = ref([
             { label: 'COGS', value: 'cogs' },
             { label: 'G&A', value: 'ga' },
@@ -1820,6 +1926,49 @@ const CompanySettingsComponent = {
             return tagMap[tag] || tag;
         };
 
+        // Sub Cost Center methods
+        const openSubCostCenterDialog = () => {
+            editingSubCostCenter.value = null;
+            subCostCenterForm.value = { code: '', name: '', parentCostCenterId: null, tag: null, active: true };
+            showSubCostCenterDialog.value = true;
+        };
+
+        const editSubCostCenter = (scc) => {
+            editingSubCostCenter.value = scc;
+            subCostCenterForm.value = { 
+                code: scc.code, 
+                name: scc.name, 
+                parentCostCenterId: scc.parentCostCenterId, 
+                tag: scc.tag || null, 
+                active: scc.active 
+            };
+            showSubCostCenterDialog.value = true;
+        };
+
+        const saveSubCostCenter = () => {
+            if (editingSubCostCenter.value) {
+                const idx = subCostCenters.value.findIndex(c => c.id === editingSubCostCenter.value.id);
+                if (idx !== -1) subCostCenters.value[idx] = { ...subCostCenters.value[idx], ...subCostCenterForm.value };
+            } else {
+                const maxId = Math.max(...subCostCenters.value.map(c => c.id), 0);
+                subCostCenters.value.push({ ...subCostCenterForm.value, id: maxId + 1, headCount: 0 });
+            }
+            showSubCostCenterDialog.value = false;
+        };
+
+        const deleteSubCostCenter = (id) => {
+            subCostCenters.value = subCostCenters.value.filter(c => c.id !== id);
+        };
+
+        const getSubCostCenterCount = (parentId) => {
+            return subCostCenters.value.filter(scc => scc.parentCostCenterId === parentId).length;
+        };
+
+        const getParentCostCenterName = (parentId) => {
+            const parent = costCenters.value.find(cc => cc.id === parentId);
+            return parent ? parent.name : 'Unknown';
+        };
+
         // Work Week methods
         const openWorkWeekDialog = () => {
             editingWorkWeek.value = null;
@@ -1855,25 +2004,25 @@ const CompanySettingsComponent = {
 
         return {
             // Tabs
-            activeTab, orgTab, gradeTab,
+            activeTab, orgTab, gradeTab, costCenterSubTab,
             // Dialogs
             showCountryDialog, showHolidayDialog, showOrgDialog, showGradeDialog,
-            showOfficeDialog, showCostCenterDialog, showWorkWeekDialog, showShiftDialog,
+            showOfficeDialog, showCostCenterDialog, showSubCostCenterDialog, showWorkWeekDialog, showShiftDialog,
             // Edit states
             editingHoliday, editingOrg, orgType, editingGrade, gradeType,
-            editingOffice, editingCostCenter, editingWorkWeek, editingShift,
+            editingOffice, editingCostCenter, editingSubCostCenter, editingWorkWeek, editingShift,
             // Data
             countriesOfWork, timezones, holidays, departments, sections, units, teams,
-            mainGrades, subGrades, jobTitles, offices, costCenters,
+            mainGrades, subGrades, jobTitles, offices, costCenters, subCostCenters,
             workWeeks, employees, attendanceSettings,
             weekDaysList, availableCountries, countryOptions,
             // Shift Library data
             allShifts, filteredShifts, shiftTypeFilter, shiftForm, shiftColors, showColorPicker,
             // Forms
-            newCountry, holidayForm, orgForm, gradeForm, officeForm, costCenterForm, costCenterTagOptions,
+            newCountry, holidayForm, orgForm, gradeForm, officeForm, costCenterForm, subCostCenterForm, costCenterTagOptions,
             workWeekForm,
             // Helpers
-            getCostCenterTagLabel,
+            getCostCenterTagLabel, getSubCostCenterCount, getParentCostCenterName,
             getDepartmentName, getSectionName, getUnitName, getMainGradeName, getSubGradeName,
             getSectionCount, getUnitCount, getTeamCount, getSubGradeCount, getJobTitleCount,
             // Shift helpers
@@ -1892,6 +2041,7 @@ const CompanySettingsComponent = {
             openGradeDialog, editGrade, saveGrade, deleteGrade,
             openOfficeDialog, editOffice, saveOffice, deleteOffice,
             openCostCenterDialog, editCostCenter, saveCostCenter, deleteCostCenter,
+            openSubCostCenterDialog, editSubCostCenter, saveSubCostCenter, deleteSubCostCenter,
             openWorkWeekDialog, editWorkWeek, saveWorkWeek, deleteWorkWeek,
             // Shift methods
             openShiftDialog, editShift, saveShift, deleteShift, addPeriod, removePeriod,

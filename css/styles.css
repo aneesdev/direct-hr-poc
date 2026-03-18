@@ -19151,6 +19151,60 @@ img {
     color: #fff;
 }
 
+/* Cost Center Sub-Tabs */
+.cost-center-sub-tabs {
+    margin-bottom: 1.5rem;
+}
+
+.cost-center-sub-tabs .sub-tab-list {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cost-center-sub-tabs .sub-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface-ground);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cost-center-sub-tabs .sub-tab:hover {
+    background: #fff;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.cost-center-sub-tabs .sub-tab.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.cost-center-sub-tabs .sub-tab.active i {
+    color: #fff;
+}
+
+/* Parent Cost Center Badge */
+.parent-cc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    background: rgba(var(--primary-color-rgb), 0.1);
+    color: var(--primary-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
 /* Clickable Row */
 .clickable-row {
     cursor: pointer;
@@ -24892,6 +24946,55 @@ img {
     color: #8b5cf6;
 }
 
+/* Reminder Count Badge */
+.reminder-btn-wrapper {
+    position: relative;
+}
+
+.reminder-count-badge {
+    position: absolute;
+    top: -6px;
+    left: -4px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #8b5cf6;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 50%;
+    padding: 0 4px;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(139, 92, 246, 0.4);
+}
+
+/* Logs Header Row */
+.logs-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.logs-reminder-count {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: #8b5cf6;
+    font-weight: 500;
+    background: rgba(139, 92, 246, 0.1);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+}
+
+.logs-reminder-count i {
+    font-size: 0.75rem;
+}
+
 .reminder-dialog-content {
     display: flex;
     flex-direction: column;
@@ -25513,6 +25616,16 @@ img {
     color: var(--primary-color);
 }
 
+.approval-flow-summary .flow-item.auto-approval {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #16a34a;
+}
+
+.approval-flow-summary .flow-item.auto-approval i {
+    color: #22c55e;
+}
+
 .conditional-flow-summary {
     margin-top: 1rem;
     padding-top: 1rem;
@@ -25595,4 +25708,165 @@ img {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 1rem;
+}
+
+/* Fingerprint Modal */
+.fingerprint-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.fingerprint-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+}
+
+.fingerprint-header-info .employee-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.fingerprint-header-info .total-punches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    border-radius: var(--radius-md);
+    color: white;
+}
+
+.fingerprint-header-info .punch-count {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.fingerprint-header-info .punch-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.fingerprint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.fingerprint-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.fingerprint-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.fingerprint-item .punch-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.fingerprint-item .punch-icon.in {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.fingerprint-item .punch-icon.out {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.fingerprint-item .punch-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 100px;
+}
+
+.fingerprint-item .punch-time {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.fingerprint-item .punch-type-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    width: fit-content;
+}
+
+.fingerprint-item .punch-type-badge.in {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.fingerprint-item .punch-type-badge.out {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.fingerprint-item .punch-location {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.fingerprint-item .location-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.fingerprint-item .location-row i {
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    width: 16px;
+}
+
+.fingerprint-item .location-row.device {
+    color: var(--text-color-secondary);
+    font-size: 0.8rem;
+}
+
+.fingerprint-item .location-row.device i {
+    color: var(--text-color-secondary);
+}
+
+.fingerprint-count.clickable {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.fingerprint-count.clickable:hover {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    color: var(--primary-color);
 }

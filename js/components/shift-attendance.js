@@ -613,6 +613,9 @@ const ShiftAttendanceComponent = {
                                     <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Section" showClear :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
                                     <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Unit" showClear :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
                                     <p-select v-model="attendanceTeam" :options="attendanceFilteredTeams" optionLabel="name" optionValue="id" placeholder="Team" showClear :disabled="!attendanceUnit"></p-select>
+                                    <div class="requests-datepicker-wrap">
+                                        <p-datepicker v-model="attendanceDateRangeFilter" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Date Range" @update:modelValue="onAttendanceDateRangeFilterChange"></p-datepicker>
+                                    </div>
                                 </div>
                                 <div class="filter-actions-row">
                                     <p-button label="Apply" icon="pi pi-check" @click="applyAttendanceFilters" size="small"></p-button>
@@ -731,7 +734,12 @@ const ShiftAttendanceComponent = {
                                                         <span v-else class="no-data">---</span>
                                                     </td>
                                                     <td class="col-fingerprints">
-                                                        <span v-if="getFingerprintsForDay(employee.days[0], employee.employeeId, 0).count" class="fingerprint-count" v-tooltip.top="{ value: getFingerprintsForDay(employee.days[0], employee.employeeId, 0).tooltip, escape: false }">{{ getFingerprintsForDay(employee.days[0], employee.employeeId, 0).count }}</span>
+                                                        <span v-if="getFingerprintsForDay(employee.days[0], employee.employeeId, 0).count" 
+                                                              class="fingerprint-count clickable" 
+                                                              @click="openFingerprintModal(employee, employee.days[0], 0)">
+                                                            <i class="pi pi-id-card" style="margin-right: 0.25rem;"></i>
+                                                            {{ getFingerprintsForDay(employee.days[0], employee.employeeId, 0).count }}
+                                                        </span>
                                                         <span v-else class="no-data">---</span>
                                                     </td>
                                                 </tr>
@@ -786,7 +794,12 @@ const ShiftAttendanceComponent = {
                                                             <span v-else class="no-data">---</span>
                                                         </td>
                                                         <td class="col-fingerprints">
-                                                            <span v-if="getFingerprintsForDay(day, employee.employeeId, idx + 1).count" class="fingerprint-count" v-tooltip.top="{ value: getFingerprintsForDay(day, employee.employeeId, idx + 1).tooltip, escape: false }">{{ getFingerprintsForDay(day, employee.employeeId, idx + 1).count }}</span>
+                                                            <span v-if="getFingerprintsForDay(day, employee.employeeId, idx + 1).count" 
+                                                                  class="fingerprint-count clickable" 
+                                                                  @click="openFingerprintModal(employee, day, idx + 1)">
+                                                                <i class="pi pi-id-card" style="margin-right: 0.25rem;"></i>
+                                                                {{ getFingerprintsForDay(day, employee.employeeId, idx + 1).count }}
+                                                            </span>
                                                             <span v-else class="no-data">---</span>
                                                         </td>
                                                     </tr>
@@ -837,6 +850,50 @@ const ShiftAttendanceComponent = {
                 <template #footer>
                     <p-button label="Cancel" severity="danger" outlined @click="showAssignDialog = false"></p-button>
                     <p-button label="Save" icon="pi pi-check" @click="saveAssignment"></p-button>
+                </template>
+            </p-dialog>
+
+            <!-- Fingerprint Details Modal -->
+            <p-dialog v-model:visible="showFingerprintModal" header="Fingerprint Details" :modal="true" :style="{ width: '550px' }">
+                <div v-if="fingerprintModalData" class="fingerprint-modal-content">
+                    <div class="fingerprint-header-info">
+                        <div class="employee-summary">
+                            <i class="pi pi-user" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                            <div>
+                                <div style="font-weight: 600;">{{ fingerprintModalData.employeeName }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-color-secondary);">{{ fingerprintModalData.dayName }} - {{ fingerprintModalData.date }}</div>
+                            </div>
+                        </div>
+                        <div class="total-punches">
+                            <span class="punch-count">{{ fingerprintModalData.punches.length }}</span>
+                            <span class="punch-label">Total Punches</span>
+                        </div>
+                    </div>
+                    
+                    <div class="fingerprint-list">
+                        <div v-for="(punch, index) in fingerprintModalData.punches" :key="index" class="fingerprint-item" :class="punch.type.toLowerCase()">
+                            <div class="punch-icon" :class="punch.type.toLowerCase()">
+                                <i :class="punch.type === 'IN' ? 'pi pi-sign-in' : 'pi pi-sign-out'"></i>
+                            </div>
+                            <div class="punch-details">
+                                <div class="punch-time">{{ punch.time }}</div>
+                                <div class="punch-type-badge" :class="punch.type.toLowerCase()">{{ punch.type }}</div>
+                            </div>
+                            <div class="punch-location">
+                                <div class="location-row">
+                                    <i class="pi pi-building"></i>
+                                    <span>{{ punch.office }}</span>
+                                </div>
+                                <div class="location-row device">
+                                    <i class="pi pi-tablet"></i>
+                                    <span>{{ punch.device }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <template #footer>
+                    <p-button label="Close" outlined @click="showFingerprintModal = false"></p-button>
                 </template>
             </p-dialog>
 
@@ -1572,6 +1629,7 @@ const ShiftAttendanceComponent = {
         const appliedAttendanceFilters = ref({ departmentId: null, sectionId: null, unitId: null, teamId: null });
         const attendanceSearchName = ref('');
         const appliedAttendanceSearchName = ref('');
+        const attendanceDateRangeFilter = ref(null);
 
         // Department / Section / Unit options (from StaticData, dependent)
         const reviewerDepartmentOptions = ref([...StaticData.departments]);
@@ -1632,13 +1690,21 @@ const ShiftAttendanceComponent = {
             attendanceUnit.value = null;
             attendanceTeam.value = null;
             attendanceSearchName.value = '';
+            attendanceDateRangeFilter.value = null;
             appliedAttendanceFilters.value = { departmentId: null, sectionId: null, unitId: null, teamId: null };
             appliedAttendanceSearchName.value = '';
         };
 
         const hasAttendanceActiveFilters = computed(() => {
-            return attendanceDepartment.value || attendanceSection.value || attendanceUnit.value || attendanceTeam.value || attendanceSearchName.value;
+            return attendanceDepartment.value || attendanceSection.value || attendanceUnit.value || attendanceTeam.value || attendanceSearchName.value || attendanceDateRangeFilter.value;
         });
+
+        // When date range filter is used, reset the week selector
+        const onAttendanceDateRangeFilterChange = (value) => {
+            if (value && value.length === 2 && value[0] && value[1]) {
+                attendanceWeekOffset.value = 0;
+            }
+        };
 
         const onReviewerDepartmentChange = () => {
             reviewerSection.value = null;
@@ -2158,11 +2224,13 @@ const ShiftAttendanceComponent = {
 
         const prevAttendanceWeek = () => {
             attendanceDateRange.value = null;
+            attendanceDateRangeFilter.value = null;
             attendanceWeekOffset.value -= 1;
         };
 
         const nextAttendanceWeek = () => {
             attendanceDateRange.value = null;
+            attendanceDateRangeFilter.value = null;
             attendanceWeekOffset.value += 1;
         };
 
@@ -2879,6 +2947,60 @@ const ShiftAttendanceComponent = {
             return { count: events.length, tooltip };
         };
 
+        // Fingerprint Modal
+        const showFingerprintModal = ref(false);
+        const fingerprintModalData = ref(null);
+        const offices = ref([...StaticData.offices]);
+        const biometricDevices = ['BIO-001 Main Entrance', 'BIO-002 Side Gate', 'BIO-003 Parking Entry', 'BIO-004 Floor 2', 'BIO-005 Floor 3'];
+
+        const openFingerprintModal = (employee, day, dayIndex) => {
+            const inTime = day && day.actualCheckIn;
+            const outTime = day && day.actualCheckOut;
+            if (!inTime && !outTime) return;
+
+            const inStr = inTime ? formatTimeForFingerprint(inTime) : '';
+            const outStr = outTime ? formatTimeForFingerprint(outTime) : '';
+            
+            const base = (employee.employeeId || 0) + (dayIndex || 0);
+            const numPrints = 2 + (base % 5) * 2;
+            
+            let events = [];
+            if (inStr) events.push({ time: inStr, type: 'IN' });
+            if (numPrints >= 4) events.push({ time: '12:00 PM', type: 'OUT' }, { time: '12:30 PM', type: 'IN' });
+            if (numPrints >= 6) events.push({ time: '10:00 AM', type: 'OUT' }, { time: '10:15 AM', type: 'IN' });
+            if (numPrints >= 8) events.push({ time: '3:00 PM', type: 'OUT' }, { time: '3:10 PM', type: 'IN' });
+            if (numPrints >= 10) events.push({ time: '11:00 AM', type: 'OUT' }, { time: '11:10 AM', type: 'IN' });
+            if (outStr) events.push({ time: outStr, type: 'OUT' });
+
+            const sortKey = (e) => {
+                const m = e.time.match(/(\d+):?(\d*)\s*(AM|PM)/i);
+                if (!m) return 0;
+                let h = parseInt(m[1], 10);
+                const min = parseInt(m[2] || '0', 10);
+                const pm = (m[3] || '').toUpperCase() === 'PM';
+                if (pm && h < 12) h += 12;
+                if (!pm && h === 12) h = 0;
+                return h * 60 + min;
+            };
+            events = events.sort((a, b) => sortKey(a) - sortKey(b));
+
+            // Add office and device info to each punch
+            const activeOffices = offices.value.filter(o => o.active);
+            const punches = events.map((e, idx) => ({
+                ...e,
+                office: activeOffices[(base + idx) % activeOffices.length]?.name || 'Main Office',
+                device: biometricDevices[(base + idx) % biometricDevices.length]
+            }));
+
+            fingerprintModalData.value = {
+                employeeName: employee.name,
+                dayName: day.dayName,
+                date: day.dateLabel || '',
+                punches
+            };
+            showFingerprintModal.value = true;
+        };
+
         // Formatted week label
         const weekLabelFormatted = computed(() => {
             const start = new Date(currentWeekStart.value);
@@ -3459,6 +3581,8 @@ const ShiftAttendanceComponent = {
             attendanceUnit,
             attendanceTeam,
             attendanceSearchName,
+            attendanceDateRangeFilter,
+            onAttendanceDateRangeFilterChange,
             attendanceDepartmentOptions,
             attendanceFilteredSections,
             attendanceFilteredUnits,
@@ -3484,6 +3608,9 @@ const ShiftAttendanceComponent = {
             getPunchFlagClass,
             getViolationClass,
             getFingerprintsForDay,
+            showFingerprintModal,
+            fingerprintModalData,
+            openFingerprintModal,
             // Legacy
             showAssignDialog,
             assignForm,

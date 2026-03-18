@@ -64,7 +64,6 @@ const EmployeeDirectoryComponent = {
                     <div class="emp-card-header">
                         <div class="emp-avatar-wrapper">
                             <img :src="emp.avatar" :alt="emp.name" class="emp-avatar">
-                            <span class="emp-status-dot" :class="emp.status"></span>
                         </div>
                         <div class="emp-badges">
                             <span class="emp-grade-badge" :class="emp.gradeClass">{{ emp.grade }}</span>
@@ -174,7 +173,6 @@ const EmployeeDirectoryComponent = {
                                     {{ emp.grade }} • {{ emp.branch }}
                                 </div>
                             </div>
-                            <span class="region-emp-status" :class="emp.status"></span>
                         </div>
                     </div>
                 </div>

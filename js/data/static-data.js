@@ -208,6 +208,19 @@ const StaticData = {
         { id: 5, code: 'CC-005', name: 'IT Infrastructure', tag: 'intangible', headCount: 0, active: true },
     ],
 
+    // Sub Cost Centers (linked to parent cost centers)
+    subCostCenters: [
+        { id: 1, code: 'SCC-001', name: 'Frontend Development', parentCostCenterId: 1, tag: 'cogs', headCount: 2, active: true },
+        { id: 2, code: 'SCC-002', name: 'Backend Development', parentCostCenterId: 1, tag: 'cogs', headCount: 1, active: true },
+        { id: 3, code: 'SCC-003', name: 'DevOps', parentCostCenterId: 1, tag: 'cogs', headCount: 0, active: true },
+        { id: 4, code: 'SCC-004', name: 'Recruitment', parentCostCenterId: 2, tag: 'ga', headCount: 1, active: true },
+        { id: 5, code: 'SCC-005', name: 'Payroll & Benefits', parentCostCenterId: 2, tag: 'ga', headCount: 0, active: true },
+        { id: 6, code: 'SCC-006', name: 'Accounts Payable', parentCostCenterId: 3, tag: 'ga', headCount: 1, active: true },
+        { id: 7, code: 'SCC-007', name: 'Accounts Receivable', parentCostCenterId: 3, tag: 'ga', headCount: 0, active: true },
+        { id: 8, code: 'SCC-008', name: 'Digital Marketing', parentCostCenterId: 4, tag: 'ga', headCount: 0, active: false },
+        { id: 9, code: 'SCC-009', name: 'Network & Security', parentCostCenterId: 5, tag: 'intangible', headCount: 0, active: true },
+    ],
+
     // Document Types
     documentTypes: [
         { id: 1, name: 'National ID Card', mandatory: true, hasExpiry: true, sendReminders: true, reminderMonths: 1 },

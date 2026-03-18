@@ -164,7 +164,12 @@ const AddEmployeeComponent = {
                         <div class="form-group">
                             <label class="form-label">Cost Center</label>
                             <p-select v-model="form.costCenter" :options="costCenters" optionLabel="name" optionValue="id" 
-                                      placeholder="Select cost center" style="width: 100%;"></p-select>
+                                      placeholder="Select cost center" style="width: 100%;" @change="onCostCenterChange" showClear></p-select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sub Cost Center</label>
+                            <p-select v-model="form.subCostCenter" :options="filteredSubCostCenters" optionLabel="name" optionValue="id" 
+                                      placeholder="Select sub cost center" style="width: 100%;" :disabled="!form.costCenter" showClear></p-select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Date of Hiring <span class="required">*</span></label>
@@ -1004,6 +1009,7 @@ const AddEmployeeComponent = {
             unit: null,
             team: null,
             costCenter: null,
+            subCostCenter: null,
             dateOfHiring: null,
             mainGrade: null,
             subGrade: null,
@@ -1082,6 +1088,7 @@ const AddEmployeeComponent = {
         const units = ref([...StaticData.units]);
         const teams = ref([...StaticData.teams]);
         const costCenters = ref([...StaticData.costCenters]);
+        const subCostCenters = ref([...StaticData.subCostCenters]);
         const mainGrades = ref([...StaticData.mainGrades]);
         const subGrades = ref([...StaticData.subGrades]);
         const jobTitles = ref([...StaticData.jobTitles]);
@@ -1156,6 +1163,11 @@ const AddEmployeeComponent = {
         const filteredTeams = computed(() => {
             if (!form.value.unit) return [];
             return teams.value.filter(t => t.unitId === form.value.unit);
+        });
+
+        const filteredSubCostCenters = computed(() => {
+            if (!form.value.costCenter) return [];
+            return subCostCenters.value.filter(scc => scc.parentCostCenterId === form.value.costCenter);
         });
 
         const filteredSubGrades = computed(() => {
@@ -1236,6 +1248,10 @@ const AddEmployeeComponent = {
             form.value.team = null;
         };
 
+        const onCostCenterChange = () => {
+            form.value.subCostCenter = null;
+        };
+
         const onMainGradeChange = () => {
             form.value.subGrade = null;
             form.value.jobTitle = null;
@@ -1307,6 +1323,8 @@ const AddEmployeeComponent = {
             units,
             teams,
             costCenters,
+            subCostCenters,
+            filteredSubCostCenters,
             mainGrades,
             subGrades,
             jobTitles,
@@ -1351,6 +1369,7 @@ const AddEmployeeComponent = {
             onDepartmentChange,
             onSectionChange,
             onUnitChange,
+            onCostCenterChange,
             onMainGradeChange,
             onPictureSelect,
             saveAsDraft,

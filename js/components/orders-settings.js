@@ -131,6 +131,7 @@ const OrdersSettingsComponent = {
                                 <p-column header="Balance">
                                     <template #body="slotProps">
                                         <span v-if="slotProps.data.balanceSource === 'system'">From Settings</span>
+                                        <span v-else-if="slotProps.data.balanceSource === 'compound'">Compound Leaves</span>
                                         <span v-else-if="slotProps.data.balanceSource === 'fixed'">
                                             {{ slotProps.data.balanceDays || slotProps.data.balanceHours }} {{ slotProps.data.balanceHours ? 'hours' : 'days' }}
                                         </span>
@@ -371,8 +372,18 @@ const OrdersSettingsComponent = {
                     <!-- Approval Flow Section -->
                     <div class="form-section-title">Approval Flow</div>
                     <div class="approval-flow-builder">
-                        <!-- Primary Approval -->
+                        <!-- Auto Approval -->
                         <div class="approval-step">
+                            <div class="approval-checkboxes">
+                                <div class="approval-checkbox-item">
+                                    <p-checkbox v-model="typeForm.approvalFlow.autoApproval" :binary="true" inputId="autoApproval"></p-checkbox>
+                                    <label for="autoApproval">Auto Approval by System</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Primary Approval (hidden when auto approval is enabled) -->
+                        <div class="approval-step" v-if="!typeForm.approvalFlow.autoApproval">
                             <div class="step-label">Primary Approval</div>
                             <div class="form-group">
                                 <label class="form-label">Line Manager Level</label>
@@ -395,8 +406,8 @@ const OrdersSettingsComponent = {
                             </div>
                         </div>
 
-                        <!-- Conditional Approval -->
-                        <div class="approval-condition">
+                        <!-- Conditional Approval (hidden when auto approval is enabled) -->
+                        <div class="approval-condition" v-if="!typeForm.approvalFlow.autoApproval">
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
                                 <p-checkbox v-model="typeForm.approvalFlow.conditionEnabled" :binary="true"></p-checkbox>
                                 <label class="form-label" style="margin: 0; font-weight: 600;">Enable Conditional Approval</label>
@@ -478,6 +489,7 @@ const OrdersSettingsComponent = {
                             <span class="detail-label">Balance</span>
                             <span class="detail-value">
                                 <span v-if="viewingType.balanceSource === 'system'">From Employee Settings</span>
+                                <span v-else-if="viewingType.balanceSource === 'compound'">From Compound Leaves</span>
                                 <span v-else-if="viewingType.balanceSource === 'fixed'">{{ viewingType.balanceDays }} days</span>
                                 <span v-else-if="viewingType.balanceSource === 'fixed_hours'">{{ viewingType.balanceHours }} hours</span>
                                 <span v-else>No Balance</span>
@@ -502,7 +514,13 @@ const OrdersSettingsComponent = {
                     <!-- Approval Flow -->
                     <div class="type-view-section">
                         <h4><i class="pi pi-sitemap"></i> Approval Flow</h4>
-                        <div class="approval-flow-summary">
+                        <div v-if="viewingType.approvalFlow?.autoApproval" class="approval-flow-summary">
+                            <div class="flow-item auto-approval">
+                                <i class="pi pi-check-circle"></i>
+                                <span>Auto Approval by System</span>
+                            </div>
+                        </div>
+                        <div v-else class="approval-flow-summary">
                             <div v-if="viewingType.approvalFlow?.lineManagerLevel" class="flow-item">
                                 <i class="pi pi-user"></i>
                                 <span>{{ getLineManagerLabel(viewingType.approvalFlow.lineManagerLevel) }}</span>
@@ -520,7 +538,7 @@ const OrdersSettingsComponent = {
                                 <span>HR EVP</span>
                             </div>
                         </div>
-                        <div v-if="viewingType.approvalFlow?.conditionEnabled" class="conditional-flow-summary">
+                        <div v-if="!viewingType.approvalFlow?.autoApproval && viewingType.approvalFlow?.conditionEnabled" class="conditional-flow-summary">
                             <div class="condition-note">
                                 <i class="pi pi-exclamation-triangle"></i>
                                 If request is more than {{ viewingType.approvalFlow.conditionDays }} days:
@@ -621,6 +639,7 @@ const OrdersSettingsComponent = {
         const balanceSourceOptions = ref([
             { id: null, name: 'No Balance' },
             { id: 'system', name: 'From Employee Settings' },
+            { id: 'compound', name: 'From Compound Leaves' },
             { id: 'fixed', name: 'Fixed Days' },
             { id: 'fixed_hours', name: 'Fixed Hours' }
         ]);
@@ -646,6 +665,7 @@ const OrdersSettingsComponent = {
             balanceMethod: 'working_days',
             formFields: [],
             approvalFlow: {
+                autoApproval: false,
                 lineManagerLevel: 1,
                 requireHrAdmin: false,
                 requireHrManager: false,
@@ -745,6 +765,7 @@ const OrdersSettingsComponent = {
                 balanceMethod: 'working_days',
                 formFields: [],
                 approvalFlow: {
+                    autoApproval: false,
                     lineManagerLevel: 1,
                     requireHrAdmin: false,
                     requireHrManager: false,

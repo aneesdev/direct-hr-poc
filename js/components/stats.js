@@ -1027,7 +1027,9 @@ const StatsComponent = {
                     <p-select v-if="showEntityFilter" v-model="filters.entity" :options="entities" optionLabel="name" optionValue="id"
                               placeholder="Entity" showClear class="stats-filter-field"></p-select>
                     <p-select v-if="showCostCenterFilter" v-model="filters.costCenter" :options="costCenters" optionLabel="name" optionValue="id"
-                              placeholder="Cost Center" showClear class="stats-filter-field"></p-select>
+                              placeholder="Cost Center" showClear class="stats-filter-field" @change="onCostCenterChange"></p-select>
+                    <p-select v-if="showCostCenterFilter && filters.costCenter" v-model="filters.subCostCenter" :options="filteredSubCostCenters" optionLabel="name" optionValue="id"
+                              placeholder="Sub Cost Center" showClear class="stats-filter-field"></p-select>
                     <p-select v-if="showCountryFilter" v-model="filters.country" :options="countries" optionLabel="name" optionValue="id"
                               placeholder="Country" showClear class="stats-filter-field"></p-select>
                     <p-select v-if="showOfficeFilter" v-model="filters.office" :options="offices" optionLabel="name" optionValue="id"
@@ -1131,7 +1133,7 @@ const StatsComponent = {
             customRangeApplied: false,
             showDateRangePicker: false,
             dynamicFilters: { type: 'Monthly', month: 'February', quarter: null, year: 2026 },
-            filters: { department: null, section: null, unit: null, team: null, entity: null, costCenter: null, country: null, office: null }
+            filters: { department: null, section: null, unit: null, team: null, entity: null, costCenter: null, subCostCenter: null, country: null, office: null }
         });
 
         const moduleStates = reactive({
@@ -1194,6 +1196,16 @@ const StatsComponent = {
         ]);
         const entities = ref([{ id: 1, name: 'Direct' }, { id: 2, name: 'Tawfiq' }]);
         const costCenters = ref([{ id: 1, name: 'Operations' }, { id: 2, name: 'Sales & Marketing' }, { id: 3, name: 'IT & Digital' }, { id: 4, name: 'Corporate Services' }]);
+        const subCostCenters = ref([
+            { id: 1, name: 'Frontend Development', parentCostCenterId: 1 },
+            { id: 2, name: 'Backend Development', parentCostCenterId: 1 },
+            { id: 3, name: 'Digital Marketing', parentCostCenterId: 2 },
+            { id: 4, name: 'Sales Operations', parentCostCenterId: 2 },
+            { id: 5, name: 'Infrastructure', parentCostCenterId: 3 },
+            { id: 6, name: 'Security', parentCostCenterId: 3 },
+            { id: 7, name: 'HR Admin', parentCostCenterId: 4 },
+            { id: 8, name: 'Finance Admin', parentCostCenterId: 4 }
+        ]);
         const countries = ref([{ id: 1, name: 'Saudi Arabia' }, { id: 2, name: 'Egypt' }, { id: 3, name: 'UAE' }]);
         const offices = ref([{ id: 1, name: 'Riyadh HQ' }, { id: 2, name: 'Jeddah Branch' }, { id: 3, name: 'Dammam Branch' }]);
 
@@ -1219,6 +1231,10 @@ const StatsComponent = {
         const filteredTeams = computed(() => {
             const f = filters.value;
             return f.unit ? teams.value.filter(t => t.unitId === f.unit) : [];
+        });
+        const filteredSubCostCenters = computed(() => {
+            const f = filters.value;
+            return f.costCenter ? subCostCenters.value.filter(scc => scc.parentCostCenterId === f.costCenter) : [];
         });
         const hasModuleFilters = computed(() => ['attendance', 'requests', 'hrdesk'].includes(activeModule.value));
         const usesCustomDateRange = computed(() => ['attendance', 'requests', 'hrdesk'].includes(activeModule.value));
@@ -1271,11 +1287,15 @@ const StatsComponent = {
             const f = moduleStates[activeModule.value].filters;
             f.unit = null; f.team = null; 
         };
-        const onUnitChange = () => { 
+        const onUnitChange = () => {
             const f = moduleStates[activeModule.value].filters;
-            f.team = null; 
+            f.team = null;
         };
-        const applyAppraisalCycle = () => { 
+        const onCostCenterChange = () => {
+            const f = moduleStates[activeModule.value].filters;
+            f.subCostCenter = null;
+        };
+        const applyAppraisalCycle = () => {
             if (moduleStates.appraisals.selectedCycle) {
                 moduleStates.appraisals.cycleApplied = true;
             }
@@ -1308,7 +1328,7 @@ const StatsComponent = {
         const resetFilters = () => {
             const state = moduleStates[activeModule.value];
             // Reset filters
-            state.filters = { department: null, section: null, unit: null, team: null, entity: null, costCenter: null, country: null, office: null };
+            state.filters = { department: null, section: null, unit: null, team: null, entity: null, costCenter: null, subCostCenter: null, country: null, office: null };
             // Reset dynamic filters
             state.dynamicFilters = { type: 'Monthly', month: null, quarter: null, year: 2026 };
             // Reset custom range
@@ -1320,12 +1340,12 @@ const StatsComponent = {
 
         return {
             modules, activeModule, insightTab, selectedDateRange, customRange, dynamicFilters, months, quarters, years,
-            filters, departments, sections, units, teams, entities, costCenters, countries, offices,
+            filters, departments, sections, units, teams, entities, costCenters, subCostCenters, countries, offices,
             appraisalCycles, selectedAppraisalCycle, appraisalCycleApplied, customRangeApplied, currentModuleTitle,
-            filteredSections, filteredUnits, filteredTeams, hasModuleFilters, showDateRangePicker, formatDateRange,
+            filteredSections, filteredUnits, filteredTeams, filteredSubCostCenters, hasModuleFilters, showDateRangePicker, formatDateRange,
             usesCustomDateRange, usesTypeDateFilter, dateRangeArray, hasActiveFilters,
             showDepartmentFilter, showSectionFilter, showUnitFilter, showTeamFilter, showEntityFilter, showCostCenterFilter, showCountryFilter, showOfficeFilter,
-            onDepartmentChange, onSectionChange, onUnitChange, applyAppraisalCycle, toggleDateRangePicker, clearDateRange, applyDateRange, applyFilters, resetFilters
+            onDepartmentChange, onSectionChange, onUnitChange, onCostCenterChange, applyAppraisalCycle, toggleDateRangePicker, clearDateRange, applyDateRange, applyFilters, resetFilters
         };
     }
 };
