@@ -23136,6 +23136,207 @@ img {
     padding: 0;
 }
 
+/* Dynamic View Selector */
+.dynamic-view-selector {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+
+/* When inside filter row, remove margin */
+.dynamic-view-selector.stats-filter-field {
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 180px;
+}
+
+.view-selector-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: #fff;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+    min-width: 180px;
+    height: 100%;
+}
+
+.stats-filter-field .view-selector-field {
+    min-width: auto;
+    width: 100%;
+}
+
+.view-selector-field:hover {
+    border-color: var(--primary-color);
+}
+
+.view-selector-field i:first-child {
+    color: var(--primary-color);
+}
+
+.view-selector-field i:last-child {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.view-selector-popover {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    margin-top: 0.5rem;
+    background: #fff;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 280px;
+}
+
+.popover-content {
+    padding: 1.25rem;
+}
+
+.popover-field {
+    margin-bottom: 1rem;
+}
+
+.popover-field:last-of-type {
+    margin-bottom: 1.25rem;
+}
+
+.popover-field label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.popover-select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    color: var(--text-color);
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.popover-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.popover-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    color: var(--text-color);
+    background: #fff;
+}
+
+.popover-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* PrimeVue components inside popover */
+.popover-field .p-select,
+.popover-field .p-datepicker {
+    width: 100% !important;
+}
+
+.popover-field .p-select .p-select-label {
+    padding: 0.625rem 0.875rem;
+}
+
+.month-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    background: #fff;
+}
+
+.month-selector span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.month-nav {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-ground);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-color);
+    transition: all 0.2s;
+}
+
+.month-nav:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.month-nav i {
+    font-size: 0.75rem;
+}
+
+.popover-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--surface-border);
+}
+
+.popover-btn {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.popover-btn.apply {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.popover-btn.apply:hover {
+    background: var(--primary-hover-color);
+}
+
+.popover-btn.cancel {
+    background: var(--surface-ground);
+    color: var(--text-color);
+}
+
+.popover-btn.cancel:hover {
+    background: var(--surface-hover);
+}
+
 .dynamic-performance-link {
     display: flex;
     align-items: center;

@@ -277,6 +277,7 @@ const AttendanceStaticInsights = {
 
 // ATTENDANCE DYNAMIC INSIGHTS with ApexCharts
 const AttendanceDynamicInsights = {
+    props: ['viewCategories'],
     template: `
         <div class="dynamic-insights-content">
             <div class="chart-card full-width">
@@ -309,8 +310,8 @@ const AttendanceDynamicInsights = {
             </div>
         </div>
     `,
-    setup() {
-        const { ref, onMounted, onUnmounted } = Vue;
+    setup(props) {
+        const { ref, onMounted, onUnmounted, watch } = Vue;
         const attendanceStatusChart = ref(null);
         const workingHoursChart = ref(null);
         const vacationChart = ref(null);
@@ -319,21 +320,26 @@ const AttendanceDynamicInsights = {
         const performanceChart = ref(null);
         let charts = [];
 
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const generateData = (baseData, length) => {
+            return Array.from({ length }, () => Math.floor(Math.random() * 100) + baseData);
+        };
 
         const initCharts = () => {
+            const categories = props.viewCategories || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const dataLength = categories.length;
+
             if (attendanceStatusChart.value) {
                 const chart1 = new ApexCharts(attendanceStatusChart.value, {
                     ...apexDefaultOptions,
                     chart: { ...apexDefaultOptions.chart, type: 'area', height: 320 },
                     colors: ['#16a34a', '#ef4444', '#3b82f6', '#8b5cf6'],
                     series: [
-                        { name: 'Present', data: [380, 390, 395, 400, 405, 410, 415, 420, 425, 430, 435, 440] },
-                        { name: 'Absent', data: [20, 18, 15, 12, 10, 8, 6, 5, 4, 3, 2, 2] },
-                        { name: 'Business Trip', data: [5, 8, 10, 12, 15, 18, 20, 22, 18, 15, 12, 10] },
-                        { name: 'WFH', data: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65] }
+                        { name: 'Present', data: generateData(380, dataLength) },
+                        { name: 'Absent', data: generateData(10, dataLength) },
+                        { name: 'Business Trip', data: generateData(5, dataLength) },
+                        { name: 'WFH', data: generateData(20, dataLength) }
                     ],
-                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    xaxis: { ...apexDefaultOptions.xaxis, categories },
                     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } }
                 });
                 chart1.render();
@@ -344,8 +350,8 @@ const AttendanceDynamicInsights = {
                     ...apexDefaultOptions,
                     chart: { ...apexDefaultOptions.chart, type: 'bar', height: 320 },
                     colors: ['#f97316'],
-                    series: [{ name: 'Working Hours', data: [72000, 75000, 78000, 80000, 82000, 85000, 88000, 90000, 87000, 85000, 83000, 80000] }],
-                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    series: [{ name: 'Working Hours', data: generateData(70000, dataLength) }],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories },
                     plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } },
                     legend: { show: false }
                 });
@@ -358,11 +364,11 @@ const AttendanceDynamicInsights = {
                     chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 },
                     colors: ['#f97316', '#8b5cf6', '#9ca3af'],
                     series: [
-                        { name: 'Annual Vacation', data: [45, 50, 55, 60, 80, 120, 150, 100, 70, 55, 50, 45] },
-                        { name: 'Others', data: [5, 8, 10, 12, 15, 20, 25, 18, 12, 8, 6, 5] },
-                        { name: 'Day Off', data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100] }
+                        { name: 'Annual Vacation', data: generateData(50, dataLength) },
+                        { name: 'Others', data: generateData(10, dataLength) },
+                        { name: 'Day Off', data: generateData(100, dataLength) }
                     ],
-                    xaxis: { ...apexDefaultOptions.xaxis, categories: months }
+                    xaxis: { ...apexDefaultOptions.xaxis, categories }
                 });
                 chart3.render();
                 charts.push(chart3);
@@ -373,11 +379,11 @@ const AttendanceDynamicInsights = {
                     chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 },
                     colors: ['#ef4444', '#f97316', '#06b6d4'],
                     series: [
-                        { name: 'Missing Clock In', data: [25, 22, 20, 18, 15, 12, 10, 8, 6, 5, 4, 3] },
-                        { name: 'Missing Clock Out', data: [30, 28, 25, 22, 20, 18, 15, 12, 10, 8, 6, 5] },
-                        { name: 'Off-Schedule Attendance', data: [8, 10, 12, 9, 7, 11, 14, 10, 8, 6, 5, 4] }
+                        { name: 'Missing Clock In', data: generateData(15, dataLength) },
+                        { name: 'Missing Clock Out', data: generateData(20, dataLength) },
+                        { name: 'Off-Schedule Attendance', data: generateData(8, dataLength) }
                     ],
-                    xaxis: { ...apexDefaultOptions.xaxis, categories: months }
+                    xaxis: { ...apexDefaultOptions.xaxis, categories }
                 });
                 chart4.render();
                 charts.push(chart4);
@@ -388,11 +394,11 @@ const AttendanceDynamicInsights = {
                     chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true },
                     colors: ['#f97316', '#ef4444', '#8b5cf6'],
                     series: [
-                        { name: 'Late In', data: [80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25] },
-                        { name: 'Early Out', data: [40, 38, 35, 32, 30, 28, 25, 22, 20, 18, 15, 12] },
-                        { name: 'Less Effort', data: [20, 18, 16, 14, 12, 10, 8, 6, 5, 4, 3, 2] }
+                        { name: 'Late In', data: generateData(50, dataLength) },
+                        { name: 'Early Out', data: generateData(30, dataLength) },
+                        { name: 'Less Effort', data: generateData(10, dataLength) }
                     ],
-                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    xaxis: { ...apexDefaultOptions.xaxis, categories },
                     plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } }
                 });
                 chart5.render();
@@ -404,17 +410,28 @@ const AttendanceDynamicInsights = {
                     chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 },
                     colors: ['#16a34a', '#ef4444', '#f97316'],
                     series: [
-                        { name: 'Attendance Rate', data: [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96] },
-                        { name: 'Absent Rate', data: [5, 4.5, 4, 3.5, 3, 2.5, 2, 1.8, 1.5, 1.2, 1, 0.8] },
-                        { name: 'Violation Rate', data: [12, 11, 10, 9, 8, 7, 6, 5.5, 5, 4.5, 4, 3.5] }
+                        { name: 'Attendance Rate', data: generateData(85, dataLength) },
+                        { name: 'Absent Rate', data: generateData(3, dataLength) },
+                        { name: 'Violation Rate', data: generateData(8, dataLength) }
                     ],
-                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    xaxis: { ...apexDefaultOptions.xaxis, categories },
                     yaxis: { ...apexDefaultOptions.yaxis, max: 100 }
                 });
                 chart6.render();
                 charts.push(chart6);
             }
         };
+
+        const reinitCharts = () => {
+            charts.forEach(c => c.destroy());
+            charts = [];
+            setTimeout(initCharts, 50);
+        };
+
+        // Watch for viewCategories changes from parent
+        watch(() => props.viewCategories, () => {
+            reinitCharts();
+        }, { deep: true });
 
         onMounted(() => { setTimeout(initCharts, 100); });
         onUnmounted(() => { charts.forEach(c => c.destroy()); });
@@ -615,6 +632,7 @@ const RequestsStaticInsights = {
 
 // REQUESTS DYNAMIC INSIGHTS with ApexCharts
 const RequestsDynamicInsights = {
+    props: ['viewCategories'],
     template: `
         <div class="dynamic-insights-content">
             <div class="charts-row">
@@ -625,43 +643,58 @@ const RequestsDynamicInsights = {
                 <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-check-circle"></i> 3. Approved vs Rejected</h3></div><div class="chart-container small" ref="approvalChart"></div></div>
                 <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-clock"></i> 4. SLA in Days</h3></div><div class="chart-container small" ref="slaChart"></div></div>
             </div>
-            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> 5. Monthly Request Type Breakdown</h3></div><div class="chart-container" ref="breakdownChart"></div></div>
-            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-history"></i> 6. Monthly Request Status Lifecycle</h3></div><div class="chart-container" ref="lifecycleChart"></div></div>
+            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> 5. Request Type Breakdown</h3></div><div class="chart-container" ref="breakdownChart"></div></div>
+            <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-history"></i> 6. Request Status Lifecycle</h3></div><div class="chart-container" ref="lifecycleChart"></div></div>
         </div>
     `,
-    setup() {
-        const { ref, onMounted, onUnmounted } = Vue;
+    setup(props) {
+        const { ref, onMounted, onUnmounted, watch } = Vue;
         const volumeChart = ref(null); const leavesChart = ref(null); const approvalChart = ref(null);
         const slaChart = ref(null); const breakdownChart = ref(null); const lifecycleChart = ref(null);
         let charts = [];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        const generateData = (baseData, length) => Array.from({ length }, () => Math.floor(Math.random() * 100) + baseData);
 
         const initCharts = () => {
+            const categories = props.viewCategories || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const dataLength = categories.length;
+
             if (volumeChart.value) {
-                const c1 = new ApexCharts(volumeChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#f97316'], series: [{ name: 'Requests', data: [320, 350, 380, 420, 450, 480, 520, 550, 500, 480, 450, 420] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } }, legend: { show: false } });
+                const c1 = new ApexCharts(volumeChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#f97316'], series: [{ name: 'Requests', data: generateData(350, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } }, legend: { show: false } });
                 c1.render(); charts.push(c1);
             }
             if (leavesChart.value) {
-                const c2 = new ApexCharts(leavesChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#16a34a'], series: [{ name: 'Leaves', data: [120, 140, 160, 180, 220, 280, 320, 250, 200, 180, 160, 140] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                const c2 = new ApexCharts(leavesChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#16a34a'], series: [{ name: 'Leaves', data: generateData(150, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
                 c2.render(); charts.push(c2);
             }
             if (approvalChart.value) {
-                const c3 = new ApexCharts(approvalChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#16a34a', '#ef4444'], series: [{ name: 'Approved', data: [280, 310, 340, 380, 410, 440, 480, 510, 460, 440, 410, 380] }, { name: 'Rejected', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                const c3 = new ApexCharts(approvalChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#16a34a', '#ef4444'], series: [{ name: 'Approved', data: generateData(300, dataLength) }, { name: 'Rejected', data: generateData(30, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
                 c3.render(); charts.push(c3);
             }
             if (slaChart.value) {
-                const c4 = new ApexCharts(slaChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#3b82f6'], series: [{ name: 'SLA Days', data: [2.5, 2.3, 2.1, 1.9, 1.7, 1.5, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false } });
+                const c4 = new ApexCharts(slaChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#3b82f6'], series: [{ name: 'SLA Days', data: Array.from({ length: dataLength }, () => (Math.random() * 2 + 0.5).toFixed(1)) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, legend: { show: false } });
                 c4.render(); charts.push(c4);
             }
             if (breakdownChart.value) {
-                const c5 = new ApexCharts(breakdownChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 320, stacked: true }, colors: ['#8b5cf6', '#f97316', '#ef4444', '#16a34a', '#3b82f6'], series: [{ name: 'Attendance Adj.', data: [80, 90, 100, 110, 120, 130, 140, 150, 140, 130, 120, 110] }, { name: 'Business Trip', data: [30, 35, 40, 45, 50, 55, 60, 65, 60, 55, 50, 45] }, { name: 'Leaves', data: [120, 140, 160, 180, 220, 280, 320, 250, 200, 180, 160, 140] }, { name: 'Letters', data: [50, 55, 60, 65, 70, 75, 80, 85, 80, 75, 70, 65] }, { name: 'Others', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                const c5 = new ApexCharts(breakdownChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 320, stacked: true }, colors: ['#8b5cf6', '#f97316', '#ef4444', '#16a34a', '#3b82f6'], series: [{ name: 'Attendance Adj.', data: generateData(100, dataLength) }, { name: 'Business Trip', data: generateData(40, dataLength) }, { name: 'Leaves', data: generateData(150, dataLength) }, { name: 'Letters', data: generateData(60, dataLength) }, { name: 'Others', data: generateData(30, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
                 c5.render(); charts.push(c5);
             }
             if (lifecycleChart.value) {
-                const c6 = new ApexCharts(lifecycleChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 320 }, colors: ['#16a34a', '#8b5cf6', '#f97316', '#ef4444', '#3b82f6'], series: [{ name: 'Approved', data: [280, 310, 340, 380, 410, 440, 480, 510, 460, 440, 410, 380] }, { name: 'In Review', data: [20, 25, 30, 35, 40, 45, 50, 55, 50, 45, 40, 35] }, { name: 'Pending', data: [20, 15, 20, 25, 30, 35, 40, 35, 30, 25, 20, 15] }, { name: 'Rejected', data: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40] }, { name: 'Total', data: [320, 350, 380, 420, 450, 480, 520, 550, 500, 480, 450, 420] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months } });
+                const c6 = new ApexCharts(lifecycleChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 320 }, colors: ['#16a34a', '#8b5cf6', '#f97316', '#ef4444', '#3b82f6'], series: [{ name: 'Approved', data: generateData(300, dataLength) }, { name: 'In Review', data: generateData(30, dataLength) }, { name: 'Pending', data: generateData(25, dataLength) }, { name: 'Rejected', data: generateData(30, dataLength) }, { name: 'Total', data: generateData(400, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories } });
                 c6.render(); charts.push(c6);
             }
         };
+
+        const reinitCharts = () => {
+            charts.forEach(c => c.destroy());
+            charts = [];
+            setTimeout(initCharts, 50);
+        };
+
+        // Watch for viewCategories changes from parent
+        watch(() => props.viewCategories, () => {
+            reinitCharts();
+        }, { deep: true });
 
         onMounted(() => { setTimeout(initCharts, 100); });
         onUnmounted(() => { charts.forEach(c => c.destroy()); });
@@ -775,10 +808,11 @@ const HrdeskStaticInsights = {
 
 // HR DESK DYNAMIC INSIGHTS with ApexCharts
 const HrdeskDynamicInsights = {
+    props: ['viewCategories'],
     template: `
         <div class="dynamic-insights-content">
             <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> Monthly Lifecycle Trends</h3></div><div class="chart-container small" ref="lifecycleChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> Lifecycle Trends</h3></div><div class="chart-container small" ref="lifecycleChart"></div></div>
                 <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-sync"></i> Admin & Attendance Volume</h3></div><div class="chart-container small" ref="adminChart"></div></div>
             </div>
             <div class="charts-row">
@@ -787,30 +821,45 @@ const HrdeskDynamicInsights = {
             </div>
         </div>
     `,
-    setup() {
-        const { ref, onMounted, onUnmounted } = Vue;
+    setup(props) {
+        const { ref, onMounted, onUnmounted, watch } = Vue;
         const lifecycleChart = ref(null); const adminChart = ref(null); const salaryChart = ref(null); const disciplinaryChart = ref(null);
         let charts = [];
-        const months = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+
+        const generateData = (baseData, length) => Array.from({ length }, () => Math.floor(Math.random() * 20) + baseData);
 
         const initCharts = () => {
+            const categories = props.viewCategories || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const dataLength = categories.length;
+
             if (lifecycleChart.value) {
-                const c1 = new ApexCharts(lifecycleChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true }, colors: ['#16a34a', '#f97316', '#ef4444'], series: [{ name: 'Job Titles', data: [12, 15, 18, 22, 18, 14] }, { name: 'Promotions', data: [8, 10, 12, 15, 12, 9] }, { name: 'Transfers', data: [3, 5, 6, 8, 6, 4] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
+                const c1 = new ApexCharts(lifecycleChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true }, colors: ['#16a34a', '#f97316', '#ef4444'], series: [{ name: 'Job Titles', data: generateData(12, dataLength) }, { name: 'Promotions', data: generateData(8, dataLength) }, { name: 'Transfers', data: generateData(4, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
                 c1.render(); charts.push(c1);
             }
             if (adminChart.value) {
-                const c2 = new ApexCharts(adminChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#3b82f6', '#f97316'], series: [{ name: 'Attendance Adj.', data: [55, 62, 70, 85, 78, 66] }, { name: 'Document Updates', data: [30, 35, 40, 45, 38, 32] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months } });
+                const c2 = new ApexCharts(adminChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#3b82f6', '#f97316'], series: [{ name: 'Attendance Adj.', data: generateData(55, dataLength) }, { name: 'Document Updates', data: generateData(30, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories } });
                 c2.render(); charts.push(c2);
             }
             if (salaryChart.value) {
-                const c3 = new ApexCharts(salaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#f97316'], series: [{ name: 'Salary Changes', data: [18, 22, 28, 32, 25, 20] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } }, legend: { show: false } });
+                const c3 = new ApexCharts(salaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#f97316'], series: [{ name: 'Salary Changes', data: generateData(20, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } }, legend: { show: false } });
                 c3.render(); charts.push(c3);
             }
             if (disciplinaryChart.value) {
-                const c4 = new ApexCharts(disciplinaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#ef4444'], series: [{ name: 'Warnings', data: [2, 3, 4, 5, 4, 3] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
+                const c4 = new ApexCharts(disciplinaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#ef4444'], series: [{ name: 'Warnings', data: generateData(2, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
                 c4.render(); charts.push(c4);
             }
         };
+
+        const reinitCharts = () => {
+            charts.forEach(c => c.destroy());
+            charts = [];
+            setTimeout(initCharts, 50);
+        };
+
+        // Watch for viewCategories changes from parent
+        watch(() => props.viewCategories, () => {
+            reinitCharts();
+        }, { deep: true });
 
         onMounted(() => { setTimeout(initCharts, 100); });
         onUnmounted(() => { charts.forEach(c => c.destroy()); });
@@ -1059,9 +1108,47 @@ const StatsComponent = {
                     <p-select v-if="showOfficeFilter" v-model="filters.office" :options="offices" optionLabel="name" optionValue="id"
                               placeholder="Office" showClear class="stats-filter-field"></p-select>
 
-                    <!-- Date Range Filter (for Attendance, Requests, HR Desk only) -->
-                    <div class="requests-datepicker-wrap stats-filter-field" v-if="usesCustomDateRange">
+                    <!-- Date Range Filter (for Static Insights - Attendance, Requests, HR Desk only) -->
+                    <div class="requests-datepicker-wrap stats-filter-field" v-if="usesCustomDateRange && insightTab === 'static'">
                         <p-datepicker v-model="dateRangeArray" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Date Range"></p-datepicker>
+                    </div>
+
+                    <!-- View Type Selector (for Dynamic Insights - Attendance, Requests, HR Desk only) -->
+                    <div class="dynamic-view-selector stats-filter-field" v-if="usesCustomDateRange && insightTab === 'dynamic'" @click.stop>
+                        <div class="view-selector-field" @click="showDynamicViewPopover = !showDynamicViewPopover">
+                            <i class="pi pi-calendar"></i>
+                            <span>{{ dynamicViewTypeLabel }}</span>
+                            <i class="pi pi-chevron-down"></i>
+                        </div>
+                        <div class="view-selector-popover" v-if="showDynamicViewPopover" @click.stop>
+                            <div class="popover-content">
+                                <div class="popover-field">
+                                    <label>View Type</label>
+                                    <p-select v-model="dynamicViewType" :options="dynamicViewTypeOptions" optionLabel="label" optionValue="value" 
+                                              placeholder="Select view type" style="width: 100%;"></p-select>
+                                </div>
+                                <div class="popover-field" v-if="dynamicViewType === 'daily'">
+                                    <label>Select Date</label>
+                                    <p-datepicker v-model="dynamicSelectedDateObj" dateFormat="dd/mm/yy" style="width: 100%;"></p-datepicker>
+                                </div>
+                                <div class="popover-field" v-if="dynamicViewType === 'weekly' || dynamicViewType === 'monthly'">
+                                    <label>Month</label>
+                                    <div class="month-selector">
+                                        <button type="button" @click="prevDynamicMonth" class="month-nav"><i class="pi pi-chevron-left"></i></button>
+                                        <span>{{ dynamicMonthNames[dynamicSelectedMonth] }}</span>
+                                        <button type="button" @click="nextDynamicMonth" class="month-nav"><i class="pi pi-chevron-right"></i></button>
+                                    </div>
+                                </div>
+                                <div class="popover-field" v-if="dynamicViewType === 'yearly' || dynamicViewType === 'weekly' || dynamicViewType === 'monthly'">
+                                    <label>Year</label>
+                                    <p-select v-model="dynamicSelectedYear" :options="dynamicYearOptions" placeholder="Select year" style="width: 100%;"></p-select>
+                                </div>
+                                <div class="popover-actions">
+                                    <button type="button" class="popover-btn apply" @click="applyDynamicViewType">Apply</button>
+                                    <button type="button" class="popover-btn cancel" @click="showDynamicViewPopover = false">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="filter-actions-row">
@@ -1089,7 +1176,7 @@ const StatsComponent = {
             <div class="stats-content">
                 <template v-if="activeModule === 'attendance'">
                     <attendance-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange" :custom-range-applied="customRangeApplied" :custom-range-dates="customRange" @open-date-picker="toggleDateRangePicker"></attendance-static-insights>
-                    <attendance-dynamic-insights v-else></attendance-dynamic-insights>
+                    <attendance-dynamic-insights v-else :view-categories="dynamicViewCategories"></attendance-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'payroll'">
                     <payroll-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange"></payroll-static-insights>
@@ -1097,7 +1184,7 @@ const StatsComponent = {
                 </template>
                 <template v-else-if="activeModule === 'requests'">
                     <requests-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange"></requests-static-insights>
-                    <requests-dynamic-insights v-else></requests-dynamic-insights>
+                    <requests-dynamic-insights v-else :view-categories="dynamicViewCategories"></requests-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'demography'">
                     <demography-static-insights v-if="insightTab === 'static'"></demography-static-insights>
@@ -1105,7 +1192,7 @@ const StatsComponent = {
                 </template>
                 <template v-else-if="activeModule === 'hrdesk'">
                     <hrdesk-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange"></hrdesk-static-insights>
-                    <hrdesk-dynamic-insights v-else></hrdesk-dynamic-insights>
+                    <hrdesk-dynamic-insights v-else :view-categories="dynamicViewCategories"></hrdesk-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'directory'">
                     <directory-static-insights v-if="insightTab === 'static'"></directory-static-insights>
@@ -1204,6 +1291,68 @@ const StatsComponent = {
             }
             return 'Select dates';
         });
+
+        // Dynamic View Type State (for Dynamic Insights charts)
+        const showDynamicViewPopover = ref(false);
+        const dynamicViewType = ref('yearly');
+        const dynamicSelectedDateObj = ref(new Date());
+        const dynamicSelectedMonth = ref(new Date().getMonth());
+        const dynamicSelectedYear = ref(new Date().getFullYear());
+        const appliedDynamicViewType = ref('yearly');
+        const appliedDynamicDateObj = ref(new Date());
+        const appliedDynamicMonth = ref(new Date().getMonth());
+        const appliedDynamicYear = ref(new Date().getFullYear());
+
+        const dynamicViewTypeOptions = ref([
+            { label: 'Overall', value: 'overall' },
+            { label: 'Yearly', value: 'yearly' },
+            { label: 'Monthly', value: 'monthly' },
+            { label: 'Weekly', value: 'weekly' },
+            { label: 'Daily', value: 'daily' }
+        ]);
+
+        const dynamicMonthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const dynamicMonthShortNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dynamicYearOptions = [2023, 2024, 2025, 2026];
+
+        const prevDynamicMonth = () => { dynamicSelectedMonth.value = dynamicSelectedMonth.value === 0 ? 11 : dynamicSelectedMonth.value - 1; };
+        const nextDynamicMonth = () => { dynamicSelectedMonth.value = dynamicSelectedMonth.value === 11 ? 0 : dynamicSelectedMonth.value + 1; };
+
+        const dynamicViewTypeLabel = computed(() => {
+            switch (appliedDynamicViewType.value) {
+                case 'overall': return 'Overall (All Years)';
+                case 'yearly': return `Yearly - ${appliedDynamicYear.value}`;
+                case 'monthly': return `Monthly - ${dynamicMonthNames[appliedDynamicMonth.value]} ${appliedDynamicYear.value}`;
+                case 'weekly': return `Weekly - ${dynamicMonthNames[appliedDynamicMonth.value]} ${appliedDynamicYear.value}`;
+                case 'daily': {
+                    const d = appliedDynamicDateObj.value;
+                    return `Daily - ${d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+                }
+                default: return 'Select View';
+            }
+        });
+
+        const dynamicViewCategories = computed(() => {
+            switch (appliedDynamicViewType.value) {
+                case 'overall': return ['2023', '2024', '2025', '2026'];
+                case 'yearly': return dynamicMonthShortNames;
+                case 'monthly': {
+                    const daysInMonth = new Date(appliedDynamicYear.value, appliedDynamicMonth.value + 1, 0).getDate();
+                    return Array.from({ length: daysInMonth }, (_, i) => `${dynamicMonthShortNames[appliedDynamicMonth.value]} ${String(i + 1).padStart(2, '0')}`);
+                }
+                case 'weekly': return ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+                case 'daily': return Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
+                default: return dynamicMonthShortNames;
+            }
+        });
+
+        const applyDynamicViewType = () => {
+            appliedDynamicViewType.value = dynamicViewType.value;
+            appliedDynamicDateObj.value = dynamicSelectedDateObj.value;
+            appliedDynamicMonth.value = dynamicSelectedMonth.value;
+            appliedDynamicYear.value = dynamicSelectedYear.value;
+            showDynamicViewPopover.value = false;
+        };
 
         // Dropdown options (shared across modules)
         const departments = ref([
@@ -1369,7 +1518,12 @@ const StatsComponent = {
             filteredSections, filteredUnits, filteredTeams, filteredSubCostCenters, hasModuleFilters, showDateRangePicker, formatDateRange,
             usesCustomDateRange, usesTypeDateFilter, dateRangeArray, hasActiveFilters,
             showDepartmentFilter, showSectionFilter, showUnitFilter, showTeamFilter, showEntityFilter, showCostCenterFilter, showCountryFilter, showOfficeFilter,
-            onDepartmentChange, onSectionChange, onUnitChange, onCostCenterChange, applyAppraisalCycle, toggleDateRangePicker, clearDateRange, applyDateRange, applyFilters, resetFilters
+            onDepartmentChange, onSectionChange, onUnitChange, onCostCenterChange, applyAppraisalCycle, toggleDateRangePicker, clearDateRange, applyDateRange, applyFilters, resetFilters,
+            // Dynamic View Type (for dynamic insights charts)
+            showDynamicViewPopover, dynamicViewType, dynamicViewTypeOptions, dynamicSelectedDateObj, dynamicSelectedMonth, dynamicSelectedYear,
+            appliedDynamicViewType, appliedDynamicDateObj, appliedDynamicMonth, appliedDynamicYear,
+            dynamicMonthNames, dynamicYearOptions, dynamicViewTypeLabel, dynamicViewCategories,
+            prevDynamicMonth, nextDynamicMonth, applyDynamicViewType
         };
     }
 };
