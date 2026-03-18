@@ -156,7 +156,6 @@ const HrRequestsTrackingComponent = {
         const statusOptions = ref([
             'Pending',
             'Approved',
-            'Processing',
             'Rejected'
         ]);
 
@@ -325,7 +324,7 @@ const HrRequestsTrackingComponent = {
                 hrUserName: 'Amal Al-Sayed',
                 hrUserRole: 'HR Manager',
                 dateOfAction: '2024-03-12',
-                status: 'Processing',
+                status: 'Pending',
                 changes: [
                     { group: 'Compensation', field: 'Basic Salary', oldValue: '7,000', newValue: '8,500' },
                     { group: 'Compensation', field: 'Transportation Allowance', oldValue: '700', newValue: '850' }
@@ -412,7 +411,6 @@ const HrRequestsTrackingComponent = {
             const classes = {
                 'Pending': 'pending',
                 'Approved': 'approved',
-                'Processing': 'processing',
                 'Rejected': 'rejected'
             };
             return classes[status] || 'pending';

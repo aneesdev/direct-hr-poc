@@ -661,7 +661,8 @@ const PayrollDynamicInsights = {
 
 // REQUESTS STATIC INSIGHTS
 const RequestsStaticInsights = {
-    props: ['dateRange'],
+    props: ['dateRange', 'customRangeApplied', 'customRangeDates'],
+    emits: ['open-date-picker'],
     template: `
         <div class="static-insights-content">
             <div class="section-title"><i class="pi pi-history"></i> HISTORICAL SNAPSHOTS</div>
@@ -676,18 +677,57 @@ const RequestsStaticInsights = {
                     </div>
                     <a class="view-details-link">VIEW DETAILS <i class="pi pi-chevron-down"></i></a>
                 </div>
+
+                <!-- Custom Range Card -->
+                <div class="period-card requests-card custom-range-card" :class="{ highlighted: customRangeApplied, 'not-applied': !customRangeApplied }" @click="!customRangeApplied && $emit('open-date-picker')">
+                    <div class="period-header">
+                        <span class="period-title">CUSTOM RANGE</span>
+                        <span class="period-date" v-if="customRangeApplied">{{ formattedDateRange }}</span>
+                        <span class="period-date" v-else>Not Applied</span>
+                    </div>
+
+                    <div v-if="!customRangeApplied" class="custom-range-placeholder">
+                        <i class="pi pi-calendar-plus"></i>
+                        <span class="placeholder-text">Apply Custom Range</span>
+                        <p class="placeholder-hint">Click to select a date range</p>
+                    </div>
+
+                    <template v-else>
+                        <div class="stats-section"><div class="section-label"><i class="pi pi-chart-pie"></i> ORDER STATUS</div>
+                            <div class="stats-list"><div class="stat-row" v-for="stat in customPeriod.orderStats" :key="stat.label"><span class="stat-dot" :class="stat.color"></span><span>{{ stat.label }}</span><span class="stat-num">{{ stat.value }}</span></div></div>
+                        </div>
+                        <div class="stats-section"><div class="section-label"><i class="pi pi-list"></i> TYPE OF REQUESTS</div>
+                            <div class="stats-list"><div class="stat-row" v-for="stat in customPeriod.typeStats" :key="stat.label"><span class="stat-dot" :class="stat.color"></span><span>{{ stat.label }}</span><span class="stat-num">{{ stat.value }}</span></div></div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     `,
-    setup() {
-        const { ref } = Vue;
+    setup(props) {
+        const { ref, computed } = Vue;
         const periods = ref([
             { id: 'today', title: 'TODAY', date: 'REAL-TIME', highlighted: false, orderStats: [{ label: 'Total Request', value: 12, color: 'blue' }, { label: 'Pending', value: 4, color: 'orange' }, { label: 'In Review', value: 2, color: 'purple' }, { label: 'Approved', value: 5, color: 'green' }, { label: 'Rejected', value: 1, color: 'red' }], typeStats: [{ label: 'Leaves', value: 5, color: 'blue' }, { label: 'Business Trip', value: 1, color: 'orange' }, { label: 'Attendance Adj.', value: 3, color: 'purple' }, { label: 'Letters', value: 2, color: 'green' }, { label: 'Others', value: 1, color: 'gray' }] },
             { id: 'yesterday', title: 'YESTERDAY', date: 'FULL DAY', highlighted: false, orderStats: [{ label: 'Total Request', value: 28, color: 'blue' }, { label: 'Pending', value: 0, color: 'orange' }, { label: 'In Review', value: 3, color: 'purple' }, { label: 'Approved', value: 22, color: 'green' }, { label: 'Rejected', value: 3, color: 'red' }], typeStats: [{ label: 'Leaves', value: 10, color: 'blue' }, { label: 'Business Trip', value: 2, color: 'orange' }, { label: 'Attendance Adj.', value: 8, color: 'purple' }, { label: 'Letters', value: 4, color: 'green' }, { label: 'Others', value: 4, color: 'gray' }] },
             { id: 'week', title: 'CURRENT WEEK', date: 'OCT 20-26', highlighted: true, orderStats: [{ label: 'Total Request', value: 145, color: 'blue' }, { label: 'Pending', value: 20, color: 'orange' }, { label: 'In Review', value: 15, color: 'purple' }, { label: 'Approved', value: 98, color: 'green' }, { label: 'Rejected', value: 12, color: 'red' }], typeStats: [{ label: 'Leaves', value: 55, color: 'blue' }, { label: 'Business Trip', value: 12, color: 'orange' }, { label: 'Attendance Adj.', value: 40, color: 'purple' }, { label: 'Letters', value: 22, color: 'green' }, { label: 'Others', value: 16, color: 'gray' }] },
             { id: 'last_week', title: 'LAST WEEK', date: 'OCT 13-19', highlighted: false, orderStats: [{ label: 'Total Request', value: 188, color: 'blue' }, { label: 'Pending', value: 0, color: 'orange' }, { label: 'In Review', value: 8, color: 'purple' }, { label: 'Approved', value: 165, color: 'green' }, { label: 'Rejected', value: 15, color: 'red' }], typeStats: [{ label: 'Leaves', value: 82, color: 'blue' }, { label: 'Business Trip', value: 18, color: 'orange' }, { label: 'Attendance Adj.', value: 45, color: 'purple' }, { label: 'Letters', value: 28, color: 'green' }, { label: 'Others', value: 15, color: 'gray' }] }
         ]);
-        return { periods };
+
+        const customPeriod = ref({
+            orderStats: [{ label: 'Total Request', value: 78, color: 'blue' }, { label: 'Pending', value: 8, color: 'orange' }, { label: 'In Review', value: 5, color: 'purple' }, { label: 'Approved', value: 58, color: 'green' }, { label: 'Rejected', value: 7, color: 'red' }],
+            typeStats: [{ label: 'Leaves', value: 32, color: 'blue' }, { label: 'Business Trip', value: 8, color: 'orange' }, { label: 'Attendance Adj.', value: 20, color: 'purple' }, { label: 'Letters', value: 12, color: 'green' }, { label: 'Others', value: 6, color: 'gray' }]
+        });
+
+        const formattedDateRange = computed(() => {
+            if (props.customRangeDates?.from && props.customRangeDates?.to) {
+                const from = new Date(props.customRangeDates.from);
+                const to = new Date(props.customRangeDates.to);
+                return `${from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} - ${to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}`;
+            }
+            return 'Selected';
+        });
+
+        return { periods, customPeriod, formattedDateRange };
     }
 };
 
@@ -782,7 +822,7 @@ const DemographyStaticInsights = {
         const { ref } = Vue;
         const expandedCategories = ref([]);
         const categories = ref([
-            { id: 'entity', title: 'ENTITY BREAKDOWN', icon: 'pi-building', color: 'blue', items: [{ name: 'Direct', count: 320 }, { name: 'Tawfiq', count: 130 }] },
+            { id: 'entity', title: 'ENTITY BREAKDOWN', icon: 'pi-building', color: 'blue', items: [{ name: 'Direct', count: 320 }, { name: 'Techtic', count: 130 }] },
             { id: 'country', title: 'COUNTRY OF WORK', icon: 'pi-globe', color: 'orange', items: [{ name: 'Saudi Arabia', count: 280 }, { name: 'Egypt', count: 45 }, { name: 'UAE', count: 65 }, { name: 'Jordan', count: 10 }] },
             { id: 'nationality', title: 'NATIONALITY', icon: 'pi-flag', color: 'purple', items: [{ name: 'Saudi', count: 230 }, { name: 'Egyptian', count: 85 }, { name: 'Indian', count: 65 }, { name: 'Pakistani', count: 40 }, { name: 'Others', count: 40 }] },
             { id: 'costcenter', title: 'COST CENTER', icon: 'pi-dollar', color: 'green', items: [{ name: 'Operations', count: 150 }, { name: 'Sales & Marketing', count: 100 }, { name: 'IT & Digital', count: 95 }, { name: 'Corporate Services', count: 55 }] },
@@ -795,7 +835,8 @@ const DemographyStaticInsights = {
             { id: 'marital', title: 'MARITAL STATUS', icon: 'pi-heart', color: 'red', items: [{ name: 'Married', count: 285 }, { name: 'Single', count: 150 }, { name: 'Divorced', count: 12 }, { name: 'Widowed', count: 3 }] },
             { id: 'seniority', title: 'SENIORITY', icon: 'pi-clock', color: 'orange', items: [{ name: 'Junior (0-3 Years)', count: 140 }, { name: 'Mid-Level (3-6 Years)', count: 160 }, { name: 'Senior (10+ Years)', count: 150 }] },
             { id: 'worktype', title: 'TYPE OF WORK', icon: 'pi-briefcase', color: 'green', items: [{ name: 'Full Time', count: 350 }, { name: 'Part Time', count: 45 }, { name: 'Full Time Remotely', count: 25 }, { name: 'Part Time Remotely', count: 12 }, { name: 'Intern', count: 8 }] },
-            { id: 'shiftmodule', title: 'SHIFT MODULE', icon: 'pi-calendar', color: 'blue', items: [{ name: 'Variable', count: 120 }, { name: 'Fixed', count: 220 }] }
+            { id: 'shiftmodule', title: 'SHIFT MODULE', icon: 'pi-calendar', color: 'blue', items: [{ name: 'Variable', count: 120 }, { name: 'Fixed', count: 220 }] },
+            { id: 'termination', title: 'TERMINATION BY REASON', icon: 'pi-sign-out', color: 'red', items: [{ name: 'Resignation', count: 18 }, { name: 'Layoff', count: 6 }, { name: 'End of Contract', count: 4 }] }
         ]);
         const toggleExpand = (id) => { const i = expandedCategories.value.indexOf(id); if (i > -1) expandedCategories.value.splice(i, 1); else expandedCategories.value.push(id); };
         const getVisibleItems = (cat) => expandedCategories.value.includes(cat.id) ? cat.items : cat.items.slice(0, 5);
@@ -811,13 +852,15 @@ const DemographyDynamicInsights = {
             <div class="chart-card full-width"><div class="chart-header"><h3><i class="pi pi-chart-line"></i> Headcount Growth Trend</h3></div><div class="chart-container" ref="headcountChart"></div></div>
             <div class="charts-row">
                 <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-users"></i> New Hires vs Terminations</h3></div><div class="chart-container small" ref="hiresChart"></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-percentage"></i> Retention Rate Analysis</h3></div><div class="retention-chart"><div class="retention-value">94.2%</div><div class="retention-label">AVERAGE ANNUAL RETENTION</div></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-percentage"></i> Turnover Percentage Rate</h3></div><div class="chart-container small" ref="turnoverChart"></div></div>
             </div>
         </div>
     `,
     setup() {
         const { ref, onMounted, onUnmounted } = Vue;
-        const headcountChart = ref(null); const hiresChart = ref(null);
+        const headcountChart = ref(null);
+        const hiresChart = ref(null);
+        const turnoverChart = ref(null);
         let charts = [];
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
 
@@ -830,40 +873,105 @@ const DemographyDynamicInsights = {
                 const c2 = new ApexCharts(hiresChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#16a34a', '#ef4444'], series: [{ name: 'Hires', data: [12, 15, 10, 8, 14, 18, 12] }, { name: 'Terminations', data: [5, 3, 4, 2, 6, 4, 3] }], xaxis: { ...apexDefaultOptions.xaxis, categories: months }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
                 c2.render(); charts.push(c2);
             }
+            if (turnoverChart.value) {
+                // Turnover Rate = (Total Terminations / Total Employees) * 100
+                // Demo data: terminations [5, 3, 4, 2, 6, 4, 3] / headcount [420, 425, 430, 435, 440, 445, 450] * 100
+                const c3 = new ApexCharts(turnoverChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 },
+                    colors: ['#ef4444'],
+                    series: [{ name: 'Turnover Rate %', data: [1.19, 0.71, 0.93, 0.46, 1.36, 0.90, 0.67] }],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    yaxis: { ...apexDefaultOptions.yaxis, labels: { formatter: (val) => val.toFixed(2) + '%' } },
+                    legend: { show: false },
+                    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } },
+                    tooltip: { y: { formatter: (val) => val.toFixed(2) + '%' } }
+                });
+                c3.render(); charts.push(c3);
+            }
         };
 
         onMounted(() => { setTimeout(initCharts, 100); });
         onUnmounted(() => { charts.forEach(c => c.destroy()); });
 
-        return { headcountChart, hiresChart };
+        return { headcountChart, hiresChart, turnoverChart };
     }
 };
 
 // HR DESK STATIC INSIGHTS
 const HrdeskStaticInsights = {
-    props: ['dateRange'],
+    props: ['dateRange', 'customRangeApplied', 'customRangeDates'],
+    emits: ['open-date-picker'],
     template: `
         <div class="static-insights-content">
             <div class="section-title"><i class="pi pi-ticket"></i> SERVICE REQUEST SNAPSHOTS</div>
             <div class="period-cards-grid hrdesk">
                 <div v-for="period in periods" :key="period.id" class="period-card hrdesk-card" :class="{ highlighted: period.highlighted }">
                     <div class="period-header"><span class="period-title">{{ period.title }}</span><span class="period-date">{{ period.date }}</span></div>
+                    <div class="stats-section"><div class="section-label"><i class="pi pi-chart-pie"></i> REQUEST STATUS</div>
+                        <div class="stats-list"><div class="stat-row" v-for="stat in period.statusStats" :key="stat.label"><span class="stat-dot" :class="stat.color"></span><span>{{ stat.label }}</span><span class="stat-num">{{ stat.value }}</span></div></div>
+                    </div>
                     <div class="stats-section"><div class="section-label"><i class="pi pi-list"></i> TYPE OF REQUESTS</div>
                         <div class="stats-list"><div class="stat-row" v-for="stat in period.typeStats" :key="stat.label"><span class="stat-dot" :class="stat.color"></span><span>{{ stat.label }}</span><span class="stat-num">{{ stat.value }}</span></div></div>
                     </div>
                     <a class="view-details-link">VIEW MORE <i class="pi pi-chevron-down"></i></a>
                 </div>
+
+                <!-- Custom Range Card -->
+                <div class="period-card hrdesk-card custom-range-card" :class="{ highlighted: customRangeApplied, 'not-applied': !customRangeApplied }" @click="!customRangeApplied && $emit('open-date-picker')">
+                    <div class="period-header">
+                        <span class="period-title">CUSTOM RANGE</span>
+                        <span class="period-date" v-if="customRangeApplied">{{ formattedDateRange }}</span>
+                        <span class="period-date" v-else>Not Applied</span>
+                    </div>
+
+                    <div v-if="!customRangeApplied" class="custom-range-placeholder">
+                        <i class="pi pi-calendar-plus"></i>
+                        <span class="placeholder-text">Apply Custom Range</span>
+                        <p class="placeholder-hint">Click to select a date range</p>
+                    </div>
+
+                    <template v-else>
+                        <div class="stats-section"><div class="section-label"><i class="pi pi-chart-pie"></i> REQUEST STATUS</div>
+                            <div class="stats-list"><div class="stat-row" v-for="stat in customPeriod.statusStats" :key="stat.label"><span class="stat-dot" :class="stat.color"></span><span>{{ stat.label }}</span><span class="stat-num">{{ stat.value }}</span></div></div>
+                        </div>
+                        <div class="stats-section"><div class="section-label"><i class="pi pi-list"></i> TYPE OF REQUESTS</div>
+                            <div class="stats-list"><div class="stat-row" v-for="stat in customPeriod.typeStats" :key="stat.label"><span class="stat-dot" :class="stat.color"></span><span>{{ stat.label }}</span><span class="stat-num">{{ stat.value }}</span></div></div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     `,
-    setup() {
-        const { ref } = Vue;
+    setup(props) {
+        const { ref, computed } = Vue;
         const periods = ref([
-            { id: 'this_month', title: 'THIS MONTH', date: 'OCTOBER 2025', highlighted: false, typeStats: [{ label: 'Employee Promotion', value: 9, color: 'orange' }, { label: 'Change Job Title', value: 12, color: 'blue' }, { label: 'Salary & Benefits Adjustment', value: 25, color: 'green' }, { label: 'Employee Transfer', value: 5, color: 'purple' }, { label: 'Change Contract Type', value: 2, color: 'red' }, { label: 'Document & Detail Updates', value: 45, color: 'gray' }, { label: 'Attendance Adjustment', value: 66, color: 'orange' }, { label: 'Change Extension / email', value: 18, color: 'blue' }, { label: 'Disciplinary Action', value: 3, color: 'red' }] },
-            { id: 'last_month', title: 'LAST MONTH', date: 'SEPTEMBER 2025', highlighted: true, typeStats: [{ label: 'Employee Promotion', value: 15, color: 'orange' }, { label: 'Change Job Title', value: 18, color: 'blue' }, { label: 'Salary & Benefits Adjustment', value: 22, color: 'green' }, { label: 'Employee Transfer', value: 8, color: 'purple' }, { label: 'Change Contract Type', value: 5, color: 'red' }, { label: 'Document & Detail Updates', value: 32, color: 'gray' }, { label: 'Attendance Adjustment', value: 85, color: 'orange' }, { label: 'Change Extension / email', value: 22, color: 'blue' }, { label: 'Disciplinary Action', value: 4, color: 'red' }] },
-            { id: 'last_quarter', title: 'LAST QUARTER', date: 'Q3 2025', highlighted: false, typeStats: [{ label: 'Employee Promotion', value: 42, color: 'orange' }, { label: 'Change Job Title', value: 55, color: 'blue' }, { label: 'Salary & Benefits Adjustment', value: 110, color: 'green' }, { label: 'Employee Transfer', value: 24, color: 'purple' }, { label: 'Change Contract Type', value: 8, color: 'red' }, { label: 'Document & Detail Updates', value: 160, color: 'gray' }, { label: 'Attendance Adjustment', value: 245, color: 'orange' }, { label: 'Change Extension / email', value: 65, color: 'blue' }, { label: 'Disciplinary Action', value: 8, color: 'red' }] }
+            { id: 'this_month', title: 'THIS MONTH', date: 'OCTOBER 2025', highlighted: false, 
+              statusStats: [{ label: 'Pending', value: 18, color: 'orange' }, { label: 'Approved', value: 152, color: 'green' }, { label: 'Rejected', value: 15, color: 'red' }],
+              typeStats: [{ label: 'Employee Promotion', value: 9, color: 'orange' }, { label: 'Change Job Title', value: 12, color: 'blue' }, { label: 'Salary & Benefits Adjustment', value: 25, color: 'green' }, { label: 'Employee Transfer', value: 5, color: 'purple' }, { label: 'Change Contract Type', value: 2, color: 'red' }, { label: 'Document & Detail Updates', value: 45, color: 'gray' }, { label: 'Attendance Adjustment', value: 66, color: 'orange' }, { label: 'Change Extension / email', value: 18, color: 'blue' }, { label: 'Disciplinary Action', value: 3, color: 'red' }] },
+            { id: 'last_month', title: 'LAST MONTH', date: 'SEPTEMBER 2025', highlighted: true, 
+              statusStats: [{ label: 'Pending', value: 0, color: 'orange' }, { label: 'Approved', value: 198, color: 'green' }, { label: 'Rejected', value: 13, color: 'red' }],
+              typeStats: [{ label: 'Employee Promotion', value: 15, color: 'orange' }, { label: 'Change Job Title', value: 18, color: 'blue' }, { label: 'Salary & Benefits Adjustment', value: 22, color: 'green' }, { label: 'Employee Transfer', value: 8, color: 'purple' }, { label: 'Change Contract Type', value: 5, color: 'red' }, { label: 'Document & Detail Updates', value: 32, color: 'gray' }, { label: 'Attendance Adjustment', value: 85, color: 'orange' }, { label: 'Change Extension / email', value: 22, color: 'blue' }, { label: 'Disciplinary Action', value: 4, color: 'red' }] },
+            { id: 'last_quarter', title: 'LAST QUARTER', date: 'Q3 2025', highlighted: false, 
+              statusStats: [{ label: 'Pending', value: 0, color: 'orange' }, { label: 'Approved', value: 680, color: 'green' }, { label: 'Rejected', value: 37, color: 'red' }],
+              typeStats: [{ label: 'Employee Promotion', value: 42, color: 'orange' }, { label: 'Change Job Title', value: 55, color: 'blue' }, { label: 'Salary & Benefits Adjustment', value: 110, color: 'green' }, { label: 'Employee Transfer', value: 24, color: 'purple' }, { label: 'Change Contract Type', value: 8, color: 'red' }, { label: 'Document & Detail Updates', value: 160, color: 'gray' }, { label: 'Attendance Adjustment', value: 245, color: 'orange' }, { label: 'Change Extension / email', value: 65, color: 'blue' }, { label: 'Disciplinary Action', value: 8, color: 'red' }] }
         ]);
-        return { periods };
+
+        const customPeriod = ref({
+            statusStats: [{ label: 'Pending', value: 5, color: 'orange' }, { label: 'Approved', value: 105, color: 'green' }, { label: 'Rejected', value: 7, color: 'red' }],
+            typeStats: [{ label: 'Employee Promotion', value: 6, color: 'orange' }, { label: 'Change Job Title', value: 8, color: 'blue' }, { label: 'Salary & Benefits Adjustment', value: 15, color: 'green' }, { label: 'Employee Transfer', value: 3, color: 'purple' }, { label: 'Change Contract Type', value: 1, color: 'red' }, { label: 'Document & Detail Updates', value: 28, color: 'gray' }, { label: 'Attendance Adjustment', value: 42, color: 'orange' }, { label: 'Change Extension / email', value: 12, color: 'blue' }, { label: 'Disciplinary Action', value: 2, color: 'red' }]
+        });
+
+        const formattedDateRange = computed(() => {
+            if (props.customRangeDates?.from && props.customRangeDates?.to) {
+                const from = new Date(props.customRangeDates.from);
+                const to = new Date(props.customRangeDates.to);
+                return `${from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} - ${to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}`;
+            }
+            return 'Selected';
+        });
+
+        return { periods, customPeriod, formattedDateRange };
     }
 };
 
@@ -874,17 +982,13 @@ const HrdeskDynamicInsights = {
         <div class="dynamic-insights-content">
             <div class="charts-row">
                 <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-chart-bar"></i> Lifecycle Trends</h3></div><div class="chart-container small" ref="lifecycleChart"></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-sync"></i> Admin & Attendance Volume</h3></div><div class="chart-container small" ref="adminChart"></div></div>
-            </div>
-            <div class="charts-row">
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-dollar"></i> Salary & Benefits Trend</h3></div><div class="chart-container small" ref="salaryChart"></div></div>
-                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-exclamation-triangle"></i> Disciplinary Warnings</h3></div><div class="chart-container small" ref="disciplinaryChart"></div></div>
+                <div class="chart-card"><div class="chart-header"><h3><i class="pi pi-ticket"></i> Total Submitted Requests Volume</h3></div><div class="chart-container small" ref="requestsVolumeChart"></div></div>
             </div>
         </div>
     `,
     setup(props) {
         const { ref, onMounted, onUnmounted, watch } = Vue;
-        const lifecycleChart = ref(null); const adminChart = ref(null); const salaryChart = ref(null); const disciplinaryChart = ref(null);
+        const lifecycleChart = ref(null); const requestsVolumeChart = ref(null);
         let charts = [];
 
         const generateData = (baseData, length) => Array.from({ length }, () => Math.floor(Math.random() * 20) + baseData);
@@ -897,17 +1001,9 @@ const HrdeskDynamicInsights = {
                 const c1 = new ApexCharts(lifecycleChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true }, colors: ['#16a34a', '#f97316', '#ef4444'], series: [{ name: 'Job Titles', data: generateData(12, dataLength) }, { name: 'Promotions', data: generateData(8, dataLength) }, { name: 'Transfers', data: generateData(4, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } } });
                 c1.render(); charts.push(c1);
             }
-            if (adminChart.value) {
-                const c2 = new ApexCharts(adminChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#3b82f6', '#f97316'], series: [{ name: 'Attendance Adj.', data: generateData(55, dataLength) }, { name: 'Document Updates', data: generateData(30, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories } });
+            if (requestsVolumeChart.value) {
+                const c2 = new ApexCharts(requestsVolumeChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'line', height: 240 }, colors: ['#f97316', '#3b82f6', '#10b981', '#6366f1', '#f59e0b', '#06b6d4'], series: [{ name: 'Employee Promotion', data: generateData(10, dataLength) }, { name: 'Change Job Title', data: generateData(15, dataLength) }, { name: 'Salary & Benefits Adjustment', data: generateData(25, dataLength) }, { name: 'Employee Transfer', data: generateData(8, dataLength) }, { name: 'Change Contract Type', data: generateData(5, dataLength) }, { name: 'Compound Leaves', data: generateData(20, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories } });
                 c2.render(); charts.push(c2);
-            }
-            if (salaryChart.value) {
-                const c3 = new ApexCharts(salaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240 }, colors: ['#f97316'], series: [{ name: 'Salary Changes', data: generateData(20, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } }, legend: { show: false } });
-                c3.render(); charts.push(c3);
-            }
-            if (disciplinaryChart.value) {
-                const c4 = new ApexCharts(disciplinaryChart.value, { ...apexDefaultOptions, chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 }, colors: ['#ef4444'], series: [{ name: 'Warnings', data: generateData(2, dataLength) }], xaxis: { ...apexDefaultOptions.xaxis, categories }, legend: { show: false }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } } });
-                c4.render(); charts.push(c4);
             }
         };
 
@@ -925,7 +1021,7 @@ const HrdeskDynamicInsights = {
         onMounted(() => { setTimeout(initCharts, 100); });
         onUnmounted(() => { charts.forEach(c => c.destroy()); });
 
-        return { lifecycleChart, adminChart, salaryChart, disciplinaryChart };
+        return { lifecycleChart, requestsVolumeChart };
     }
 };
 
@@ -935,7 +1031,7 @@ const DirectoryStaticInsights = {
         <div class="static-insights-content">
             <div class="section-title"><i class="pi pi-id-card"></i> DIRECTORY SNAPSHOT</div>
             <div class="directory-stats-grid">
-                <div class="directory-stat-card"><div class="stat-header">MAIN STATUS</div><div class="stat-items"><div class="stat-item"><span class="item-dot green"></span><span>active</span><span class="item-count">452</span></div><div class="stat-item"><span class="item-dot red"></span><span>non-active</span><span class="item-count">28</span></div></div></div>
+                <div class="directory-stat-card"><div class="stat-header">MAIN STATUS</div><div class="stat-items"><div class="stat-item"><span class="item-dot orange"></span><span>Draft</span><span class="item-count">3</span></div><div class="stat-item"><span class="item-dot blue"></span><span>Onboarding</span><span class="item-count">2</span></div><div class="stat-item"><span class="item-dot green"></span><span>Active</span><span class="item-count">8</span></div><div class="stat-item"><span class="item-dot gray"></span><span>Non-active</span><span class="item-count">1</span></div></div></div>
                 <div class="directory-stat-card"><div class="stat-header">ONBOARDING STATUS</div><div class="stat-items"><div class="stat-item"><span class="item-dot orange"></span><span>Ready to hire step</span><span class="item-count">15</span></div><div class="stat-item"><span class="item-dot blue"></span><span>Documents step</span><span class="item-count">5</span></div><div class="stat-item"><span class="item-dot purple"></span><span>Work Access step</span><span class="item-count">12</span></div><div class="stat-item"><span class="item-dot green"></span><span>Contract & Salary step</span><span class="item-count">8</span></div><div class="stat-item"><span class="item-dot red"></span><span>Attendance step</span><span class="item-count">7</span></div><div class="stat-item"><span class="item-dot gray"></span><span>System step</span><span class="item-count">3</span></div><div class="stat-item"><span class="item-dot blue"></span><span>checklistverif step</span><span class="item-count">10</span></div><div class="stat-item"><span class="item-dot green"></span><span>done</span><span class="item-count">45</span></div></div></div>
                 <div class="directory-stat-card"><div class="stat-header">SOCIAL ENGAGEMENT</div><div class="stat-items"><div class="stat-item"><span class="item-dot orange"></span><span>Total HR Post Items</span><span class="item-count">2,450</span></div><div class="stat-item"><span class="item-dot blue"></span><span>Total HR Post Comments</span><span class="item-count">840</span></div><div class="stat-item"><span class="item-dot green"></span><span>Total HR Post Likes</span><span class="item-count">1,120</span></div><div class="stat-item"><span class="item-dot purple"></span><span>Total BD Post Comments</span><span class="item-count">495</span></div><div class="stat-item"><span class="item-dot red"></span><span>Total Anniv. Post Likes</span><span class="item-count">5,600</span></div><div class="stat-item"><span class="item-dot gray"></span><span>Total Anniv. Comments</span><span class="item-count">1,205</span></div></div></div>
             </div>
@@ -1012,8 +1108,6 @@ const SettingsStaticInsights = {
             <div class="section-title"><i class="pi pi-cog"></i> GLOBAL CONFIGURATION SNAPSHOTS</div>
             <div class="settings-stats-grid">
                 <div class="settings-stat-card"><div class="stat-header"><i class="pi pi-building"></i> ORGANIZATIONAL FOOTPRINT</div><div class="stat-items"><div class="stat-item"><span class="item-dot orange"></span><span>Countries of Work</span><span class="item-count">2</span></div><div class="stat-item"><span class="item-dot blue"></span><span>Offices</span><span class="item-count">5</span></div><div class="stat-item"><span class="item-dot green"></span><span>Total Departments</span><span class="item-count">12</span></div><div class="stat-item"><span class="item-dot purple"></span><span>Total Sections</span><span class="item-count">28</span></div><div class="stat-item"><span class="item-dot red"></span><span>Total Units</span><span class="item-count">45</span></div><div class="stat-item"><span class="item-dot gray"></span><span>Total Teams</span><span class="item-count">62</span></div></div><a class="view-more-link">VIEW MORE <i class="pi pi-chevron-down"></i></a></div>
-                <div class="settings-stat-card"><div class="stat-header"><i class="pi pi-briefcase"></i> WORKFORCE & OPERATIONS</div><div class="stat-items"><div class="stat-item"><span class="item-dot orange"></span><span>Total Job Titles</span><span class="item-count">165</span></div><div class="stat-item"><span class="item-dot blue"></span><span>Total Cost Centers</span><span class="item-count">8</span></div><div class="stat-item"><span class="item-dot green"></span><span>Total NOMAD SHIFT</span><span class="item-count">4</span></div><div class="stat-item"><span class="item-dot purple"></span><span>Total FLEXIBLE</span><span class="item-count">2</span></div></div><a class="view-more-link">VIEW MORE <i class="pi pi-chevron-down"></i></a></div>
-                <div class="settings-stat-card"><div class="stat-header"><i class="pi pi-calendar"></i> COMPLIANCES & HOLIDAYS</div><div class="stat-items"><div class="stat-item"><span class="item-dot orange"></span><span>Holidays</span><span class="item-count">22</span></div><div class="stat-item"><span class="item-dot blue"></span><span>Total Admin</span><span class="item-count">8</span></div><div class="stat-item"><span class="item-dot green"></span><span>Total Public Holiday</span><span class="item-count">12</span></div><div class="stat-item"><span class="item-dot purple"></span><span>Total Valid Documents</span><span class="item-count">1,430</span></div><div class="stat-item"><span class="item-dot red"></span><span>Total Expired Documents</span><span class="item-count">12</span></div></div><a class="view-more-link">VIEW MORE <i class="pi pi-chevron-down"></i></a></div>
                 <div class="settings-stat-card"><div class="stat-header"><i class="pi pi-users"></i> KEY SYSTEM ROLES</div><div class="stat-items"><div class="stat-item"><span class="item-dot orange"></span><span>Total Admin</span><span class="item-count">3</span></div><div class="stat-item"><span class="item-dot blue"></span><span>Total HR Manager</span><span class="item-count">2</span></div><div class="stat-item"><span class="item-dot green"></span><span>Total HR Team</span><span class="item-count">8</span></div><div class="stat-item"><span class="item-dot purple"></span><span>Total SVS Accountants</span><span class="item-count">4</span></div><div class="stat-item"><span class="item-dot red"></span><span>Total Payroll Team</span><span class="item-count">3</span></div></div><a class="view-more-link">VIEW MORE <i class="pi pi-chevron-down"></i></a></div>
             </div>
         </div>
@@ -1244,7 +1338,7 @@ const StatsComponent = {
                     <payroll-dynamic-insights v-else></payroll-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'requests'">
-                    <requests-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange"></requests-static-insights>
+                    <requests-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange" :custom-range-applied="customRangeApplied" :custom-range-dates="customRange" @open-date-picker="toggleDateRangePicker"></requests-static-insights>
                     <requests-dynamic-insights v-else :view-categories="dynamicViewCategories"></requests-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'demography'">
@@ -1252,7 +1346,7 @@ const StatsComponent = {
                     <demography-dynamic-insights v-else></demography-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'hrdesk'">
-                    <hrdesk-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange"></hrdesk-static-insights>
+                    <hrdesk-static-insights v-if="insightTab === 'static'" :date-range="selectedDateRange" :custom-range-applied="customRangeApplied" :custom-range-dates="customRange" @open-date-picker="toggleDateRangePicker"></hrdesk-static-insights>
                     <hrdesk-dynamic-insights v-else :view-categories="dynamicViewCategories"></hrdesk-dynamic-insights>
                 </template>
                 <template v-else-if="activeModule === 'directory'">
@@ -1428,7 +1522,7 @@ const StatsComponent = {
         const teams = ref([
             { id: 1, name: 'Alpha Squad', unitId: 1 }, { id: 2, name: 'Beta Squad', unitId: 1 }, { id: 3, name: 'Core API', unitId: 3 }
         ]);
-        const entities = ref([{ id: 1, name: 'Direct' }, { id: 2, name: 'Tawfiq' }]);
+        const entities = ref([{ id: 1, name: 'Direct' }, { id: 2, name: 'Techtic' }]);
         const costCenters = ref([{ id: 1, name: 'Operations' }, { id: 2, name: 'Sales & Marketing' }, { id: 3, name: 'IT & Digital' }, { id: 4, name: 'Corporate Services' }]);
         const subCostCenters = ref([
             { id: 1, name: 'Frontend Development', parentCostCenterId: 1 },
@@ -1508,7 +1602,7 @@ const StatsComponent = {
         const showSectionFilter = computed(() => hasModuleFilters.value);
         const showUnitFilter = computed(() => hasModuleFilters.value);
         const showTeamFilter = computed(() => hasModuleFilters.value);
-        const showEntityFilter = computed(() => activeModule.value === 'attendance');
+        const showEntityFilter = computed(() => ['attendance', 'requests', 'hrdesk'].includes(activeModule.value));
         const showCostCenterFilter = computed(() => ['attendance', 'payroll'].includes(activeModule.value));
         const showCountryFilter = computed(() => activeModule.value === 'attendance');
         const showOfficeFilter = computed(() => activeModule.value === 'attendance');
