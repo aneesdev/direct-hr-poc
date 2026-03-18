@@ -24125,6 +24125,54 @@ img {
     color: var(--text-color-secondary);
 }
 
+/* Payroll Tag Breakdown Section */
+.payroll-tag-section {
+    margin-top: 0.5rem;
+}
+
+.tag-divider {
+    height: 1px;
+    background: var(--surface-border);
+    margin: 1rem 0;
+}
+
+.tag-header {
+    margin-bottom: 0.75rem;
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+}
+
+.tag-badge.cogs {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.tag-badge.ga {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.tag-badge.intangible {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.tag-amounts .amount-row {
+    font-size: 0.8rem;
+}
+
+.tag-amounts .amount {
+    font-size: 0.8rem;
+}
+
 /* ===========================
    Training Module Styles
    =========================== */

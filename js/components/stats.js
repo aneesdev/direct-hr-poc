@@ -463,6 +463,22 @@ const PayrollStaticInsights = {
                         <div class="amount-row"><span class="amount-dot red"></span><span>Total EOS Ded.</span><span class="amount">{{ period.eosDed }} <small>SAR</small></span></div>
                         <div class="amount-row"><span class="amount-dot gray"></span><span>Total Arrears Ded.</span><span class="amount">{{ period.arrearsDed }} <small>SAR</small></span></div>
                     </div>
+
+                    <!-- Cost Center Tag Breakdown -->
+                    <div class="payroll-tag-section" v-for="tag in period.tagBreakdown" :key="tag.name">
+                        <div class="tag-divider"></div>
+                        <div class="tag-header">
+                            <span class="tag-badge" :class="tag.class">{{ tag.name }}</span>
+                        </div>
+                        <div class="payroll-amounts tag-amounts">
+                            <div class="amount-row"><span class="amount-dot green"></span><span>Total Net Pay</span><span class="amount">{{ tag.netPay }} <small>SAR</small></span></div>
+                            <div class="amount-row"><span class="amount-dot blue"></span><span>Total Gross</span><span class="amount">{{ tag.gross }} <small>SAR</small></span></div>
+                            <div class="amount-row"><span class="amount-dot orange"></span><span>Total Commissions</span><span class="amount">{{ tag.commissions }} <small>SAR</small></span></div>
+                            <div class="amount-row"><span class="amount-dot purple"></span><span>Total Arrears Add</span><span class="amount">{{ tag.arrearsAdd }} <small>SAR</small></span></div>
+                            <div class="amount-row"><span class="amount-dot red"></span><span>Total EOS Ded.</span><span class="amount">{{ tag.eosDed }} <small>SAR</small></span></div>
+                            <div class="amount-row"><span class="amount-dot gray"></span><span>Total Arrears Ded.</span><span class="amount">{{ tag.arrearsDed }} <small>SAR</small></span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -470,9 +486,33 @@ const PayrollStaticInsights = {
     setup() {
         const { ref } = Vue;
         const periods = ref([
-            { id: 1, title: 'OCTOBER 2025', status: 'confirmed', highlighted: false, headcount: 380, runCycles: 4, netPay: '2,180,500.00', gross: '2,455,000.00', commissions: '58,200.00', arrearsAdd: '8,150.00', eosDed: '7,980.00', arrearsDed: '52,800.00' },
-            { id: 2, title: 'NOVEMBER 2025', status: 'confirmed', highlighted: true, headcount: 365, runCycles: 4, netPay: '2,230,000.00', gross: '2,490,000.00', commissions: '42,000.00', arrearsAdd: '15,000.00', eosDed: '7,500.00', arrearsDed: '18,500.00' },
-            { id: 3, title: 'DECEMBER 2025', status: 'confirmed', highlighted: false, headcount: 372, runCycles: 5, netPay: '2,215,750.00', gross: '2,562,300.00', commissions: '71,650.00', arrearsAdd: '8,500.00', eosDed: '8,320.00', arrearsDed: '52,450.00' }
+            { 
+                id: 1, title: 'OCTOBER 2025', status: 'confirmed', highlighted: false, headcount: 380, runCycles: 4, 
+                netPay: '2,180,500.00', gross: '2,455,000.00', commissions: '58,200.00', arrearsAdd: '8,150.00', eosDed: '7,980.00', arrearsDed: '52,800.00',
+                tagBreakdown: [
+                    { name: 'COGS', class: 'cogs', netPay: '1,150,200.00', gross: '1,280,000.00', commissions: '32,100.00', arrearsAdd: '4,200.00', eosDed: '4,100.00', arrearsDed: '28,500.00' },
+                    { name: 'G&A', class: 'ga', netPay: '820,300.00', gross: '935,000.00', commissions: '21,100.00', arrearsAdd: '3,150.00', eosDed: '3,080.00', arrearsDed: '19,300.00' },
+                    { name: 'INTANGIBLE', class: 'intangible', netPay: '210,000.00', gross: '240,000.00', commissions: '5,000.00', arrearsAdd: '800.00', eosDed: '800.00', arrearsDed: '5,000.00' }
+                ]
+            },
+            { 
+                id: 2, title: 'NOVEMBER 2025', status: 'confirmed', highlighted: true, headcount: 365, runCycles: 4, 
+                netPay: '2,230,000.00', gross: '2,490,000.00', commissions: '42,000.00', arrearsAdd: '15,000.00', eosDed: '7,500.00', arrearsDed: '18,500.00',
+                tagBreakdown: [
+                    { name: 'COGS', class: 'cogs', netPay: '1,180,000.00', gross: '1,320,000.00', commissions: '22,000.00', arrearsAdd: '8,000.00', eosDed: '3,900.00', arrearsDed: '9,500.00' },
+                    { name: 'G&A', class: 'ga', netPay: '840,000.00', gross: '940,000.00', commissions: '16,000.00', arrearsAdd: '5,500.00', eosDed: '2,800.00', arrearsDed: '7,200.00' },
+                    { name: 'INTANGIBLE', class: 'intangible', netPay: '210,000.00', gross: '230,000.00', commissions: '4,000.00', arrearsAdd: '1,500.00', eosDed: '800.00', arrearsDed: '1,800.00' }
+                ]
+            },
+            { 
+                id: 3, title: 'DECEMBER 2025', status: 'confirmed', highlighted: false, headcount: 372, runCycles: 5, 
+                netPay: '2,215,750.00', gross: '2,562,300.00', commissions: '71,650.00', arrearsAdd: '8,500.00', eosDed: '8,320.00', arrearsDed: '52,450.00',
+                tagBreakdown: [
+                    { name: 'COGS', class: 'cogs', netPay: '1,175,400.00', gross: '1,360,000.00', commissions: '38,000.00', arrearsAdd: '4,500.00', eosDed: '4,400.00', arrearsDed: '28,000.00' },
+                    { name: 'G&A', class: 'ga', netPay: '830,350.00', gross: '962,300.00', commissions: '28,650.00', arrearsAdd: '3,200.00', eosDed: '3,120.00', arrearsDed: '19,450.00' },
+                    { name: 'INTANGIBLE', class: 'intangible', netPay: '210,000.00', gross: '240,000.00', commissions: '5,000.00', arrearsAdd: '800.00', eosDed: '800.00', arrearsDed: '5,000.00' }
+                ]
+            }
         ]);
         return { periods };
     }
@@ -492,19 +532,23 @@ const PayrollDynamicInsights = {
                     <div class="chart-container small" ref="deductionChart"></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-header"><h3><i class="pi pi-money-bill"></i> 3. Total Arrears Ded.</h3></div>
-                    <div class="chart-container small" ref="arrearsChart"></div>
+                    <div class="chart-header"><h3><i class="pi pi-wallet"></i> 3. Cost Center Tag Breakdown</h3></div>
+                    <div class="chart-container small" ref="costCenterTagChart"></div>
                 </div>
             </div>
             <div class="charts-row">
                 <div class="chart-card">
-                    <div class="chart-header"><h3><i class="pi pi-users"></i> 4. Headcount Growth</h3></div>
-                    <div class="chart-container small" ref="headcountChart"></div>
+                    <div class="chart-header"><h3><i class="pi pi-money-bill"></i> 4. Total Arrears Ded.</h3></div>
+                    <div class="chart-container small" ref="arrearsChart"></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-header"><h3><i class="pi pi-building"></i> 5. Company GOSI Contribution</h3></div>
-                    <div class="chart-container small" ref="gosiChart"></div>
+                    <div class="chart-header"><h3><i class="pi pi-users"></i> 5. Headcount Growth</h3></div>
+                    <div class="chart-container small" ref="headcountChart"></div>
                 </div>
+            </div>
+            <div class="chart-card full-width">
+                <div class="chart-header"><h3><i class="pi pi-building"></i> 6. Company GOSI Contribution</h3></div>
+                <div class="chart-container" ref="gosiChart"></div>
             </div>
         </div>
     `,
@@ -512,6 +556,7 @@ const PayrollDynamicInsights = {
         const { ref, onMounted, onUnmounted } = Vue;
         const netPayChart = ref(null);
         const deductionChart = ref(null);
+        const costCenterTagChart = ref(null);
         const arrearsChart = ref(null);
         const headcountChart = ref(null);
         const gosiChart = ref(null);
@@ -550,6 +595,22 @@ const PayrollDynamicInsights = {
                 chart2.render();
                 charts.push(chart2);
             }
+            if (costCenterTagChart.value) {
+                const chartTag = new ApexCharts(costCenterTagChart.value, {
+                    ...apexDefaultOptions,
+                    chart: { ...apexDefaultOptions.chart, type: 'bar', height: 240, stacked: true },
+                    colors: ['#3b82f6', '#8b5cf6', '#16a34a'],
+                    series: [
+                        { name: 'COGS', data: [1150000, 1160000, 1170000, 1175000, 1180000, 1185000, 1190000, 1195000, 1200000, 1205000, 1210000, 1215000] },
+                        { name: 'G&A', data: [820000, 825000, 830000, 835000, 840000, 845000, 850000, 855000, 860000, 865000, 870000, 875000] },
+                        { name: 'Intangible', data: [210000, 212000, 214000, 216000, 218000, 220000, 222000, 224000, 226000, 228000, 230000, 232000] }
+                    ],
+                    xaxis: { ...apexDefaultOptions.xaxis, categories: months },
+                    plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } }
+                });
+                chartTag.render();
+                charts.push(chartTag);
+            }
             if (arrearsChart.value) {
                 const chart3 = new ApexCharts(arrearsChart.value, {
                     ...apexDefaultOptions,
@@ -579,7 +640,7 @@ const PayrollDynamicInsights = {
             if (gosiChart.value) {
                 const chart5 = new ApexCharts(gosiChart.value, {
                     ...apexDefaultOptions,
-                    chart: { ...apexDefaultOptions.chart, type: 'area', height: 240 },
+                    chart: { ...apexDefaultOptions.chart, type: 'area', height: 280 },
                     colors: ['#16a34a'],
                     series: [{ name: 'GOSI', data: [120000, 122000, 125000, 128000, 130000, 132000, 135000, 138000, 140000, 142000, 145000, 148000] }],
                     xaxis: { ...apexDefaultOptions.xaxis, categories: months },
@@ -594,7 +655,7 @@ const PayrollDynamicInsights = {
         onMounted(() => { setTimeout(initCharts, 100); });
         onUnmounted(() => { charts.forEach(c => c.destroy()); });
 
-        return { netPayChart, deductionChart, arrearsChart, headcountChart, gosiChart };
+        return { netPayChart, deductionChart, costCenterTagChart, arrearsChart, headcountChart, gosiChart };
     }
 };
 
