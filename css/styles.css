@@ -15904,8 +15904,7 @@ img {
 }
 
 /* Extend hover zone so moving mouse to tooltip doesn't hide it */
-.action-btn-wrapper::before,
-.stat-item-wrapper::before {
+.action-btn-wrapper::before {
     content: '';
     position: absolute;
     bottom: 100%;
@@ -15915,8 +15914,29 @@ img {
     z-index: 999;
 }
 
-.action-btn-wrapper:hover .social-tooltip,
-.stat-item-wrapper:hover .social-tooltip {
+.action-btn-wrapper:hover .social-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-2px);
+    pointer-events: auto;
+}
+
+/* For stat-item-wrapper, only show tooltip when hovering the stat-item itself */
+.stat-item-wrapper .stat-item {
+    position: relative;
+}
+
+.stat-item-wrapper .stat-item::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: -10px;
+    right: -10px;
+    height: 20px;
+}
+
+.stat-item-wrapper .stat-item:hover ~ .social-tooltip,
+.stat-item-wrapper .social-tooltip:hover {
     opacity: 1;
     visibility: visible;
     transform: translateY(-2px);

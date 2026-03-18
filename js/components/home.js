@@ -193,8 +193,11 @@ const HomeComponent = {
                                         </div>
                                     </div>
                                     <div class="stat-item-wrapper">
-                                        <span class="stat-item"><i class="pi pi-comment"></i> {{ bday.commentsList.length }} Wishes</span>
-                                        <div class="social-tooltip" v-if="bday.commentsList && bday.commentsList.length > 0">
+                                        <span class="stat-item clickable" @click="toggleWidgetComments(bday)">
+                                            <i class="pi pi-comment"></i> {{ bday.commentsList.length }} Wishes
+                                            <i :class="bday.showComments ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" style="font-size: 0.65rem; margin-left: 0.25rem;"></i>
+                                        </span>
+                                        <div class="social-tooltip" v-if="bday.commentsList && bday.commentsList.length > 0 && !bday.showComments">
                                             <div class="tooltip-content tooltip-content-scroll">
                                                 <span v-for="(comment, idx) in getUniqueCommenters(bday.commentsList)" :key="idx">{{ comment }}</span>
                                             </div>
@@ -203,8 +206,8 @@ const HomeComponent = {
                                 </div>
                                 <div class="liked-by" v-if="bday.likedBy && bday.likedBy.length > 0">Liked by <strong>{{ bday.likedBy[0] }}</strong><span v-if="bday.likedBy.length > 1"> and {{ bday.likedBy.length - 1 }} others</span></div>
                                 
-                                <!-- Comments Section -->
-                                <div class="widget-comments">
+                                <!-- Comments Section (hidden by default) -->
+                                <div class="widget-comments" v-if="bday.showComments">
                                     <div v-for="comment in getVisibleWidgetComments(bday)" :key="comment.id" class="widget-comment">
                                         <img :src="comment.avatar" :alt="comment.name" class="widget-comment-avatar">
                                         <div class="widget-comment-content">
@@ -220,7 +223,7 @@ const HomeComponent = {
                                     </div>
                                 </div>
                                 
-                                <div class="widget-comment-input">
+                                <div class="widget-comment-input" v-if="bday.showComments">
                                     <input type="text" v-model="bday.newComment" placeholder="Write something nice..." @keyup.enter="addBirthdayComment(bday)">
                                     <button class="send-btn-filled" @click="addBirthdayComment(bday)"><i class="pi pi-send"></i></button>
                                 </div>
@@ -256,8 +259,11 @@ const HomeComponent = {
                                         </div>
                                     </div>
                                     <div class="stat-item-wrapper">
-                                        <span class="stat-item"><i class="pi pi-comment"></i> {{ anni.commentsList.length }} Wishes</span>
-                                        <div class="social-tooltip" v-if="anni.commentsList && anni.commentsList.length > 0">
+                                        <span class="stat-item clickable" @click="toggleWidgetComments(anni)">
+                                            <i class="pi pi-comment"></i> {{ anni.commentsList.length }} Wishes
+                                            <i :class="anni.showComments ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" style="font-size: 0.65rem; margin-left: 0.25rem;"></i>
+                                        </span>
+                                        <div class="social-tooltip" v-if="anni.commentsList && anni.commentsList.length > 0 && !anni.showComments">
                                             <div class="tooltip-content tooltip-content-scroll">
                                                 <span v-for="(comment, idx) in getUniqueCommenters(anni.commentsList)" :key="idx">{{ comment }}</span>
                                             </div>
@@ -265,8 +271,8 @@ const HomeComponent = {
                                     </div>
                                 </div>
                                 
-                                <!-- Comments Section -->
-                                <div class="widget-comments">
+                                <!-- Comments Section (hidden by default) -->
+                                <div class="widget-comments" v-if="anni.showComments">
                                     <div v-for="comment in getVisibleWidgetComments(anni)" :key="comment.id" class="widget-comment">
                                         <img :src="comment.avatar" :alt="comment.name" class="widget-comment-avatar">
                                         <div class="widget-comment-content">
@@ -282,7 +288,7 @@ const HomeComponent = {
                                     </div>
                                 </div>
                                 
-                                <div class="widget-comment-input">
+                                <div class="widget-comment-input" v-if="anni.showComments">
                                     <input type="text" v-model="anni.newComment" placeholder="Write something nice..." @keyup.enter="addAnniversaryComment(anni)">
                                     <button class="send-btn-filled" @click="addAnniversaryComment(anni)"><i class="pi pi-send"></i></button>
                                 </div>
@@ -323,38 +329,6 @@ const HomeComponent = {
                         </div>
                     </div>
 
-                    <!-- Workforce Status Widget -->
-                    <div class="widget-card">
-                        <div class="widget-header">
-                            <h4><i class="pi pi-chart-bar"></i> Workforce Status</h4>
-                        </div>
-                        <div class="workforce-stats">
-                            <div class="workforce-stat">
-                                <div class="stat-icon-small blue"><i class="pi pi-users"></i></div>
-                                <div class="stat-info">
-                                    <span class="stat-label-sm">ACTIVE DUTY</span>
-                                    <span class="stat-value-lg">{{ workforceStatus.activeDaily.count }}</span>
-                                </div>
-                                <span class="stat-change positive">+{{ workforceStatus.activeDaily.change }}%</span>
-                            </div>
-                            <div class="workforce-stat">
-                                <div class="stat-icon-small purple"><i class="pi pi-clock"></i></div>
-                                <div class="stat-info">
-                                    <span class="stat-label-sm">PROBATION</span>
-                                    <span class="stat-value-lg">{{ workforceStatus.probation.count }}</span>
-                                </div>
-                                <span class="stat-change positive">+{{ workforceStatus.probation.change }}%</span>
-                            </div>
-                            <div class="workforce-stat">
-                                <div class="stat-icon-small orange"><i class="pi pi-calendar-times"></i></div>
-                                <div class="stat-info">
-                                    <span class="stat-label-sm">ON LEAVE</span>
-                                    <span class="stat-value-lg">{{ workforceStatus.onLeave.count }}</span>
-                                </div>
-                                <span class="stat-change negative">{{ workforceStatus.onLeave.change }}%</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             
@@ -548,6 +522,7 @@ const HomeComponent = {
                 likedBy: ['Khaled Al-Anazi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Sarah Al-Otaibi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad', 'Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki', 'Huda Al-Shammari', 'Ali Al-Jaber'],
                 newComment: '',
                 commentsExpanded: false,
+                showComments: false,
                 commentsList: [
                     { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Happy Birthday! 🎂' },
                     { id: 2, name: 'Khaled Al-Anazi', avatar: 'https://i.pravatar.cc/40?img=11', text: 'Wishing you an amazing day!' },
@@ -566,6 +541,7 @@ const HomeComponent = {
                 likedBy: ['Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Khaled Al-Anazi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad', 'Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki'],
                 newComment: '',
                 commentsExpanded: false,
+                showComments: false,
                 commentsList: [
                     { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Many happy returns!' },
                     { id: 2, name: 'Sarah Al-Otaibi', avatar: 'https://i.pravatar.cc/40?img=5', text: 'Happy Birthday Khaled! 🎁' },
@@ -589,6 +565,7 @@ const HomeComponent = {
                 likedBy: ['Sarah Al-Otaibi', 'Khaled Al-Anazi', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Ali Al-Rashid', 'Fatima Al-Zahrani', 'Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Mohammad Al-Dossari', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad', 'Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki', 'Huda Al-Shammari'],
                 newComment: '',
                 commentsExpanded: false,
+                showComments: false,
                 commentsList: [
                     { id: 1, name: 'Ahmed Al-Qahtani', avatar: 'https://i.pravatar.cc/40?img=12', text: 'Congrats on 5 years!' },
                     { id: 2, name: 'Sarah Al-Otaibi', avatar: 'https://i.pravatar.cc/40?img=5', text: 'Amazing milestone! Keep it up! 🌟' },
@@ -670,6 +647,11 @@ const HomeComponent = {
         // Toggle expand comments for widget
         const toggleExpandWidgetComments = (item) => {
             item.commentsExpanded = !item.commentsExpanded;
+        };
+
+        // Toggle show/hide comments for widget (birthday/anniversary)
+        const toggleWidgetComments = (item) => {
+            item.showComments = !item.showComments;
         };
         
         // Add birthday comment
@@ -916,6 +898,7 @@ const HomeComponent = {
             toggleExpandComments,
             getVisibleWidgetComments,
             toggleExpandWidgetComments,
+            toggleWidgetComments,
             selectMood,
             getMoodEmoji,
             openDocument

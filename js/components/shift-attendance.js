@@ -85,8 +85,6 @@ const ShiftAttendanceComponent = {
                                     </span>
                                     <p-select v-model="scheduleFilterDepartment" :options="departmentOptions" optionLabel="name" optionValue="id"
                                               placeholder="Department" showClear style="width: 130px;"></p-select>
-                                    <p-select v-model="scheduleFilterShift" :options="shiftFilterOptions" optionLabel="name" optionValue="id"
-                                              placeholder="Shift" showClear style="width: 120px;"></p-select>
                                     <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
                                         <button class="layer-tab" :class="{ active: schedulerLayer === 'first' }" @click="schedulerLayer = 'first'">
                                             First Layer
@@ -965,19 +963,19 @@ const ShiftAttendanceComponent = {
             return allShifts.value.filter(s => s.shiftType === shiftTypeFilter.value);
         });
 
-        // Week navigation
-        const currentWeekStart = ref(getMonday(new Date()));
+        // Week navigation (Sunday to Saturday)
+        const currentWeekStart = ref(getSunday(new Date()));
 
-        function getMonday(date) {
+        function getSunday(date) {
             const d = new Date(date);
             const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            const diff = d.getDate() - day;
             return new Date(d.setDate(diff));
         }
 
         const weekDays = computed(() => {
             const days = [];
-            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             for (let i = 0; i < 7; i++) {
                 const date = new Date(currentWeekStart.value);
                 date.setDate(date.getDate() + i);
@@ -1011,7 +1009,7 @@ const ShiftAttendanceComponent = {
         };
 
         const goToToday = () => {
-            currentWeekStart.value = getMonday(new Date());
+            currentWeekStart.value = getSunday(new Date());
         };
 
         const isToday = (dateStr) => {
@@ -1949,7 +1947,7 @@ const ShiftAttendanceComponent = {
         const initReviewerShifts = () => {
             const shifts = allShifts.value.filter(s => s.active !== false);
             if (shifts.length === 0) return;
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const cache = {};
             const nLeaves = summaryLeaveTypes.length;
             // 0,1,2=shifts 3=dayoff 4..(4+nLeaves-1)=leaves (4+nLeaves)=empty
@@ -2080,7 +2078,7 @@ const ShiftAttendanceComponent = {
         // Get total hours for a schedule in summary
         const getSummaryTotalHours = (schedule) => {
             let total = 0;
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             days.forEach(day => {
                 const shift = getSummaryShift(schedule, day);
                 if (shift && shift.type !== 'dayoff' && shift.duration) {
@@ -3031,7 +3029,7 @@ const ShiftAttendanceComponent = {
         // Get employee weekly hours
         const getEmployeeWeeklyHours = (schedule) => {
             let totalHours = 0;
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             days.forEach(dayName => {
                 const key = `${schedule.id}-${dayName}`;
                 const assignment = scheduleAssignments.value[key];
@@ -3045,21 +3043,18 @@ const ShiftAttendanceComponent = {
 
         // Schedule filter dropdowns
         const scheduleFilterDepartment = ref(null);
-        const scheduleFilterShift = ref(null);
         const departmentOptions = ref([...StaticData.departments]);
-        const shiftFilterOptions = computed(() => allShifts.value.filter(s => s.active));
         const applyScheduleFilters = () => {
             console.log('Applying schedule filters');
         };
 
         const resetScheduleFilters = () => {
             scheduleFilterDepartment.value = null;
-            scheduleFilterShift.value = null;
             scheduleSearch.value = '';
         };
 
         const hasScheduleActiveFilters = computed(() => {
-            return scheduleFilterDepartment.value || scheduleFilterShift.value || scheduleSearch.value;
+            return scheduleFilterDepartment.value || scheduleSearch.value;
         });
 
         // Schedule stats for top stat cards
@@ -3401,9 +3396,7 @@ const ShiftAttendanceComponent = {
             schedulerStats,
             scheduleStats,
             scheduleFilterDepartment,
-            scheduleFilterShift,
             departmentOptions,
-            shiftFilterOptions,
             applyScheduleFilters,
             resetScheduleFilters,
             hasScheduleActiveFilters,
