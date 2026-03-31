@@ -1439,14 +1439,20 @@ const PayrollComponent = {
 
         const getCostCenterTotals = (cycleId) => {
             const cycleSubCycles = subCycles.value.filter(s => s.cycleId === cycleId);
+            const tagConfig = {
+                cogs: { name: 'COGS', color: '#8b5cf6' },
+                ga: { name: 'G&A', color: '#16a34a' },
+                intangible: { name: 'Intangible Assets', color: '#f59e0b' }
+            };
             const totals = {};
             cycleSubCycles.forEach(sub => {
                 const cc = getCostCenter(sub.costCenterId);
-                if (cc) {
-                    if (!totals[cc.id]) {
-                        totals[cc.id] = { id: cc.id, name: cc.name, color: cc.color, total: 0 };
+                if (cc && cc.tag) {
+                    const tag = cc.tag;
+                    if (!totals[tag]) {
+                        totals[tag] = { id: tag, name: tagConfig[tag]?.name || tag, color: tagConfig[tag]?.color || '#6b7280', total: 0 };
                     }
-                    totals[cc.id].total += (sub.netSalary || 0);
+                    totals[tag].total += (sub.netSalary || 0);
                 }
             });
             return Object.values(totals);

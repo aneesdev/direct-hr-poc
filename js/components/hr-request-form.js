@@ -252,6 +252,28 @@ const HrRequestFormComponent = {
                                     </template>
                                 </p-select>
 
+                                <!-- Schedule Type Select -->
+                                <p-select v-else-if="field.type === 'schedule_type_select'" 
+                                         v-model="formValues[field.id]" 
+                                         :options="scheduleTypes"
+                                         placeholder="Select type"
+                                         style="width: 100%;">
+                                </p-select>
+
+                                <!-- Variable Schedule Info Box -->
+                                <div v-if="field.type === 'schedule_type_select' && formValues[field.id] === 'Variable Schedule'" 
+                                     class="variable-schedule-info" style="margin-top: 0.75rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--surface-ground); border-radius: 8px; border-left: 3px solid var(--primary-color);">
+                                        <i class="pi pi-info-circle" style="color: var(--primary-color); font-size: 1.25rem;"></i>
+                                        <div>
+                                            <div style="font-weight: 600;">Variable Schedule</div>
+                                            <div style="font-size: 0.85rem; color: var(--text-color-secondary);">
+                                                Employee will have flexible working hours without a fixed weekly pattern
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Attendance Method (radio buttons - 2x2 grid) -->
                                 <div v-else-if="field.type === 'attendance_method'" class="attendance-method-grid">
                                     <div class="attendance-method-option" :class="{ active: formValues[field.id] === 'office' }" @click="formValues[field.id] = 'office'">
@@ -387,9 +409,10 @@ const HrRequestFormComponent = {
             costCenter: ['CC-001', 'CC-002', 'CC-003', 'CC-004']
         };
 
-        // Work week and shift templates from static data
+        // Work week, shift templates, and schedule types from static data
         const workWeeks = ref([...StaticData.workWeeks]);
         const shiftTemplates = ref([...StaticData.shiftTemplates]);
+        const scheduleTypes = ref([...StaticData.scheduleTypes]);
         const expandedShiftRules = ref(null);
 
         const getWorkWeekById = (id) => {
@@ -580,6 +603,7 @@ const HrRequestFormComponent = {
             groupedFields,
             workWeeks,
             shiftTemplates,
+            scheduleTypes,
             expandedShiftRules,
             searchEmployees,
             getIconStyle,

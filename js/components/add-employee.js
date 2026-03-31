@@ -237,11 +237,16 @@ const AddEmployeeComponent = {
 
                 <!-- Step 2: Documents & Personal Details -->
                 <div v-show="currentStep === 1" class="step-panel">
-                    <div class="step-title">
-                        <i class="pi pi-file"></i>
-                        Documents & Personal Details
+                    <div class="step-title-row">
+                        <div>
+                            <div class="step-title">
+                                <i class="pi pi-file"></i>
+                                Documents & Personal Details
+                            </div>
+                            <div class="step-subtitle">Identity documents, bank information, and emergency contacts</div>
+                        </div>
+                        <p-button label="Preview as Employee" icon="pi pi-external-link" outlined size="small" @click="openEmployeePreview"></p-button>
                     </div>
-                    <div class="step-subtitle">Identity documents, bank information, and emergency contacts</div>
                     
                     <div class="form-section-title">Professional Picture</div>
                     <div class="picture-upload-section">
@@ -274,9 +279,14 @@ const AddEmployeeComponent = {
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">CV <span class="required">*</span></label>
-                            <label class="file-upload-area">
-                                <input type="file" accept="application/pdf,.doc,.docx" hidden>
-                                <div class="file-upload-content">
+                            <label class="file-upload-area" :class="{ 'has-file': form.cvFileName }">
+                                <input type="file" accept="application/pdf,.doc,.docx" @change="onFileSelect($event, 'cv')" hidden>
+                                <div v-if="form.cvFileName" class="file-uploaded-content">
+                                    <i class="pi pi-file-pdf"></i>
+                                    <span class="file-name">{{ form.cvFileName }}</span>
+                                    <button type="button" class="file-remove-btn" @click.prevent="removeFile('cv')"><i class="pi pi-times"></i></button>
+                                </div>
+                                <div v-else class="file-upload-content">
                                     <i class="pi pi-cloud-upload"></i>
                                     <span>Click to upload or drag and drop</span>
                                 </div>
@@ -284,9 +294,14 @@ const AddEmployeeComponent = {
                         </div>
                         <div class="form-group">
                             <label class="form-label">National ID <span class="required">*</span></label>
-                            <label class="file-upload-area">
-                                <input type="file" accept="image/*,application/pdf" hidden>
-                                <div class="file-upload-content">
+                            <label class="file-upload-area" :class="{ 'has-file': form.nationalIdFileName }">
+                                <input type="file" accept="image/*,application/pdf" @change="onFileSelect($event, 'nationalId')" hidden>
+                                <div v-if="form.nationalIdFileName" class="file-uploaded-content">
+                                    <i class="pi pi-file"></i>
+                                    <span class="file-name">{{ form.nationalIdFileName }}</span>
+                                    <button type="button" class="file-remove-btn" @click.prevent="removeFile('nationalId')"><i class="pi pi-times"></i></button>
+                                </div>
+                                <div v-else class="file-upload-content">
                                     <i class="pi pi-cloud-upload"></i>
                                     <span>Click to upload or drag and drop</span>
                                 </div>
@@ -294,9 +309,14 @@ const AddEmployeeComponent = {
                         </div>
                         <div class="form-group">
                             <label class="form-label">Passport (Optional)</label>
-                            <label class="file-upload-area">
-                                <input type="file" accept="image/*,application/pdf" hidden>
-                                <div class="file-upload-content">
+                            <label class="file-upload-area" :class="{ 'has-file': form.passportFileName }">
+                                <input type="file" accept="image/*,application/pdf" @change="onFileSelect($event, 'passport')" hidden>
+                                <div v-if="form.passportFileName" class="file-uploaded-content">
+                                    <i class="pi pi-file"></i>
+                                    <span class="file-name">{{ form.passportFileName }}</span>
+                                    <button type="button" class="file-remove-btn" @click.prevent="removeFile('passport')"><i class="pi pi-times"></i></button>
+                                </div>
+                                <div v-else class="file-upload-content">
                                     <i class="pi pi-cloud-upload"></i>
                                     <span>Click to upload or drag and drop</span>
                                 </div>
@@ -316,9 +336,14 @@ const AddEmployeeComponent = {
                         </div>
                         <div class="form-group">
                             <label class="form-label">Graduation Certificate</label>
-                            <label class="file-upload-area">
-                                <input type="file" accept="image/*,application/pdf" hidden>
-                                <div class="file-upload-content">
+                            <label class="file-upload-area" :class="{ 'has-file': form.graduationCertFileName }">
+                                <input type="file" accept="image/*,application/pdf" @change="onFileSelect($event, 'graduationCert')" hidden>
+                                <div v-if="form.graduationCertFileName" class="file-uploaded-content">
+                                    <i class="pi pi-file"></i>
+                                    <span class="file-name">{{ form.graduationCertFileName }}</span>
+                                    <button type="button" class="file-remove-btn" @click.prevent="removeFile('graduationCert')"><i class="pi pi-times"></i></button>
+                                </div>
+                                <div v-else class="file-upload-content">
                                     <i class="pi pi-cloud-upload"></i>
                                     <span>Click to upload or drag and drop</span>
                                 </div>
@@ -362,9 +387,14 @@ const AddEmployeeComponent = {
                         </div>
                         <div class="form-group">
                             <label class="form-label">IBAN Attachment</label>
-                            <label class="file-upload-area">
-                                <input type="file" accept="image/*,application/pdf" hidden>
-                                <div class="file-upload-content">
+                            <label class="file-upload-area" :class="{ 'has-file': form.ibanAttachmentFileName }">
+                                <input type="file" accept="image/*,application/pdf" @change="onFileSelect($event, 'ibanAttachment')" hidden>
+                                <div v-if="form.ibanAttachmentFileName" class="file-uploaded-content">
+                                    <i class="pi pi-file"></i>
+                                    <span class="file-name">{{ form.ibanAttachmentFileName }}</span>
+                                    <button type="button" class="file-remove-btn" @click.prevent="removeFile('ibanAttachment')"><i class="pi pi-times"></i></button>
+                                </div>
+                                <div v-else class="file-upload-content">
                                     <i class="pi pi-cloud-upload"></i>
                                     <span>Click to upload or drag and drop</span>
                                 </div>
@@ -1020,6 +1050,16 @@ const AddEmployeeComponent = {
             sendInvitation: true,
             // Step 2
             picturePreview: null,
+            cvFile: null,
+            cvFileName: '',
+            nationalIdFile: null,
+            nationalIdFileName: '',
+            passportFile: null,
+            passportFileName: '',
+            graduationCertFile: null,
+            graduationCertFileName: '',
+            ibanAttachmentFile: null,
+            ibanAttachmentFileName: '',
             dateOfBirth: null,
             academicDegree: null,
             residenceCountry: null,
@@ -1268,6 +1308,19 @@ const AddEmployeeComponent = {
             }
         };
 
+        const onFileSelect = (event, fieldName) => {
+            const file = event.target.files[0];
+            if (file) {
+                form.value[fieldName + 'File'] = file;
+                form.value[fieldName + 'FileName'] = file.name;
+            }
+        };
+
+        const removeFile = (fieldName) => {
+            form.value[fieldName + 'File'] = null;
+            form.value[fieldName + 'FileName'] = '';
+        };
+
         const saveAsDraft = () => {
             StaticData.employeeDrafts.push({ ...form.value, savedAt: new Date() });
             alert('Draft saved successfully!');
@@ -1307,6 +1360,10 @@ const AddEmployeeComponent = {
             };
             StaticData.employees.push(newEmployee);
             emit('submitted');
+        };
+
+        const openEmployeePreview = () => {
+            window.open('employee-form.html', '_blank');
         };
 
         return {
@@ -1372,8 +1429,11 @@ const AddEmployeeComponent = {
             onCostCenterChange,
             onMainGradeChange,
             onPictureSelect,
+            onFileSelect,
+            removeFile,
             saveAsDraft,
-            submitEmployee
+            submitEmployee,
+            openEmployeePreview
         };
     }
 };

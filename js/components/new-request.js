@@ -236,11 +236,11 @@ const NewRequestComponent = {
                             </div>
                             <div class="balance-display">
                                 <div class="balance-main">
-                                    <div class="balance-value">{{ currentBalance }}</div>
+                                    <div class="balance-value">{{ displayedBalance }}</div>
                                     <div class="balance-label">Available Balance</div>
                                 </div>
                                 <div v-if="requestedDays > 0" class="balance-impact">
-                                    <div class="impact-value" :class="{ warning: requestedDays > currentBalance }">
+                                    <div class="impact-value" :class="{ warning: requestedDays > displayedBalance }">
                                         -{{ requestedDays }}
                                     </div>
                                     <div class="impact-label">Requested</div>
@@ -252,7 +252,7 @@ const NewRequestComponent = {
                                      :style="{ width: impactPercentage + '%', left: (balancePercentage - impactPercentage) + '%' }"></div>
                             </div>
                             <div class="balance-footer">
-                                <span>{{ selectedType.balanceMethod === 'working_days' ? 'Working Days' : 'Calendar Days' }}</span>
+                                <span>{{ selectedType.balanceMethod === 'working_days' ? 'Working ' + balanceUnit : 'Calendar ' + balanceUnit }}</span>
                                 <span>{{ getRepetitionLabel(selectedType.repetition) }}</span>
                             </div>
                         </div>
@@ -384,8 +384,17 @@ const NewRequestComponent = {
         });
 
         const requestedDays = computed(() => {
-            // Find the first daterange field and get its calculated days
             if (!selectedType.value) return 0;
+            
+            // For hour-based requests (like Permission Request), check for Hours dropdown
+            if (selectedType.value.balanceHours) {
+                const hoursField = selectedType.value.formFields.find(f => f.label === 'Hours');
+                if (hoursField && formData.value[hoursField.id]) {
+                    return parseInt(formData.value[hoursField.id]) || 0;
+                }
+            }
+            
+            // Find the first daterange field and get its calculated days
             const dateRangeField = selectedType.value.formFields.find(f => f.type === 'daterange');
             if (dateRangeField && formData.value[dateRangeField.id + '_days']) {
                 return formData.value[dateRangeField.id + '_days'];
@@ -393,23 +402,53 @@ const NewRequestComponent = {
             return 0;
         });
 
+        const displayedBalance = computed(() => {
+            if (!selectedType.value) return currentBalance.value;
+            if (selectedType.value.balanceSource === 'fixed' && selectedType.value.balanceHours) {
+                return selectedType.value.balanceHours;
+            }
+            return currentBalance.value;
+        });
+
+        const displayedTotalBalance = computed(() => {
+            if (!selectedType.value) return totalBalance.value;
+            if (selectedType.value.balanceSource === 'fixed' && selectedType.value.balanceHours) {
+                return selectedType.value.balanceHours;
+            }
+            return totalBalance.value;
+        });
+
+        const balanceUnit = computed(() => {
+            if (!selectedType.value) return 'Days';
+            if (selectedType.value.balanceSource === 'fixed' && selectedType.value.balanceHours) {
+                return 'Hours';
+            }
+            return 'Days';
+        });
+
         const balancePercentage = computed(() => {
-            return (currentBalance.value / totalBalance.value) * 100;
+            return (displayedBalance.value / displayedTotalBalance.value) * 100;
         });
 
         const impactPercentage = computed(() => {
-            return (requestedDays.value / totalBalance.value) * 100;
+            return (requestedDays.value / displayedTotalBalance.value) * 100;
         });
 
         // Helper functions
         const getTypeCountByCategory = (catId) => requestTypes.value.filter(t => t.categoryId === catId && t.active).length;
         const getRepetitionLabel = (id) => repetitionOptions.value.find(r => r.id === id)?.name || id;
         
+        // Mock compound leaves balance (in real app, from HR Help Desk settings)
+        const compoundLeavesBalance = ref(15);
+
         const getTypeBalance = (type) => {
             if (!type.balanceSource) return null;
             if (type.balanceSource === 'system') {
                 // Return system balance (from employee settings)
                 return currentBalance.value + ' days';
+            } else if (type.balanceSource === 'compound') {
+                // Return compound leaves balance (from HR Help Desk)
+                return compoundLeavesBalance.value + ' days';
             } else if (type.balanceSource === 'fixed') {
                 // Return fixed balance
                 if (type.balanceDays) {
@@ -527,7 +566,11 @@ const NewRequestComponent = {
             requestTypes,
             currentBalance,
             totalBalance,
+            compoundLeavesBalance,
             // Computed
+            displayedBalance,
+            displayedTotalBalance,
+            balanceUnit,
             activeCategories,
             filteredTypes,
             requestedDays,

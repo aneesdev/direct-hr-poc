@@ -201,8 +201,9 @@ const HrRequestCenterComponent = {
                 icon: 'pi-calendar',
                 color: '#8b5cf6',
                 fields: [
-                    { id: 'workWeek', group: 'Schedule Settings', label: 'Work Week Template', type: 'workweek_select' },
-                    { id: 'shift', group: 'Schedule Settings', label: 'Shift', type: 'shift_select' },
+                    { id: 'scheduleType', group: 'Schedule Settings', label: 'Schedule Type', type: 'schedule_type_select', required: true },
+                    { id: 'workWeek', group: 'Schedule Settings', label: 'Work Week Template', type: 'workweek_select', showWhen: { field: 'scheduleType', values: ['Fixed Schedule'] } },
+                    { id: 'shift', group: 'Schedule Settings', label: 'Shift', type: 'shift_select', showWhen: { field: 'scheduleType', values: ['Fixed Schedule'] } },
                     { id: 'attendanceMethod', group: 'Attendance Method', label: 'Attendance Record Method', type: 'attendance_method' },
                     { id: 'office', group: 'Attendance Method', label: 'Office Location', type: 'dropdown', options: ['HQ - Main Office', 'Branch - Riyadh', 'Branch - Dubai'], showWhen: { field: 'attendanceMethod', values: ['office', 'hybrid'] } }
                 ],

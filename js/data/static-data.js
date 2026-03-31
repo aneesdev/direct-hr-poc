@@ -1532,6 +1532,35 @@ const StaticData = {
             active: true
         },
         {
+            id: 9,
+            categoryId: 1,
+            name: 'Compound Leave',
+            description: 'Leave deducted from compound leaves balance',
+            policyNote: 'Compound leave is deducted from your compound leaves balance as configured in HR Help Desk settings. Check your available balance before submitting.',
+            repetition: 'yearly',
+            balanceSource: 'compound',
+            balanceDays: null,
+            balanceMethod: 'working_days',
+            formFields: [
+                { id: 'f1', type: 'daterange', label: 'Leave Period', required: true, order: 1 },
+                { id: 'f2', type: 'textarea', label: 'Reason', required: false, order: 2 }
+            ],
+            approvalFlow: {
+                autoApproval: false,
+                lineManagerLevel: 1,
+                requireHrAdmin: false,
+                requireHrManager: false,
+                requireHrEvp: false,
+                conditionEnabled: false,
+                conditionDays: null,
+                conditionLineManagerLevel: null,
+                conditionRequireHrAdmin: false,
+                conditionRequireHrManager: false,
+                conditionRequireHrEvp: false
+            },
+            active: true
+        },
+        {
             id: 4,
             categoryId: 2,
             name: 'Business Trip',

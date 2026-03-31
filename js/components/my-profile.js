@@ -273,7 +273,7 @@ const MyProfileComponent = {
                         <i class="pi pi-wallet"></i> Splits
                     </button>
                     <button class="profile-tab" :class="{ active: activeTab === 'shift' }" @click="activeTab = 'shift'">
-                        <i class="pi pi-calendar"></i> Shift Reviewer
+                        <i class="pi pi-calendar"></i> Shift Review
                     </button>
                     <button class="profile-tab" :class="{ active: activeTab === 'attendance' }" @click="activeTab = 'attendance'">
                         <i class="pi pi-clock"></i> Attendance
@@ -877,79 +877,111 @@ const MyProfileComponent = {
                     </div>
                 </div>
 
-                <!-- Shift Reviewer Tab -->
+                <!-- Shift Review Tab -->
                 <div v-if="activeTab === 'shift'" class="tab-panel">
-                    <div class="shift-reviewer-card">
-                        <!-- Week Filter Header -->
-                        <div class="filter-controls-bar">
-                            <div class="filter-controls-right" style="margin-left: auto;">
-                                <div class="week-selector-pill">
-                                    <button class="week-nav-btn" @click="previousShiftWeek"><i class="pi pi-chevron-left"></i></button>
-                                    <span class="week-range-label">{{ shiftWeekLabel }}</span>
-                                    <button class="week-nav-btn" @click="nextShiftWeek"><i class="pi pi-chevron-right"></i></button>
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">
+                                    <i class="pi pi-eye"></i>
+                                    Shift Review
+                                </div>
+                                <div class="card-subtitle">Review your shift assignments for {{ shiftWeekLabel }}</div>
+                            </div>
+                            <div class="header-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="scheduler-date-nav">
+                                    <button class="nav-arrow" @click="previousShiftWeek"><i class="pi pi-chevron-left"></i></button>
+                                    <span class="date-range" style="font-size: 0.85rem; min-width: 180px; text-align: center;">{{ shiftWeekLabel }}</span>
+                                    <button class="nav-arrow" @click="nextShiftWeek"><i class="pi pi-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Reviewer Grid -->
-                        <div class="reviewer-grid-container">
-                            <table class="reviewer-grid">
+                        <div class="scheduler-grid-container">
+                            <table class="scheduler-grid">
                                 <thead>
                                     <tr>
-                                        <th class="employee-col-rev">EMPLOYEE</th>
-                                        <th v-for="day in shiftWeekDays" :key="day.dayName" class="day-col-rev">
-                                            <div class="day-header-rev">
-                                                <span class="day-name-rev">{{ day.dayName }}</span>
-                                                <span class="day-num-rev">{{ day.date }}</span>
+                                        <th class="staff-col">TEAM MEMBER</th>
+                                        <th v-for="day in shiftWeekDays" :key="day.dayName" class="day-col-new">
+                                            <div class="day-header-new">
+                                                <span class="day-abbr">{{ day.dayName.substring(0, 3).toUpperCase() }}</span>
+                                                <span class="day-num">{{ day.date }}</span>
                                             </div>
                                         </th>
+                                        <th class="total-col">TOTAL<br>Hrs</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="schedule in myShiftSchedule" :key="schedule.id">
-                                        <td class="employee-col-rev">
-                                            <div class="employee-info-rev">
-                                                <img :src="schedule.avatar" :alt="schedule.name" class="avatar-rev">
-                                                <div class="employee-details-rev">
-                                                    <div class="employee-name-rev">{{ schedule.name }}</div>
-                                                    <div class="employee-role-rev">{{ schedule.type }}</div>
+                                        <td class="staff-col">
+                                            <div class="staff-info">
+                                                <img :src="schedule.avatar" :alt="schedule.name" class="staff-avatar">
+                                                <div class="staff-details">
+                                                    <div class="staff-name">{{ schedule.name }}</div>
+                                                    <div class="staff-role">{{ schedule.type }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td v-for="day in shiftWeekDays" :key="day.dayName" class="day-col-rev">
-                                            <div class="shift-block" 
-                                                 :style="getShiftBlockStyle(schedule, day.dayName)"
-                                                 v-if="getShiftForDay(schedule, day.dayName)">
-                                                <div class="shift-block-name">{{ getShiftForDay(schedule, day.dayName).name }}</div>
-                                                <div class="shift-block-time">{{ getShiftForDay(schedule, day.dayName).time }}</div>
+                                        <td v-for="day in shiftWeekDays" :key="day.dayName" class="day-col-new">
+                                            <div class="schedule-cell" :class="{ 'has-assignment': getShiftForDay(schedule, day.dayName) }">
+                                                <template v-if="getShiftForDay(schedule, day.dayName)">
+                                                    <template v-if="getShiftForDay(schedule, day.dayName).type === 'dayoff'">
+                                                        <div class="time-off-card readonly">
+                                                            <i class="pi pi-sun"></i>
+                                                            <span>DAY OFF</span>
+                                                        </div>
+                                                    </template>
+                                                    <template v-else-if="getShiftForDay(schedule, day.dayName).type === 'leave'">
+                                                        <div class="assigned-shift-card readonly">
+                                                            <div class="assigned-color-bar" :style="{ background: getShiftForDay(schedule, day.dayName).color || '#f59e0b' }"></div>
+                                                            <div class="assigned-card-content">
+                                                                <div class="assigned-card-name">{{ getShiftForDay(schedule, day.dayName).name }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <template v-else>
+                                                        <div class="assigned-shift-card readonly">
+                                                            <div class="assigned-color-bar" :style="{ background: getShiftForDay(schedule, day.dayName).color || '#f59e0b' }"></div>
+                                                            <div class="assigned-card-content">
+                                                                <div class="assigned-card-name">{{ getShiftForDay(schedule, day.dayName).name }}</div>
+                                                                <div class="assigned-card-time" v-if="getShiftForDay(schedule, day.dayName).time">{{ getShiftForDay(schedule, day.dayName).time }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </template>
+                                                <template v-else>
+                                                    <span class="no-shift">-</span>
+                                                </template>
                                             </div>
-                                            <span v-else class="no-shift">-</span>
+                                        </td>
+                                        <td class="total-col">
+                                            <span class="total-hours">{{ getShiftTotalHours(schedule) }}</span>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Shift Legend -->
-                        <div class="shift-legend">
-                            <span class="legend-item"><span class="legend-dot mid-day"></span> Mid-day</span>
-                            <span class="legend-item"><span class="legend-dot evening"></span> Evening</span>
-                            <span class="legend-item"><span class="legend-dot night"></span> Night</span>
-                            <span class="legend-item"><span class="legend-dot morning"></span> Morning</span>
-                        </div>
                     </div>
                 </div>
 
                 <!-- Attendance Tab -->
                 <div v-if="activeTab === 'attendance'" class="tab-panel">
-                    <div class="attendance-logs-card">
-                        <div class="logs-header">
-                            <h3>ATTENDANCE LOGS</h3>
-                            <div class="logs-actions">
-                                <div class="week-selector-pill">
-                                    <button class="week-nav-btn" @click="prevAttendanceWeek"><i class="pi pi-chevron-left"></i></button>
-                                    <span class="week-range-label">{{ attendanceWeekLabel }}</span>
-                                    <button class="week-nav-btn" @click="nextAttendanceWeek"><i class="pi pi-chevron-right"></i></button>
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">
+                                    <i class="pi pi-clock"></i>
+                                    Attendance Logs
+                                </div>
+                                <div class="card-subtitle">Track employee attendance records for {{ attendanceWeekLabel }}</div>
+                            </div>
+                            <div class="header-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="scheduler-date-nav">
+                                    <button class="nav-arrow" @click="prevAttendanceWeek"><i class="pi pi-chevron-left"></i></button>
+                                    <span class="date-range" style="font-size: 0.85rem; min-width: 180px; text-align: center;">{{ attendanceWeekLabel }}</span>
+                                    <button class="nav-arrow" @click="nextAttendanceWeek"><i class="pi pi-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -996,8 +1028,10 @@ const MyProfileComponent = {
                                             </div>
                                         </td>
                                         <td class="col-day">
-                                            <span class="day-label-att">{{ myAttendance[0].dayName }}</span>
-                                            <span class="day-date-small">{{ myAttendance[0].date }}</span>
+                                            <div class="day-cell-wrapper">
+                                                <span class="day-label-att">{{ myAttendance[0].dayName }}</span>
+                                                <span class="day-full-date">{{ myAttendance[0].date }}</span>
+                                            </div>
                                         </td>
                                         <td class="col-context">
                                             <div class="context-cell" :class="getDayContextClass(myAttendance[0].dayContext)">
@@ -1042,8 +1076,10 @@ const MyProfileComponent = {
                                             <td class="col-expand"></td>
                                             <td class="col-employee"></td>
                                             <td class="col-day">
-                                                <span class="day-label-att" :class="{ 'today': day.isToday }">{{ day.dayName }}</span>
-                                                <span class="day-date-small">{{ day.date }}</span>
+                                                <div class="day-cell-wrapper">
+                                                    <span class="day-label-att" :class="{ 'today': day.isToday }">{{ day.dayName }}</span>
+                                                    <span class="day-full-date">{{ day.date }}</span>
+                                                </div>
                                             </td>
                                             <td class="col-context">
                                                 <div class="context-cell" :class="getDayContextClass(day.dayContext)">
@@ -1088,9 +1124,9 @@ const MyProfileComponent = {
                         </div>
 
                         <!-- Reminder Note -->
-                        <div class="attendance-reminder">
-                            <i class="pi pi-exclamation-triangle"></i>
-                            <span>Attendance Policy Reminder: Please ensure all "Missing Clock-out" flags are resolved by submitting a manual punch request. Repeated missing punches may affect your monthly splits calculation.</span>
+                        <div class="attendance-reminder" style="margin: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <i class="pi pi-exclamation-triangle" style="color: #f59e0b; margin-top: 2px;"></i>
+                            <span style="font-size: 0.85rem; color: var(--text-color-secondary);">Attendance Policy Reminder: Please ensure all "Missing Clock-out" flags are resolved by submitting a manual punch request. Repeated missing punches may affect your monthly splits calculation.</span>
                         </div>
                     </div>
                 </div>
@@ -1712,13 +1748,13 @@ const MyProfileComponent = {
 
         // Shift Schedule
         const shiftWeekDays = computed(() => {
-            const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
             const baseDate = new Date();
-            baseDate.setDate(baseDate.getDate() - baseDate.getDay() + 1 + (shiftWeekOffset.value * 7));
+            baseDate.setDate(baseDate.getDate() - baseDate.getDay() + (shiftWeekOffset.value * 7));
             return days.map((name, i) => {
                 const d = new Date(baseDate);
                 d.setDate(d.getDate() + i);
-                return { dayName: name, date: d.getDate() };
+                return { dayName: name, date: d.getDate() + '/' + (d.getMonth() + 1) };
             });
         });
 
@@ -1727,8 +1763,8 @@ const MyProfileComponent = {
             baseDate.setDate(baseDate.getDate() - baseDate.getDay() + 1 + (shiftWeekOffset.value * 7));
             const endDate = new Date(baseDate);
             endDate.setDate(endDate.getDate() + 6);
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            return `${months[baseDate.getMonth()]} ${baseDate.getDate()} - ${months[endDate.getMonth()]} ${endDate.getDate()}`;
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            return `${months[baseDate.getMonth()]} ${baseDate.getDate()}, ${baseDate.getFullYear()} - ${months[endDate.getMonth()]} ${endDate.getDate()}, ${endDate.getFullYear()}`;
         });
 
         const myShiftSchedule = ref([
@@ -1738,10 +1774,13 @@ const MyProfileComponent = {
                 avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
                 type: 'Fixed',
                 shifts: {
-                    TUE: { name: 'MID-DAY', time: '10:00-17:00', color: '#f97316' },
-                    WED: { name: 'EVENING', time: '14:00-22:00', color: '#3b82f6' },
-                    FRI: { name: 'NIGHT', time: '22:00-06:00', color: '#1e293b' },
-                    SAT: { name: 'MORNING', time: '08:00-17:00', color: '#22c55e' }
+                    SUN: { name: 'Compound Leaves', type: 'leave', color: '#f97316' },
+                    MON: { name: 'Bereavement Leave', type: 'leave', color: '#f97316' },
+                    TUE: { name: 'CS Double Shift', time: '9:00 AM - 1:00 PM, 2:00 PM - 6:00 PM', color: '#f97316' },
+                    WED: { name: 'Sick Leave', type: 'leave', color: '#f97316' },
+                    THU: { name: 'Parental Leave', type: 'leave', color: '#f97316' },
+                    FRI: { name: 'DAY OFF', type: 'dayoff' },
+                    SAT: { name: 'Marriage Leave', type: 'leave', color: '#f97316' }
                 }
             }
         ]);
@@ -1759,29 +1798,49 @@ const MyProfileComponent = {
             };
         };
 
+        const getShiftTotalHours = (schedule) => {
+            let totalHours = 0;
+            Object.values(schedule.shifts || {}).forEach(shift => {
+                if (shift && shift.time) {
+                    const parts = shift.time.split('-');
+                    if (parts.length === 2) {
+                        const parseTime = (t) => {
+                            const [h, m] = t.trim().split(':').map(Number);
+                            return h + (m || 0) / 60;
+                        };
+                        const start = parseTime(parts[0]);
+                        let end = parseTime(parts[1]);
+                        if (end < start) end += 24;
+                        totalHours += (end - start);
+                    }
+                }
+            });
+            return totalHours > 0 ? totalHours : 0;
+        };
+
         const previousShiftWeek = () => shiftWeekOffset.value--;
         const nextShiftWeek = () => shiftWeekOffset.value++;
 
         // Attendance Data
         const isAttendanceExpanded = ref(true);
-        
+
         const attendanceWeekLabel = computed(() => {
             const baseDate = new Date();
             baseDate.setDate(baseDate.getDate() - baseDate.getDay() + 1 + (attendanceWeekOffset.value * 7));
             const endDate = new Date(baseDate);
             endDate.setDate(endDate.getDate() + 6);
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            return `${months[baseDate.getMonth()]} ${baseDate.getDate()} - ${months[endDate.getMonth()]} ${endDate.getDate()}`;
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            return `${months[baseDate.getMonth()]} ${baseDate.getDate()}, ${baseDate.getFullYear()} - ${months[endDate.getMonth()]} ${endDate.getDate()}, ${endDate.getFullYear()}`;
         });
 
         const myAttendance = ref([
-            { dayName: 'MON', date: '15 Jan', dayContext: 'Regular Workday', shift: 'Flexible', shiftTime: '09:00 AM - 06:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: 'MISSING CLOCK-OUT' },
-            { dayName: 'TUE', date: '16 Jan', dayContext: 'Regular Workday', shift: 'Flexible', shiftTime: '09:00 AM - 06:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: 'MISSING CLOCK-OUT', isToday: true },
-            { dayName: 'WED', date: '17 Jan', dayContext: 'Regular Workday', shift: 'Flexible', shiftTime: '09:00 AM - 06:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: 'MISSING CLOCK-OUT' },
-            { dayName: 'THU', date: '18 Jan', dayContext: 'Regular Workday', shift: 'Flexible', shiftTime: '09:00 AM - 06:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: 'MISSING CLOCK-OUT' },
-            { dayName: 'FRI', date: '19 Jan', dayContext: 'Regular Workday', shift: 'Flexible', shiftTime: '09:00 AM - 06:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: 'MISSING CLOCK-OUT' },
-            { dayName: 'SAT', date: '20 Jan', dayContext: 'Weekend Off', shift: null, shiftTime: null, checkIn: null, checkOut: null, status: null, punchFlag: null, duration: null, violation: null, isWeekend: true },
-            { dayName: 'SUN', date: '21 Jan', dayContext: 'Weekend Off', shift: null, shiftTime: null, checkIn: null, checkOut: null, status: null, punchFlag: null, duration: null, violation: null, isWeekend: true }
+            { dayName: 'MON', date: 'March 30, 2026', dayContext: 'Regular Workday', shift: 'Normal', shiftTime: '08:00 AM - 05:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: null },
+            { dayName: 'TUE', date: 'March 31, 2026', dayContext: 'Regular Workday', shift: 'Normal', shiftTime: '08:00 AM - 05:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: null, isToday: true },
+            { dayName: 'WED', date: 'April 1, 2026', dayContext: 'Sick Leave', shift: null, shiftTime: null, checkIn: null, checkOut: null, status: null, punchFlag: null, duration: null, violation: null, isLeave: true },
+            { dayName: 'THU', date: 'April 2, 2026', dayContext: 'Regular Workday', shift: 'Normal', shiftTime: '08:00 AM - 05:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: null },
+            { dayName: 'FRI', date: 'April 3, 2026', dayContext: 'Regular Workday', shift: 'Normal', shiftTime: '08:00 AM - 05:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: 'MISSING CLOCK-OUT', duration: null, violation: null },
+            { dayName: 'SAT', date: 'April 4, 2026', dayContext: 'Weekend Off', shift: null, shiftTime: null, checkIn: null, checkOut: null, status: null, punchFlag: null, duration: null, violation: null, isWeekend: true },
+            { dayName: 'SUN', date: 'April 5, 2026', dayContext: 'Weekend Off', shift: 'Normal', shiftTime: '08:00 AM - 05:00 PM', checkIn: '8:00 am', checkOut: null, status: 'PRESENT', punchFlag: null, duration: null, violation: null, isWeekend: true }
         ]);
 
         const prevAttendanceWeek = () => attendanceWeekOffset.value--;
@@ -1791,12 +1850,14 @@ const MyProfileComponent = {
         const getDayContextClass = (context) => {
             if (!context) return '';
             if (context.includes('Weekend')) return 'weekend';
+            if (context.includes('Leave') || context.includes('Sick')) return 'leave';
             return 'regular';
         };
 
         const getDayContextIcon = (context) => {
             if (!context) return 'pi pi-calendar';
             if (context.includes('Weekend')) return 'pi pi-moon';
+            if (context.includes('Leave') || context.includes('Sick')) return 'pi pi-heart';
             return 'pi pi-sun';
         };
 
@@ -1913,6 +1974,7 @@ const MyProfileComponent = {
             myShiftSchedule,
             getShiftForDay,
             getShiftBlockStyle,
+            getShiftTotalHours,
             previousShiftWeek,
             nextShiftWeek,
             myAttendance,

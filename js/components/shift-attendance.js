@@ -590,8 +590,21 @@ const ShiftAttendanceComponent = {
                             </div>
 
                             <!-- Attendance Stats Row 2 -->
-                            <div class="stats-grid" style="grid-template-columns: repeat(7, 1fr); margin-bottom: 1.5rem;">
+                            <div class="stats-grid" style="grid-template-columns: repeat(7, 1fr); margin-bottom: 1rem;">
                                 <div class="stat-card" v-for="stat in attendanceStatCardsRow2" :key="stat.key">
+                                    <div class="stat-icon" :class="stat.iconClass">
+                                        <i :class="stat.icon"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value">{{ attendanceStats[stat.key] }}</div>
+                                        <div class="stat-label">{{ stat.label }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Attendance Stats Row 3 -->
+                            <div class="stats-grid" style="grid-template-columns: repeat(7, 1fr); margin-bottom: 1.5rem;">
+                                <div class="stat-card" v-for="stat in attendanceStatCardsRow3" :key="stat.key">
                                     <div class="stat-icon" :class="stat.iconClass">
                                         <i :class="stat.icon"></i>
                                     </div>
@@ -609,6 +622,7 @@ const ShiftAttendanceComponent = {
                                         <i class="pi pi-search"></i>
                                         <p-inputtext v-model="attendanceSearchName" placeholder="Search..." style="width: 150px;"></p-inputtext>
                                     </span>
+                                    <p-select v-model="attendanceEntity" :options="attendanceEntityOptions" optionLabel="name" optionValue="id" placeholder="Entity" showClear style="width: 120px;"></p-select>
                                     <p-select v-model="attendanceDepartment" :options="attendanceDepartmentOptions" optionLabel="name" optionValue="id" placeholder="Department" showClear @change="onAttendanceDepartmentChange"></p-select>
                                     <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Section" showClear :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
                                     <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Unit" showClear :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
@@ -631,12 +645,12 @@ const ShiftAttendanceComponent = {
                                             <i class="pi pi-clock"></i>
                                             Attendance Logs
                                         </div>
-                                        <div class="card-subtitle">Track employee attendance records for week of {{ attendanceWeekLabel }}</div>
+                                        <div class="card-subtitle">Track employee attendance records for {{ attendanceWeekLabel }}</div>
                                     </div>
                                     <div class="header-actions" style="display: flex; align-items: center; gap: 0.5rem;">
                                         <div class="scheduler-date-nav">
                                             <button class="nav-arrow" @click="prevAttendanceWeek"><i class="pi pi-chevron-left"></i></button>
-                                            <span class="date-range" style="font-size: 0.85rem; min-width: 140px; text-align: center;">WEEK OF {{ attendanceWeekLabel }}</span>
+                                            <span class="date-range" style="font-size: 0.85rem; min-width: 180px; text-align: center;">{{ attendanceWeekLabel }}</span>
                                             <button class="nav-arrow" @click="nextAttendanceWeek"><i class="pi pi-chevron-right"></i></button>
                                         </div>
                                         <p-button :label="attendanceAllExpanded ? 'Collapse All' : 'Expand All'" 
@@ -689,7 +703,10 @@ const ShiftAttendanceComponent = {
                                                         </div>
                                                     </td>
                                                     <td class="col-day">
-                                                        <span class="day-label-att" :class="{ 'today': employee.days[0].isToday }">{{ employee.days[0].dayName }}</span>
+                                                        <div class="day-cell-wrapper">
+                                                            <span class="day-label-att" :class="{ 'today': employee.days[0].isToday }">{{ employee.days[0].dayName }}</span>
+                                                            <span class="day-full-date">{{ employee.days[0].fullDateLabel }}</span>
+                                                        </div>
                                                     </td>
                                                     <td class="col-context">
                                                         <div class="context-cell" :class="getDayContextClass(employee.days[0].dayContext)">
@@ -749,7 +766,10 @@ const ShiftAttendanceComponent = {
                                                         <td class="col-expand"></td>
                                                         <td class="col-employee"></td>
                                                         <td class="col-day">
-                                                            <span class="day-label-att" :class="{ 'today': day.isToday }">{{ day.dayName }}</span>
+                                                            <div class="day-cell-wrapper">
+                                                                <span class="day-label-att" :class="{ 'today': day.isToday }">{{ day.dayName }}</span>
+                                                                <span class="day-full-date">{{ day.fullDateLabel }}</span>
+                                                            </div>
                                                         </td>
                                                         <td class="col-context">
                                                             <div class="context-cell" :class="getDayContextClass(day.dayContext)">
@@ -1621,7 +1641,12 @@ const ShiftAttendanceComponent = {
         const appliedReviewerFilters = ref({ departmentId: null, sectionId: null, unitId: null });
         const appliedReviewerSearch = ref('');
 
-        // Attendance Logs filters (Department -> Section -> Unit -> Team, applied on Search)
+        // Attendance Logs filters (Entity -> Department -> Section -> Unit -> Team, applied on Search)
+        const attendanceEntity = ref(null);
+        const attendanceEntityOptions = ref([
+            { id: 1, name: 'Direct' },
+            { id: 2, name: 'Techtic' }
+        ]);
         const attendanceDepartment = ref(null);
         const attendanceSection = ref(null);
         const attendanceUnit = ref(null);
@@ -1685,6 +1710,7 @@ const ShiftAttendanceComponent = {
         };
 
         const resetAttendanceFilters = () => {
+            attendanceEntity.value = null;
             attendanceDepartment.value = null;
             attendanceSection.value = null;
             attendanceUnit.value = null;
@@ -1696,7 +1722,7 @@ const ShiftAttendanceComponent = {
         };
 
         const hasAttendanceActiveFilters = computed(() => {
-            return attendanceDepartment.value || attendanceSection.value || attendanceUnit.value || attendanceTeam.value || attendanceSearchName.value || attendanceDateRangeFilter.value;
+            return attendanceEntity.value || attendanceDepartment.value || attendanceSection.value || attendanceUnit.value || attendanceTeam.value || attendanceSearchName.value || attendanceDateRangeFilter.value;
         });
 
         // When date range filter is used, reset the week selector
@@ -2218,8 +2244,10 @@ const ShiftAttendanceComponent = {
             const today = new Date();
             const startOfWeek = new Date(today);
             startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (attendanceWeekOffset.value * 7));
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
             const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-            return `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()}`;
+            return `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()}, ${startOfWeek.getFullYear()} - ${monthNames[endOfWeek.getMonth()]} ${endOfWeek.getDate()}, ${endOfWeek.getFullYear()}`;
         });
 
         const prevAttendanceWeek = () => {
@@ -2353,6 +2381,17 @@ const ShiftAttendanceComponent = {
             { key: 'othersType', label: 'Others Type', iconClass: 'gray', icon: 'pi pi-tag' }
         ];
 
+        // Attendance stat cards config - Row 3 (new cards)
+        const attendanceStatCardsRow3 = [
+            { key: 'totalWorkingHours', label: 'Total Working Hours', iconClass: 'blue', icon: 'pi pi-hourglass' },
+            { key: 'lateInWithPermission', label: 'Late In w/ Permission', iconClass: 'teal', icon: 'pi pi-sign-in' },
+            { key: 'lateOutWithPermission', label: 'Late Out w/ Permission', iconClass: 'teal', icon: 'pi pi-sign-out' },
+            { key: 'offScheduleAttendance', label: 'Off-Schedule Attendance', iconClass: 'orange', icon: 'pi pi-calendar-minus' },
+            { key: 'violationRate', label: 'Violation Rate', iconClass: 'red', icon: 'pi pi-percentage' },
+            { key: 'missingPunch', label: 'Missing Punch', iconClass: 'orange', icon: 'pi pi-question-circle' },
+            { key: 'absentRate', label: 'Absent Rate', iconClass: 'red', icon: 'pi pi-chart-pie' }
+        ];
+
         // Attendance Stats - values aligned with stats.js customPeriod (attendanceStats, punchStats, violationStats, vacationStats)
         const attendanceStats = computed(() => ({
             totalStaff: 450,
@@ -2368,7 +2407,14 @@ const ShiftAttendanceComponent = {
             businessTrip: 18,
             workFromHome: 60,
             annualVacation: 42,
-            othersType: 12
+            othersType: 12,
+            totalWorkingHours: '3,240h',
+            lateInWithPermission: 18,
+            lateOutWithPermission: 10,
+            offScheduleAttendance: 15,
+            violationRate: '4.2%',
+            missingPunch: 67,
+            absentRate: '2.1%'
         }));
 
         // Enhanced attendance logs with specific examples
@@ -2780,9 +2826,13 @@ const ShiftAttendanceComponent = {
                         actualCheckIn = actualCheckOut = status = punchFlag = duration = violation = null;
                     }
 
+                    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    const fullDateLabel = monthNames[dayInfo.dateObj.getMonth()] + ' ' + dayInfo.dateObj.getDate() + ', ' + dayInfo.dateObj.getFullYear();
+
                     return {
                         dayName: dayInfo.dayName,
                         date: dayInfo.date,
+                        fullDateLabel,
                         isToday: dayInfo.isToday,
                         dayContext,
                         shiftType: isWeekend && !isOffSchedule ? null : shiftType,
@@ -3573,9 +3623,12 @@ const ShiftAttendanceComponent = {
             weekDaysAttendance,
             attendanceStatCardsRow1,
             attendanceStatCardsRow2,
+            attendanceStatCardsRow3,
             attendanceStats,
             attendanceLogs,
             filteredAttendanceLogs,
+            attendanceEntity,
+            attendanceEntityOptions,
             attendanceDepartment,
             attendanceSection,
             attendanceUnit,

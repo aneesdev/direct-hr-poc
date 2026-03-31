@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Document Submission - Direct HR</title>
+
+    <!-- PrimeIcons -->
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        body {
+            background: var(--surface-ground);
+            min-height: 100vh;
+        }
+
+        .employee-form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .employee-form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .employee-form-header .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .employee-form-header .logo img {
+            width: 48px;
+            height: 48px;
+        }
+
+        .employee-form-header .logo-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .employee-form-header .logo-text span {
+            color: var(--primary-color);
+        }
+
+        .employee-form-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .employee-form-header p {
+            color: var(--text-color-secondary);
+            margin: 0;
+        }
+
+        .employee-form-card {
+            background: var(--surface-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .employee-form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--surface-border);
+        }
+
+        .employee-form-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .employee-form-info i {
+            color: #3b82f6;
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+        }
+
+        .employee-form-info .info-content h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .employee-form-info .info-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-color-secondary);
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .success-message .success-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .success-message .success-icon i {
+            font-size: 2.5rem;
+            color: #22c55e;
+        }
+
+        .success-message h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .success-message p {
+            color: var(--text-color-secondary);
+            margin: 0;
+        }
+
+        .photo-skip-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(107, 114, 128, 0.08);
+            border-radius: var(--radius-md);
+        }
+
+        .photo-skip-checkbox label {
+            font-size: 0.8rem;
+            color: var(--text-color-secondary);
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .avatar-placeholder {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), #fb923c);
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- PrimeVue v4 -->
+    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+
+    <!-- PrimeVue Theme - Aura -->
+    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+
+    <!-- Static Data -->
+    <script src="js/data/static-data.js"></script>
+
+    <div id="employee-form-app">
+        <div class="employee-form-container">
+            <!-- Header -->
+            <div class="employee-form-header">
+                <div class="logo">
+                    <img src="img/direct.webp" alt="Direct HR Logo">
+                    <div class="logo-text">Direct<span>HR</span></div>
+                </div>
+                <h1>Employee Document Submission</h1>
+                <p>Please complete your personal information and upload the required documents</p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="employee-form-card" v-if="!submitted">
+                <!-- Info Banner -->
+                <div class="employee-form-info">
+                    <i class="pi pi-info-circle"></i>
+                    <div class="info-content">
+
+                        <p>Please fill in all required fields marked with an asterisk (*) and upload the necessary
+                            documents to complete your onboarding.</p>
+                    </div>
+                </div>
+
+                <!-- Professional Picture -->
+                <div class="form-section-title">Professional Picture</div>
+                <div class="picture-upload-section">
+                    <div class="form-group">
+                        <label class="form-label">Profile Photo</label>
+                        <template v-if="!skipProfilePhoto">
+                            <label class="file-upload-area" :class="{ 'has-file': form.picturePreview }">
+                                <input type="file" accept="image/*" @change="onPictureSelect" hidden>
+                                <div v-if="form.picturePreview" class="file-preview-image">
+                                    <img :src="form.picturePreview" alt="Preview">
+                                </div>
+                                <div v-else class="file-upload-content">
+                                    <i class="pi pi-cloud-upload"></i>
+                                    <span>Click to upload or drag and drop</span>
+                                    <small>Size: 400×400px, Max: 2MB</small>
+                                </div>
+                            </label>
+                        </template>
+                        <template v-else>
+                            <div class="avatar-placeholder">{{ avatarInitials }}</div>
+                        </template>
+                        <div class="photo-skip-checkbox">
+                            <p-checkbox v-model="skipProfilePhoto" :binary="true" inputId="skipPhoto"></p-checkbox>
+                            <label for="skipPhoto">I don't want to upload a profile photo (only for women in Saudi
+                                Arabia)</label>
+                        </div>
+                    </div>
+                    <div class="picture-guidelines-card">
+                        <h4>PHOTO GUIDELINES</h4>
+                        <ul>
+                            <li>Format: JPG or PNG</li>
+                            <li>Face the camera directly with good lighting</li>
+                            <li>Use a plain white or light background</li>
+                            <li>Dress professionally</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Identity Documents -->
+                <div class="form-section-title">Identity Documents</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">CV <span class="required">*</span></label>
+                        <label class="file-upload-area" :class="{ 'has-file': form.cvFileName }">
+                            <input type="file" accept="application/pdf,.doc,.docx" @change="onFileSelect($event, 'cv')"
+                                hidden>
+                            <div v-if="form.cvFileName" class="file-uploaded-content">
+                                <i class="pi pi-file-pdf"></i>
+                                <span class="file-name">{{ form.cvFileName }}</span>
+                                <button type="button" class="file-remove-btn" @click.prevent="removeFile('cv')"><i
+                                        class="pi pi-times"></i></button>
+                            </div>
+                            <div v-else class="file-upload-content">
+                                <i class="pi pi-cloud-upload"></i>
+                                <span>Click to upload or drag and drop</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">National ID <span class="required">*</span></label>
+                        <label class="file-upload-area" :class="{ 'has-file': form.nationalIdFileName }">
+                            <input type="file" accept="image/*,application/pdf"
+                                @change="onFileSelect($event, 'nationalId')" hidden>
+                            <div v-if="form.nationalIdFileName" class="file-uploaded-content">
+                                <i class="pi pi-file"></i>
+                                <span class="file-name">{{ form.nationalIdFileName }}</span>
+                                <button type="button" class="file-remove-btn"
+                                    @click.prevent="removeFile('nationalId')"><i class="pi pi-times"></i></button>
+                            </div>
+                            <div v-else class="file-upload-content">
+                                <i class="pi pi-cloud-upload"></i>
+                                <span>Click to upload or drag and drop</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Passport (Optional)</label>
+                        <label class="file-upload-area" :class="{ 'has-file': form.passportFileName }">
+                            <input type="file" accept="image/*,application/pdf"
+                                @change="onFileSelect($event, 'passport')" hidden>
+                            <div v-if="form.passportFileName" class="file-uploaded-content">
+                                <i class="pi pi-file"></i>
+                                <span class="file-name">{{ form.passportFileName }}</span>
+                                <button type="button" class="file-remove-btn" @click.prevent="removeFile('passport')"><i
+                                        class="pi pi-times"></i></button>
+                            </div>
+                            <div v-else class="file-upload-content">
+                                <i class="pi pi-cloud-upload"></i>
+                                <span>Click to upload or drag and drop</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth <span class="required">*</span></label>
+                        <p-datepicker v-model="form.dateOfBirth" dateFormat="dd/mm/yy" placeholder="Select date"
+                            style="width: 100%;"></p-datepicker>
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="form-section-title">Education</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Academic Degree</label>
+                        <p-select v-model="form.academicDegree" :options="academicDegrees" placeholder="Select degree"
+                            style="width: 100%;"></p-select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Graduation Certificate (Optional)</label>
+                        <label class="file-upload-area" :class="{ 'has-file': form.graduationCertFileName }">
+                            <input type="file" accept="image/*,application/pdf"
+                                @change="onFileSelect($event, 'graduationCert')" hidden>
+                            <div v-if="form.graduationCertFileName" class="file-uploaded-content">
+                                <i class="pi pi-file"></i>
+                                <span class="file-name">{{ form.graduationCertFileName }}</span>
+                                <button type="button" class="file-remove-btn"
+                                    @click.prevent="removeFile('graduationCert')"><i class="pi pi-times"></i></button>
+                            </div>
+                            <div v-else class="file-upload-content">
+                                <i class="pi pi-cloud-upload"></i>
+                                <span>Click to upload or drag and drop</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="form-section-title">Address</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Country of Residence</label>
+                        <p-select v-model="form.residenceCountry" :options="allCountries" optionLabel="name"
+                            optionValue="name" placeholder="Select country" style="width: 100%;">
+                            <template #option="slotProps">
+                                <div class="nationality-option">
+                                    <img :src="slotProps.option.flag" class="nationality-flag"
+                                        :alt="slotProps.option.name">
+                                    <span>{{ slotProps.option.name }}</span>
+                                </div>
+                            </template>
+                        </p-select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <p-inputtext v-model="form.city" placeholder="Enter city" style="width: 100%;"></p-inputtext>
+                    </div>
+                </div>
+
+                <!-- Bank Information -->
+                <div class="form-section-title">Bank Information</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Bank Name</label>
+                        <p-inputtext v-model="form.bankName" placeholder="Enter bank name"
+                            style="width: 100%;"></p-inputtext>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">IBAN Account</label>
+                        <p-inputtext v-model="form.ibanAccount" placeholder="Enter IBAN"
+                            style="width: 100%;"></p-inputtext>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Account Holder Name</label>
+                        <p-inputtext v-model="form.bankAccountName" placeholder="Name as in bank"
+                            style="width: 100%;"></p-inputtext>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">IBAN Attachment</label>
+                        <label class="file-upload-area" :class="{ 'has-file': form.ibanAttachmentFileName }">
+                            <input type="file" accept="image/*,application/pdf"
+                                @change="onFileSelect($event, 'ibanAttachment')" hidden>
+                            <div v-if="form.ibanAttachmentFileName" class="file-uploaded-content">
+                                <i class="pi pi-file"></i>
+                                <span class="file-name">{{ form.ibanAttachmentFileName }}</span>
+                                <button type="button" class="file-remove-btn"
+                                    @click.prevent="removeFile('ibanAttachment')"><i class="pi pi-times"></i></button>
+                            </div>
+                            <div v-else class="file-upload-content">
+                                <i class="pi pi-cloud-upload"></i>
+                                <span>Click to upload or drag and drop</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="form-section-title">Emergency Contact</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Contact Name <span class="required">*</span></label>
+                        <p-inputtext v-model="form.emergencyContactName" placeholder="Enter name"
+                            style="width: 100%;"></p-inputtext>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Relationship <span class="required">*</span></label>
+                        <p-select v-model="form.emergencyContactRelationship" :options="emergencyRelationships"
+                            placeholder="Select relationship" style="width: 100%;"></p-select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number <span class="required">*</span></label>
+                        <p-inputtext v-model="form.emergencyContactPhone" placeholder="+20 100 000 0000"
+                            style="width: 100%;"></p-inputtext>
+                    </div>
+                </div>
+
+                <!-- Submit Footer -->
+                <div class="employee-form-footer">
+                    <p-button label="Submit Documents" icon="pi pi-check" @click="submitForm"></p-button>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="employee-form-card" v-else>
+                <div class="success-message">
+                    <div class="success-icon">
+                        <i class="pi pi-check"></i>
+                    </div>
+                    <h2>Documents Submitted Successfully!</h2>
+                    <p>Thank you for completing your information. HR will review your documents and contact you soon.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+
+        const app = createApp({
+            setup() {
+                const submitted = ref(false);
+                const skipProfilePhoto = ref(false);
+
+                const form = ref({
+                    picturePreview: null,
+                    cvFile: null,
+                    cvFileName: '',
+                    nationalIdFile: null,
+                    nationalIdFileName: '',
+                    passportFile: null,
+                    passportFileName: '',
+                    graduationCertFile: null,
+                    graduationCertFileName: '',
+                    ibanAttachmentFile: null,
+                    ibanAttachmentFileName: '',
+                    dateOfBirth: null,
+                    academicDegree: null,
+                    residenceCountry: null,
+                    city: '',
+                    bankName: '',
+                    ibanAccount: '',
+                    bankAccountName: '',
+                    emergencyContactName: '',
+                    emergencyContactRelationship: null,
+                    emergencyContactPhone: '',
+                    firstName: 'Ahmed',
+                    familyName: 'Khan'
+                });
+
+                const academicDegrees = ref([...StaticData.academicDegrees]);
+                const allCountries = ref([...StaticData.allCountries]);
+                const emergencyRelationships = ref(['Spouse', 'Parent', 'Sibling', 'Friend', 'Other']);
+
+                const avatarInitials = computed(() => {
+                    const first = form.value.firstName ? form.value.firstName.charAt(0) : '';
+                    const last = form.value.familyName ? form.value.familyName.charAt(0) : '';
+                    return (first + last).toUpperCase() || 'NA';
+                });
+
+                const onPictureSelect = (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            form.value.picturePreview = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+
+                const onFileSelect = (event, fieldName) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        form.value[fieldName + 'File'] = file;
+                        form.value[fieldName + 'FileName'] = file.name;
+                    }
+                };
+
+                const removeFile = (fieldName) => {
+                    form.value[fieldName + 'File'] = null;
+                    form.value[fieldName + 'FileName'] = '';
+                };
+
+                const submitForm = () => {
+                    submitted.value = true;
+                };
+
+                return {
+                    submitted,
+                    skipProfilePhoto,
+                    form,
+                    academicDegrees,
+                    allCountries,
+                    emergencyRelationships,
+                    avatarInitials,
+                    onPictureSelect,
+                    onFileSelect,
+                    removeFile,
+                    submitForm
+                };
+            }
+        });
+
+        // Configure PrimeVue with Aura theme
+        app.use(PrimeVue.Config, {
+            theme: {
+                preset: PrimeUIX.Themes.Aura,
+                options: {
+                    prefix: 'p',
+                    darkModeSelector: '.dark-mode',
+                    cssLayer: false
+                }
+            }
+        });
+
+        // Register PrimeVue components
+        app.component('p-button', PrimeVue.Button);
+        app.component('p-inputtext', PrimeVue.InputText);
+        app.component('p-select', PrimeVue.Select);
+        app.component('p-datepicker', PrimeVue.DatePicker);
+        app.component('p-textarea', PrimeVue.Textarea);
+        app.component('p-checkbox', PrimeVue.Checkbox);
+
+        app.mount('#employee-form-app');
+    </script>
+</body>
+
+</html>
