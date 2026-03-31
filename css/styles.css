@@ -265,6 +265,10 @@ img {
     background: #22c55e;
 }
 
+.checkin-status.ended .status-dot {
+    background: #6b7280;
+}
+
 .checkin-status .status-text {
     font-size: 0.6rem;
     font-weight: 700;
@@ -274,6 +278,10 @@ img {
 
 .checkin-status.present .status-text {
     color: #22c55e;
+}
+
+.checkin-status.ended .status-text {
+    color: #6b7280;
 }
 
 .checkin-time {

@@ -67,6 +67,7 @@ const app = createApp({
 
         // Check-in/out widget state
         const isCheckedIn = ref(false);
+        const dayEnded = ref(false);
         const currentTime = ref('');
         const currentDate = ref('');
         const lastCheckAction = ref('');
@@ -103,6 +104,7 @@ const app = createApp({
 
         const checkOut = () => {
             isCheckedIn.value = false;
+            dayEnded.value = true;
             lastCheckAction.value = `OUT: ${formatTimeForAction()}`;
         };
 
@@ -169,6 +171,7 @@ const app = createApp({
             selectedHrRequestView,
             viewHrRequest,
             isCheckedIn,
+            dayEnded,
             currentTime,
             currentDate,
             lastCheckAction,
