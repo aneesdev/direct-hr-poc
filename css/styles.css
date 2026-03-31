@@ -231,6 +231,135 @@ img {
     text-transform: uppercase;
 }
 
+/* Check In/Out Widget */
+.checkin-widget {
+    position: fixed;
+    bottom: 4rem;
+    right: 1rem;
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    padding: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 140px;
+    text-align: center;
+    border: 1px solid var(--surface-border);
+}
+
+.checkin-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+}
+
+.checkin-status .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+}
+
+.checkin-status.present .status-dot {
+    background: #22c55e;
+}
+
+.checkin-status .status-text {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #f59e0b;
+    letter-spacing: 0.5px;
+}
+
+.checkin-status.present .status-text {
+    color: #22c55e;
+}
+
+.checkin-time {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: 0.5px;
+}
+
+.checkin-date {
+    font-size: 0.55rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.5px;
+}
+
+.checkin-buttons {
+    display: flex;
+    gap: 0.35rem;
+    justify-content: center;
+}
+
+.checkin-btn {
+    width: 36px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--surface-border);
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.checkin-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.checkin-btn.in.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.checkin-btn.in.active:hover {
+    background: #ea580c;
+}
+
+.checkin-btn.out.active {
+    background: var(--surface-card);
+    border-color: var(--text-color);
+    color: var(--text-color);
+}
+
+.checkin-btn.out.active:hover {
+    background: var(--surface-ground);
+}
+
+.checkin-btn i {
+    font-size: 0.75rem;
+}
+
+.checkin-last {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--surface-border);
+}
+
+.checkin-last i {
+    font-size: 0.55rem;
+    color: #22c55e;
+}
+
+.checkin-last span {
+    font-size: 0.5rem;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+}
+
 /* Floating Action Button */
 .fab-button {
     position: fixed;

@@ -55,6 +55,8 @@ const app = createApp({
     },
 
     setup() {
+        const { onMounted, onUnmounted } = Vue;
+        
         // Current page state
         const currentPage = ref('home');
         const showUserMenu = ref(false);
@@ -62,6 +64,56 @@ const app = createApp({
         const openNotificationId = ref(null);
         const selectedHrRequest = ref(null);
         const selectedHrRequestView = ref(null);
+
+        // Check-in/out widget state
+        const isCheckedIn = ref(false);
+        const currentTime = ref('');
+        const currentDate = ref('');
+        const lastCheckAction = ref('');
+        let clockInterval = null;
+
+        const updateClock = () => {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = (hours % 12 || 12).toString().padStart(2, '0');
+            currentTime.value = `${displayHours}:${minutes}:${seconds} ${ampm}`;
+            
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            currentDate.value = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+        };
+
+        const formatTimeForAction = () => {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${minutes}:${seconds} ${ampm}`;
+        };
+
+        const checkIn = () => {
+            isCheckedIn.value = true;
+            lastCheckAction.value = `IN: ${formatTimeForAction()}`;
+        };
+
+        const checkOut = () => {
+            isCheckedIn.value = false;
+            lastCheckAction.value = `OUT: ${formatTimeForAction()}`;
+        };
+
+        onMounted(() => {
+            updateClock();
+            clockInterval = setInterval(updateClock, 1000);
+        });
+
+        onUnmounted(() => {
+            if (clockInterval) clearInterval(clockInterval);
+        });
 
         const notifications = [
             { id: 1, title: 'Leave Request Approved', requestId: 'REQ-001', description: 'Your leave request for March 15-20 has been officially approved.', time: '2 mins ago', icon: 'pi-check', iconClass: 'icon-success' },
@@ -115,7 +167,13 @@ const app = createApp({
             selectedHrRequest,
             openHrRequest,
             selectedHrRequestView,
-            viewHrRequest
+            viewHrRequest,
+            isCheckedIn,
+            currentTime,
+            currentDate,
+            lastCheckAction,
+            checkIn,
+            checkOut
         };
     }
 });

@@ -393,6 +393,28 @@
                     <placeholder-page v-else :title="pageTitle"></placeholder-page>
                 </div>
 
+                <!-- Check In/Out Widget -->
+                <div class="checkin-widget" v-if="currentPage === 'home' || currentPage === 'employee-directory'">
+                    <div class="checkin-status" :class="{ 'present': isCheckedIn }">
+                        <span class="status-dot"></span>
+                        <span class="status-text">{{ isCheckedIn ? 'PRESENT' : 'AWAY' }}</span>
+                    </div>
+                    <div class="checkin-time">{{ currentTime }}</div>
+                    <div class="checkin-date">{{ currentDate }}</div>
+                    <div class="checkin-buttons">
+                        <button class="checkin-btn in" :class="{ 'active': !isCheckedIn }" :disabled="isCheckedIn" @click="checkIn">
+                            <i class="pi pi-sign-in"></i>
+                        </button>
+                        <button class="checkin-btn out" :class="{ 'active': isCheckedIn }" :disabled="!isCheckedIn" @click="checkOut">
+                            <i class="pi pi-sign-out"></i>
+                        </button>
+                    </div>
+                    <div class="checkin-last" v-if="lastCheckAction">
+                        <i class="pi pi-clock"></i>
+                        <span>{{ lastCheckAction }}</span>
+                    </div>
+                </div>
+
                 <!-- Floating Action Button -->
                 <button class="fab-button" 
                         v-if="currentPage === 'home' || currentPage === 'my-profile'"
