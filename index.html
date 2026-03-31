@@ -404,9 +404,11 @@
                     <div class="checkin-buttons">
                         <button class="checkin-btn in" :class="{ 'active': !isCheckedIn }" :disabled="isCheckedIn" @click="checkIn">
                             <i class="pi pi-sign-in"></i>
+                            <span class="btn-tooltip">Check In</span>
                         </button>
                         <button class="checkin-btn out" :class="{ 'active': isCheckedIn }" :disabled="!isCheckedIn" @click="checkOut">
                             <i class="pi pi-sign-out"></i>
+                            <span class="btn-tooltip">Check Out</span>
                         </button>
                     </div>
                     <div class="checkin-last" v-if="lastCheckAction">
@@ -417,10 +419,11 @@
 
                 <!-- Floating Action Button -->
                 <button class="fab-button" 
+                        :class="{ 'with-widget': currentPage === 'home' }"
                         v-if="currentPage === 'home' || currentPage === 'my-profile'"
-                        @click="navigateTo('new-request')"
-                        v-tooltip.left="'New Request'">
+                        @click="navigateTo('new-request')">
                     <i class="pi pi-plus"></i>
+                    <span class="fab-tooltip">New Request</span>
                 </button>
             </main>
         </div>

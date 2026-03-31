@@ -297,6 +297,7 @@ img {
 }
 
 .checkin-btn {
+    position: relative;
     width: 36px;
     height: 28px;
     border-radius: var(--radius-md);
@@ -311,32 +312,57 @@ img {
 }
 
 .checkin-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.5;
     cursor: not-allowed;
+    background: var(--surface-ground);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 .checkin-btn.in.active {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
+    background: #22c55e;
+    border-color: #22c55e;
     color: white;
 }
 
 .checkin-btn.in.active:hover {
-    background: #ea580c;
+    background: #16a34a;
 }
 
 .checkin-btn.out.active {
-    background: var(--surface-card);
-    border-color: var(--text-color);
-    color: var(--text-color);
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
 }
 
 .checkin-btn.out.active:hover {
-    background: var(--surface-ground);
+    background: #dc2626;
 }
 
 .checkin-btn i {
     font-size: 0.75rem;
+}
+
+.checkin-btn .btn-tooltip {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: white;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
+    pointer-events: none;
+}
+
+.checkin-btn:hover .btn-tooltip {
+    opacity: 1;
+    visibility: visible;
 }
 
 .checkin-last {
@@ -365,24 +391,27 @@ img {
     position: fixed;
     bottom: 1rem;
     right: 1rem;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #374151;
-    color: white;
-    border: none;
+    background: var(--surface-card);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(55, 65, 81, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     z-index: 1000;
 }
 
+.fab-button.with-widget {
+    right: calc(1rem + 70px - 20px);
+}
+
 .fab-button:hover {
-    box-shadow: 0 6px 20px rgba(55, 65, 81, 0.5);
-    background: #1f2937;
+    background: var(--surface-card);
 }
 
 .fab-button:active {
@@ -390,8 +419,30 @@ img {
 }
 
 .fab-button i {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+.fab-tooltip {
+    position: absolute;
+    right: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1e293b;
     color: white;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
+    pointer-events: none;
+}
+
+.fab-button:hover .fab-tooltip {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* ==========================================================================
