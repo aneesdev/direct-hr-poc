@@ -253,28 +253,28 @@ const StaticData = {
     workWeeks: [
         {
             id: 1,
-            name: 'Standard Week (Sun-Thu)', 
+            name: 'Standard Week (Sun-Thu)',
             days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: false, Saturday: false },
             totalDays: 5,
             active: true
         },
         {
             id: 2,
-            name: 'Standard Week (Mon-Fri)', 
+            name: 'Standard Week (Mon-Fri)',
             days: { Sunday: false, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true, Saturday: false },
             totalDays: 5,
             active: true
         },
         {
             id: 3,
-            name: '6-Day Week (Sun-Fri)', 
+            name: '6-Day Week (Sun-Fri)',
             days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true, Saturday: false },
             totalDays: 6,
             active: true
         },
-        { 
-            id: 4, 
-            name: '4-Day Week', 
+        {
+            id: 4,
+            name: '4-Day Week',
             days: { Sunday: true, Monday: true, Tuesday: true, Wednesday: true, Thursday: false, Friday: false, Saturday: false },
             totalDays: 4,
             active: true
@@ -363,7 +363,8 @@ const StaticData = {
         'stats': 'Stats',
         'training-paths': 'Training Paths',
         'training-assign': 'Assign Training',
-        'training-tracker': 'Training Tracker'
+        'training-tracker': 'Training Tracker',
+        'role-permissions': 'Roles & Permissions'
     },
 
     // Employee dropdown options
@@ -1208,19 +1209,19 @@ const StaticData = {
         { id: 2, cycleId: 1, regionId: 2, costCenterId: 2, requestId: 'ARQ-002', headcount: 150, netSalary: 280000.00, currentStage: 'variables' },
         { id: 3, cycleId: 1, regionId: 3, costCenterId: 3, requestId: 'ARQ-003', headcount: 200, netSalary: 650000.00, currentStage: 'variables' },
         { id: 4, cycleId: 1, regionId: 4, costCenterId: 1, requestId: 'ARQ-004', headcount: 200, netSalary: 450000.00, currentStage: 'variables' },
-        
+
         // February 2026 - New
         { id: 5, cycleId: 2, regionId: 1, costCenterId: 2, requestId: 'ARQ-005', headcount: 120, netSalary: 0, currentStage: 'initialization' },
         { id: 6, cycleId: 2, regionId: 2, costCenterId: 1, requestId: 'ARQ-006', headcount: 95, netSalary: 0, currentStage: 'initialization' },
         { id: 7, cycleId: 2, regionId: 3, costCenterId: 4, requestId: 'ARQ-007', headcount: 45, netSalary: 0, currentStage: 'initialization' },
         { id: 8, cycleId: 2, regionId: 4, costCenterId: 5, requestId: 'ARQ-008', headcount: 5, netSalary: 0, currentStage: 'initialization' },
-        
+
         // May 2025 - Closed
         { id: 9, cycleId: 3, regionId: 1, costCenterId: 1, requestId: 'ARQ-009', headcount: 290, netSalary: 1795000.00, grossSalary: 1985000.00, commissions: 45000.00, arrearsAdd: 2500.00, arrearsDed: 7500.00, gosi: 3750.00, currentStage: 'archived' },
         { id: 10, cycleId: 3, regionId: 2, costCenterId: 2, requestId: 'ARQ-010', headcount: 60, netSalary: 269000.00, grossSalary: 305000.00, commissions: 12000.00, arrearsAdd: 1500.00, arrearsDed: 4000.00, gosi: 1850.00, currentStage: 'archived' },
         { id: 11, cycleId: 3, regionId: 3, costCenterId: 4, requestId: 'ARQ-011', headcount: 20, netSalary: 86000.00, grossSalary: 98000.00, commissions: 3500.00, arrearsAdd: 500.00, arrearsDed: 2000.00, gosi: 980.00, currentStage: 'archived' },
         { id: 12, cycleId: 3, regionId: 4, costCenterId: 2, requestId: 'ARQ-012', headcount: 20, netSalary: 80000.00, grossSalary: 102000.00, commissions: 2500.00, arrearsAdd: 500.00, arrearsDed: 2000.00, gosi: 920.00, currentStage: 'archived' },
-        
+
         // January 2025 - Closed
         { id: 13, cycleId: 4, regionId: 1, costCenterId: 3, requestId: 'ARQ-013', headcount: 210, netSalary: 1775000.00, grossSalary: 1920000.00, commissions: 52000.00, arrearsAdd: 9000.00, arrearsDed: 5500.00, gosi: 18000.00, currentStage: 'archived' },
         { id: 14, cycleId: 4, regionId: 2, costCenterId: 2, requestId: 'ARQ-014', headcount: 90, netSalary: 615000.00, grossSalary: 698000.00, commissions: 18000.00, arrearsAdd: 5000.00, arrearsDed: 1000.00, gosi: 5200.00, currentStage: 'archived' },
