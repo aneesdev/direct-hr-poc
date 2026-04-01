@@ -358,6 +358,7 @@
 
                     <!-- My Requests Page -->
                     <my-requests v-else-if="currentPage === 'my-requests'"
+                        :initial-selected-order="selectedOrderRequest"
                         @new-request="navigateTo('new-request')"></my-requests>
 
                     <!-- New Appraisal Page -->
@@ -380,7 +381,10 @@
                         @navigate="navigateTo"></notifications-center>
 
                     <!-- My Profile Page -->
-                    <my-profile v-else-if="currentPage === 'my-profile'"></my-profile>
+                    <my-profile v-else-if="currentPage === 'my-profile'"
+                        @view-order="viewOrderRequest($event)"
+                        @view-hr-request="viewHrRequest($event)">
+                    </my-profile>
 
                     <!-- Employee Directory Page -->
                     <employee-directory v-else-if="currentPage === 'employee-directory'"></employee-directory>

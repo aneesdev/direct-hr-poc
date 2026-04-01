@@ -763,38 +763,6 @@ const MyProfileComponent = {
                         </div>
                     </div>
 
-                    <!-- Order View Modal -->
-                    <p-dialog v-model:visible="showOrderModal" :header="'Order Details - ' + (selectedOrder?.id || '')" :style="{ width: '700px' }" modal>
-                        <div v-if="selectedOrder" class="order-view-content">
-                            <div class="order-header-info">
-                                <div class="order-type-badge" :style="{ background: selectedOrder.color + '15', color: selectedOrder.color }">
-                                    <i :class="'pi ' + selectedOrder.icon"></i>
-                                </div>
-                                <div>
-                                    <h3>{{ selectedOrder.typeName }}</h3>
-                                    <p>Submitted: {{ selectedOrder.submitted }}</p>
-                                </div>
-                                <span class="status-tag" :class="selectedOrder.status.toLowerCase().replace(' ', '-')">{{ selectedOrder.status }}</span>
-                            </div>
-                            <div class="order-details-grid">
-                                <div class="order-detail-item">
-                                    <label>Request ID</label>
-                                    <span>{{ selectedOrder.id }}</span>
-                                </div>
-                                <div class="order-detail-item">
-                                    <label>Current Step</label>
-                                    <span>{{ selectedOrder.currentStep }}</span>
-                                </div>
-                                <div class="order-detail-item">
-                                    <label>Submitted</label>
-                                    <span>{{ selectedOrder.submitted }} ({{ selectedOrder.submittedAgo }})</span>
-                                </div>
-                            </div>
-                        </div>
-                        <template #footer>
-                            <p-button label="Close" severity="secondary" @click="showOrderModal = false"></p-button>
-                        </template>
-                    </p-dialog>
                 </div>
 
                 <!-- Splits Tab -->
@@ -1436,8 +1404,8 @@ const MyProfileComponent = {
             </div>
         </div>
     `,
-
-    setup() {
+    emits: ['navigate', 'view-order', 'view-hr-request'],
+    setup(props, { emit }) {
         const { ref, computed, onMounted } = Vue;
 
         const activeTab = ref('personal');
@@ -1465,8 +1433,7 @@ const MyProfileComponent = {
         const selectedOrder = ref(null);
 
         const viewOrder = (order) => {
-            selectedOrder.value = order;
-            showOrderModal.value = true;
+            emit('view-order', order);
         };
 
         // Line Manager Hierarchy (from current employee to top - reversed order)
@@ -1643,7 +1610,7 @@ const MyProfileComponent = {
         };
 
         const viewHrDeskRequest = (request) => {
-            console.log('View HR Desk Request:', request);
+            emit('view-hr-request', request);
         };
 
         // Appraisal Modal

@@ -354,14 +354,30 @@ const MyRequestsComponent = {
         </div>
     `,
 
+    props: {
+        initialSelectedOrder: {
+            type: Object,
+            default: null
+        }
+    },
+
     emits: ['new-request'],
 
     setup(props, { emit }) {
-        const { ref, computed, reactive } = Vue;
+        const { ref, computed, reactive, onMounted, watch } = Vue;
 
         // State
         const requests = ref([...StaticData.submittedRequests]);
         const selectedRequest = ref(null);
+        
+        // Watch for initial selected order from props
+        watch(() => props.initialSelectedOrder, (newOrder) => {
+            if (newOrder) {
+                // Find matching request in our list or use it directly
+                const found = requests.value.find(r => r.id === newOrder.id);
+                selectedRequest.value = found || newOrder;
+            }
+        }, { immediate: true });
         const statusFilter = ref(null);
         const roleFilter = ref(null);
         const actionComment = ref('');

@@ -136,6 +136,10 @@ const app = createApp({
             currentPage.value = page;
             showUserMenu.value = false;
             showNotificationPanel.value = false;
+            // Clear selected order when navigating away
+            if (page !== 'my-requests') {
+                selectedOrderRequest.value = null;
+            }
         };
 
         // Open HR Request form
@@ -148,6 +152,13 @@ const app = createApp({
         const viewHrRequest = (request) => {
             selectedHrRequestView.value = request;
             currentPage.value = 'hr-request-view';
+        };
+
+        // View Order Request details (navigates to my-requests page with the order selected)
+        const selectedOrderRequest = ref(null);
+        const viewOrderRequest = (order) => {
+            selectedOrderRequest.value = order;
+            currentPage.value = 'my-requests';
         };
 
         const openNotificationAndGo = (notificationId) => {
@@ -171,6 +182,8 @@ const app = createApp({
             openHrRequest,
             selectedHrRequestView,
             viewHrRequest,
+            selectedOrderRequest,
+            viewOrderRequest,
             isCheckedIn,
             dayEnded,
             currentTime,
