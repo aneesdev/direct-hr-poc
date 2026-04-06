@@ -457,7 +457,6 @@ const MyProfileComponent = {
                             <div class="emergency-name">{{ employee.emergencyContact.name }}</div>
                             <div class="emergency-relation">{{ employee.emergencyContact.relation }} • {{ employee.emergencyContact.phone }}</div>
                         </div>
-                        <button class="manage-emergency-btn">Manage Emergency Contacts</button>
                     </div>
                 </div>
 
