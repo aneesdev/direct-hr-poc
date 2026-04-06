@@ -70,6 +70,10 @@ const TrainingTrackerComponent = {
                               placeholder="Department" showClear style="width: 140px;"></p-select>
                     <p-select v-model="filters.status" :options="statusOptions" optionLabel="label" optionValue="value"
                               placeholder="All Status" showClear style="width: 130px;"></p-select>
+                    <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
+                        <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
+                        <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
+                    </div>
                 </div>
                 <div class="filter-actions-row">
                     <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
@@ -246,6 +250,7 @@ const TrainingTrackerComponent = {
             department: null,
             status: null
         });
+        const layerFilter = ref('first');
 
         const stats = ref({
             assigned: 524,
@@ -453,6 +458,7 @@ const TrainingTrackerComponent = {
             lifecycleMenuItems,
             selectedTraining,
             filters,
+            layerFilter,
             stats,
             trainings,
             activityLogs,

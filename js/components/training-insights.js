@@ -37,6 +37,10 @@ const TrainingInsightsComponent = {
                                   placeholder="Month" showClear class="stats-filter-field"></p-select>
                         <p-select v-model="cycleFilters.year" :options="yearOptions" optionLabel="label" optionValue="value"
                                   placeholder="Year" showClear class="stats-filter-field"></p-select>
+                        <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
+                            <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
+                            <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
+                        </div>
                     </div>
                     <div class="filter-actions-row">
                         <p-button label="Apply" icon="pi pi-check" @click="applyCycleFilters" size="small"></p-button>
@@ -74,6 +78,10 @@ const TrainingInsightsComponent = {
                     <div class="filter-row stats-filter-row">
                         <p-select v-model="pathFilters.pathName" :options="pathOptions" optionLabel="label" optionValue="value"
                                   placeholder="Training Path Name" class="stats-filter-field"></p-select>
+                        <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
+                            <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
+                            <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
+                        </div>
                     </div>
                     <div class="filter-actions-row">
                         <p-button label="Apply" icon="pi pi-check" @click="applyPathFilters" size="small"></p-button>
@@ -107,6 +115,15 @@ const TrainingInsightsComponent = {
 
             <!-- Performance Tab -->
             <div v-if="activeTab === 'performance'" class="insight-content">
+                <div class="card compact-filters-grid stats-filters-card" style="padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+                    <div class="filter-row stats-filter-row">
+                        <div class="scheduler-layer-tabs">
+                            <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
+                            <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="performance-stats-grid">
                     <div class="performance-stat-card">
                         <div class="stat-value">{{ performanceStats.totalPaths }}</div>
@@ -147,6 +164,7 @@ const TrainingInsightsComponent = {
         const { ref, computed } = Vue;
 
         const activeTab = ref('cycle');
+        const layerFilter = ref('first');
 
         const cycleFilters = ref({
             targetCycle: 'Cycle 1',
@@ -271,6 +289,7 @@ const TrainingInsightsComponent = {
 
         return {
             activeTab,
+            layerFilter,
             cycleFilters,
             pathFilters,
             cycleOptions,

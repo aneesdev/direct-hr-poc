@@ -1305,6 +1305,10 @@ const StatsComponent = {
                             </div>
                         </div>
                     </div>
+                    <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;" v-if="activeModule !== 'payroll' && activeModule !== 'settings'">
+                        <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
+                        <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
+                    </div>
                 </div>
                 <div class="filter-actions-row">
                     <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
@@ -1386,6 +1390,7 @@ const StatsComponent = {
         ]);
 
         const activeModule = ref('attendance');
+        const layerFilter = ref('first');
 
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const quarters = ['Q1 (Jan-Mar)', 'Q2 (Apr-Jun)', 'Q3 (Jul-Sep)', 'Q4 (Oct-Dec)'];
@@ -1667,7 +1672,7 @@ const StatsComponent = {
         };
 
         return {
-            modules, activeModule, insightTab, selectedDateRange, customRange, dynamicFilters, months, quarters, years,
+            modules, activeModule, layerFilter, insightTab, selectedDateRange, customRange, dynamicFilters, months, quarters, years,
             filters, departments, sections, units, teams, entities, costCenters, subCostCenters, countries, offices,
             appraisalCycles, selectedAppraisalCycle, appraisalCycleApplied, customRangeApplied, currentModuleTitle,
             filteredSections, filteredUnits, filteredTeams, filteredSubCostCenters, hasModuleFilters, showDateRangePicker, formatDateRange,

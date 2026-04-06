@@ -25,6 +25,10 @@ const AppraisalResultsComponent = {
                               placeholder="Unit" showClear style="width: 110px;"></p-select>
                     <p-select v-model="filters.team" :options="teamOptions" optionLabel="name" optionValue="value"
                               placeholder="Team" showClear style="width: 110px;"></p-select>
+                    <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
+                        <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
+                        <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
+                    </div>
                 </div>
                 <div class="filter-actions-row">
                     <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
@@ -240,6 +244,7 @@ const AppraisalResultsComponent = {
             unit: null,
             team: null
         });
+        const layerFilter = ref('first');
 
         // Modal state
         const showArchiveModal = ref(false);
@@ -337,6 +342,7 @@ const AppraisalResultsComponent = {
             appraisalResults,
             searchQuery,
             filters,
+            layerFilter,
             applyFilters,
             clearFilters,
             hasActiveFilters,
