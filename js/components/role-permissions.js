@@ -73,6 +73,18 @@ const RolePermissionsComponent = {
                                         </div>
                                     </template>
                                 </p-column>
+                                <p-column header="Employees">
+                                    <template #body="slotProps">
+                                        <div class="stat-item-wrapper">
+                                            <span class="stat-item clickable" style="font-weight: 500;">{{ getRoleEmployees(slotProps.data.id).length }}</span>
+                                            <div class="social-tooltip" v-if="getRoleEmployees(slotProps.data.id).length > 0">
+                                                <div class="tooltip-content tooltip-content-scroll">
+                                                    <span v-for="(emp, idx) in getRoleEmployees(slotProps.data.id)" :key="idx">{{ emp }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </p-column>
                                 <p-column header="Permissions">
                                     <template #body="slotProps">
                                         <p-tag :value="getRolePermissionCount(slotProps.data.id) + ' assigned'" severity="secondary"></p-tag>
@@ -344,6 +356,23 @@ const RolePermissionsComponent = {
             return rolePermissions.value[roleId]?.length || 0;
         };
 
+        // Employee assignments per role
+        const roleEmployees = ref({
+            1: ['Khaled Al-Anazi', 'Sarah Al-Otaibi', 'Mohammad Al-Dossari', 'Reem Al-Fahad', 'Noura Al-Subaie', 'Ahmed Al-Qahtani', 'Sami Al-Harbi', 'Ali Al-Rashid', 'Fatima Al-Zahrani'],
+            2: ['Omar Al-Salem', 'Lina Al-Mutairi', 'Hassan Al-Ghamdi', 'Maha Al-Otaibi', 'Fahad Al-Mutairi', 'Nadia Al-Harbi', 'Yusuf Al-Otaibi', 'Salma Al-Dossary', 'Tariq Al-Anazi', 'Amal Al-Fahad'],
+            3: ['Khalid Al-Subaie', 'Rania Al-Qahtani', 'Saud Al-Malki', 'Huda Al-Shammari', 'Ali Al-Jaber', 'Layla Al-Rashid', 'Majid Al-Ghamdi', 'Noor Al-Otaibi', 'Faisal Al-Mutairi', 'Sara Al-Zahrani', 'Hamad Al-Anazi'],
+            4: ['Abdullah Al-Salem', 'Mona Al-Harbi', 'Yousef Al-Dossari', 'Asma Al-Fahad', 'Bandar Al-Otaibi', 'Hanan Al-Qahtani', 'Turki Al-Malki', 'Rawan Al-Subaie', 'Nawaf Al-Rashid', 'Dalal Al-Ghamdi', 'Salem Al-Mutairi', 'Aisha Al-Harbi', 'Mansour Al-Otaibi', 'Nouf Al-Anazi', 'Zaid Al-Salem', 'Rana Al-Dossary', 'Faris Al-Fahad', 'Ghada Al-Qahtani', 'Badr Al-Malki', 'Lama Al-Subaie', 'Waleed Al-Rashid', 'Haifa Al-Ghamdi', 'Nasser Al-Mutairi', 'Afnan Al-Harbi', 'Sattam Al-Otaibi', 'Jawaher Al-Anazi'],
+            5: ['Mohammed Al-Soliman', 'Fatima Al-Rashid', 'Ahmed Al-Ghamdi', 'Noura Al-Mutairi', 'Khalid Al-Harbi', 'Sara Al-Otaibi', 'Omar Al-Anazi', 'Reem Al-Salem', 'Hassan Al-Dossary', 'Maha Al-Fahad', 'Fahad Al-Qahtani', 'Nadia Al-Malki', 'Yusuf Al-Subaie', 'Salma Al-Rashid', 'Tariq Al-Ghamdi', 'Amal Al-Mutairi', 'Sami Al-Harbi', 'Lina Al-Otaibi', 'Ali Al-Anazi', 'Huda Al-Salem', 'Majid Al-Dossary', 'Noor Al-Fahad', 'Faisal Al-Qahtani', 'Layla Al-Malki', 'Hamad Al-Subaie', 'Rania Al-Rashid', 'Saud Al-Ghamdi', 'Dalal Al-Mutairi', 'Nawaf Al-Harbi', 'Asma Al-Otaibi'],
+            6: ['Bandar Al-Anazi', 'Hanan Al-Salem', 'Turki Al-Dossary', 'Rawan Al-Fahad', 'Salem Al-Qahtani', 'Aisha Al-Malki', 'Mansour Al-Subaie', 'Nouf Al-Rashid', 'Zaid Al-Ghamdi', 'Rana Al-Mutairi', 'Faris Al-Harbi', 'Ghada Al-Otaibi', 'Badr Al-Anazi', 'Lama Al-Salem', 'Waleed Al-Dossary', 'Haifa Al-Fahad', 'Nasser Al-Qahtani'],
+            7: ['Afnan Al-Malki', 'Sattam Al-Subaie', 'Jawaher Al-Rashid', 'Abdullah Al-Ghamdi', 'Mona Al-Mutairi', 'Yousef Al-Harbi', 'Sarah Al-Otaibi', 'Khalid Al-Anazi', 'Reem Al-Salem', 'Mohammad Al-Dossari', 'Noura Al-Fahad', 'Ahmed Al-Qahtani', 'Fatima Al-Malki', 'Omar Al-Subaie'],
+            8: ['Sami Al-Rashid', 'Lina Al-Ghamdi', 'Hassan Al-Mutairi', 'Maha Al-Harbi', 'Fahad Al-Otaibi', 'Nadia Al-Anazi', 'Yusuf Al-Salem', 'Salma Al-Dossary', 'Tariq Al-Fahad'],
+            9: ['Amal Al-Qahtani', 'Ali Al-Malki', 'Huda Al-Subaie', 'Majid Al-Rashid', 'Noor Al-Ghamdi', 'Faisal Al-Mutairi', 'Layla Al-Harbi', 'Hamad Al-Otaibi']
+        });
+
+        const getRoleEmployees = (roleId) => {
+            return roleEmployees.value[roleId] || [];
+        };
+
         const hasPermission = (roleId, permId) => {
             return rolePermissions.value[roleId]?.includes(permId) || false;
         };
@@ -426,6 +455,7 @@ const RolePermissionsComponent = {
             activeRoles,
             hasChanges,
             getRolePermissionCount,
+            getRoleEmployees,
             hasPermission,
             togglePermission,
             savePermissions,

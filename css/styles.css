@@ -26603,3 +26603,62 @@ img {
     min-width: 280px;
     box-sizing: border-box;
 }
+
+/* Roles table tooltip fix */
+.role-permissions-page .p-datatable-tbody > tr > td {
+    overflow: visible !important;
+    position: relative;
+}
+
+.role-permissions-page .p-datatable {
+    overflow: visible !important;
+}
+
+.role-permissions-page .p-datatable-wrapper {
+    overflow: visible !important;
+}
+
+.role-permissions-page .p-datatable-table-container {
+    overflow: visible !important;
+}
+
+.role-permissions-page .p-datatable-table {
+    overflow: visible !important;
+}
+
+.role-permissions-page .card {
+    overflow: visible !important;
+}
+
+.role-permissions-page .stat-item-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.role-permissions-page .stat-item-wrapper .social-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) !important;
+    z-index: 9999;
+    white-space: normal;
+    min-width: 180px;
+    max-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+}
+
+.role-permissions-page .stat-item-wrapper .social-tooltip::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.role-permissions-page .stat-item-wrapper:hover .social-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) !important;
+    pointer-events: auto;
+}
