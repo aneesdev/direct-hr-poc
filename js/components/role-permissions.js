@@ -287,6 +287,21 @@ const RolePermissionsComponent = {
                     { id: 'general_filter_crud', name: 'General Filter CRUD', description: 'Manage general filters' },
                     { id: 'line_manager_crud', name: 'Line Manager CRUD', description: 'Manage line manager assignments' }
                 ]
+            },
+            {
+                id: 'stats_tabs',
+                name: 'STATS TABS',
+                permissions: [
+                    { id: 'stats_attendance', name: 'Attendance', description: 'Access Attendance tab in Stats module' },
+                    { id: 'stats_payroll', name: 'Payroll', description: 'Access Payroll tab in Stats module' },
+                    { id: 'stats_requests', name: 'Requests', description: 'Access Requests tab in Stats module' },
+                    { id: 'stats_demography', name: 'Demography', description: 'Access Demography tab in Stats module' },
+                    { id: 'stats_hrdesk', name: 'HR Desk', description: 'Access HR Desk tab in Stats module' },
+                    { id: 'stats_directory', name: 'Directory and Onboarding', description: 'Access Directory and Onboarding tab in Stats module' },
+                    { id: 'stats_settings', name: 'Settings', description: 'Access Settings tab in Stats module' },
+                    { id: 'stats_appraisal', name: 'Appraisal', description: 'Access Appraisal tab in Stats module' },
+                    { id: 'stats_training', name: 'Training', description: 'Access Training tab in Stats module' }
+                ]
             }
         ]);
 
