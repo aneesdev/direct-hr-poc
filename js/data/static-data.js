@@ -364,7 +364,8 @@ const StaticData = {
         'training-paths': 'Training Paths',
         'training-assign': 'Assign Training',
         'training-tracker': 'Training Tracker',
-        'role-permissions': 'Roles & Permissions'
+        'role-permissions': 'Roles & Permissions',
+        'pending-actions': 'Pending Actions'
     },
 
     // Employee dropdown options

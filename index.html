@@ -67,6 +67,7 @@
     <script src="js/components/training-insights.js"></script>
     <script src="js/components/stats.js"></script>
     <script src="js/components/role-permissions.js"></script>
+    <script src="js/components/pending-actions.js"></script>
 
     <div id="app">
         <div class="app-container">
@@ -109,6 +110,11 @@
                         @click="navigateTo('payroll')">
                         <i class="pi pi-wallet"></i>
                         <span>Payroll</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'pending-actions' }"
+                        @click="navigateTo('pending-actions')">
+                        <i class="pi pi-list-check"></i>
+                        <span>Pending Actions</span>
                     </div>
 
                     <!-- Requests Section -->
@@ -417,6 +423,9 @@
 
                     <!-- Roles & Permissions Page -->
                     <role-permissions v-else-if="currentPage === 'role-permissions'"></role-permissions>
+
+                    <!-- Pending Actions Page -->
+                    <pending-actions v-else-if="currentPage === 'pending-actions'"></pending-actions>
 
                     <!-- Company Documents Page -->
                     <company-documents v-else-if="currentPage === 'company-documents'"></company-documents>
