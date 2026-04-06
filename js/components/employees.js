@@ -174,9 +174,10 @@ const EmployeesComponent = {
                                     <button class="action-btn" title="View Profile"><i class="pi pi-eye"></i></button>
                                     <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
                                 </template>
-                                <!-- Active: View, Terminate -->
+                                <!-- Active: View, Assign Roles, Terminate -->
                                 <template v-else-if="slotProps.data.status === 'Active'">
                                     <button class="action-btn" title="View Profile"><i class="pi pi-eye"></i></button>
+                                    <button class="action-btn" title="Assign Roles & Permissions" @click="openAssignDialog(slotProps.data)" style="color: var(--primary-color);"><i class="pi pi-key"></i></button>
                                     <button class="action-btn delete" title="Terminate" @click="openTerminateDialog(slotProps.data)"><i class="pi pi-trash"></i></button>
                                 </template>
                                 <!-- Non-active: View only -->
@@ -188,6 +189,35 @@ const EmployeesComponent = {
                     </p-column>
                 </p-datatable>
             </div>
+
+            <!-- Assign Roles & Permissions Dialog -->
+            <p-dialog v-model:visible="showAssignDialog" header="Assign Roles & Permissions" :modal="true" :style="{ width: '550px' }">
+                <div class="assign-dialog-content" v-if="selectedEmployeeForRoles">
+                    <div class="terminate-employee-info" style="margin-bottom: 1.5rem;">
+                        <img :src="selectedEmployeeForRoles.avatar" :alt="selectedEmployeeForRoles.firstName">
+                        <div>
+                            <strong>{{ selectedEmployeeForRoles.firstName }} {{ selectedEmployeeForRoles.familyName }}</strong>
+                            <span>{{ selectedEmployeeForRoles.employeeNumber }} • {{ selectedEmployeeForRoles.jobTitle }}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-field" style="margin-bottom: 1.25rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Roles</label>
+                        <p-multiselect v-model="selectedRoles" :options="rolesOptions" optionLabel="name" optionValue="id"
+                                       placeholder="Select roles" style="width: 100%;" display="chip"></p-multiselect>
+                    </div>
+
+                    <div class="form-field">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Direct Permissions</label>
+                        <p-multiselect v-model="selectedPermissions" :options="permissionsOptions" optionLabel="name" optionValue="id"
+                                       placeholder="Select permissions" style="width: 100%;" display="chip" :maxSelectedLabels="3"></p-multiselect>
+                    </div>
+                </div>
+                <template #footer>
+                    <p-button label="Cancel" severity="danger" outlined @click="showAssignDialog = false"></p-button>
+                    <p-button label="Assign" icon="pi pi-check" @click="assignRolesAndPermissions"></p-button>
+                </template>
+            </p-dialog>
 
             <!-- Termination Dialog -->
             <p-dialog v-model:visible="showTerminateDialog" header="Employee Termination" :modal="true" :style="{ width: '500px' }">
@@ -262,6 +292,69 @@ const EmployeesComponent = {
                 finalSettlement: false
             }
         });
+
+        // Assign Roles & Permissions
+        const showAssignDialog = ref(false);
+        const selectedEmployeeForRoles = ref(null);
+        const selectedRoles = ref([]);
+        const selectedPermissions = ref([]);
+        
+        // Roles options from role-permissions.js
+        const rolesOptions = ref([
+            { id: 1, name: 'Employee' },
+            { id: 2, name: 'Payroll Specialist' },
+            { id: 3, name: 'HR Trainer' },
+            { id: 4, name: 'HR Administrator' },
+            { id: 5, name: 'HR Manager' },
+            { id: 6, name: 'Line Manager' },
+            { id: 7, name: 'Executive' },
+            { id: 8, name: 'HR EVP' },
+            { id: 9, name: 'CEO' }
+        ]);
+        
+        // Permissions options flattened from permission groups
+        const permissionsOptions = ref([
+            { id: 'home', name: 'Home' },
+            { id: 'employee_directory', name: 'Employee Directory' },
+            { id: 'my_profile', name: 'My Profile' },
+            { id: 'stats', name: 'Stats' },
+            { id: 'payroll', name: 'Payroll' },
+            { id: 'shift_scheduling', name: 'Shift Scheduling' },
+            { id: 'weekly_shift_summary', name: 'Weekly Shift Summary' },
+            { id: 'attendance', name: 'Attendance' },
+            { id: 'new_request', name: 'New Request' },
+            { id: 'requests_tracker', name: 'Requests Tracker' },
+            { id: 'new_hd_request', name: 'New Help Desk Request' },
+            { id: 'request_hd_tracker', name: 'Help Desk Tracker' },
+            { id: 'training_paths', name: 'Training Paths' },
+            { id: 'training_assign', name: 'Assign Training' },
+            { id: 'training_tracking', name: 'Training Tracking' },
+            { id: 'new_appraisal_cycle', name: 'New Appraisal Cycle' },
+            { id: 'appraisals_tracking', name: 'Appraisals Tracking' },
+            { id: 'appraisals_results', name: 'Appraisals Results' },
+            { id: 'employees', name: 'Employees' },
+            { id: 'company_news', name: 'Company News' },
+            { id: 'directory_documents', name: 'Directory Documents' },
+            { id: 'orders_requests_settings', name: 'Orders Requests Settings' },
+            { id: 'help_desk_requests_settings', name: 'Help Desk Requests Settings' },
+            { id: 'employee_documents', name: 'Employee Documents' },
+            { id: 'main_company_settings', name: 'Main Company Settings' },
+            { id: 'hr_help_desk_settings', name: 'HR Help Desk Settings' },
+            { id: 'splits_in_profile', name: 'Splits in Profile Page' },
+            { id: 'view_more_details_profile', name: 'View More Details in Profile Page' },
+            { id: 'payroll_in_stats', name: 'Payroll in Stats' },
+            { id: 'general_filter_crud', name: 'General Filter CRUD' },
+            { id: 'line_manager_crud', name: 'Line Manager CRUD' },
+            { id: 'stats_attendance', name: 'Stats: Attendance' },
+            { id: 'stats_payroll', name: 'Stats: Payroll' },
+            { id: 'stats_requests', name: 'Stats: Requests' },
+            { id: 'stats_demography', name: 'Stats: Demography' },
+            { id: 'stats_hrdesk', name: 'Stats: HR Desk' },
+            { id: 'stats_directory', name: 'Stats: Directory and Onboarding' },
+            { id: 'stats_settings', name: 'Stats: Settings' },
+            { id: 'stats_appraisal', name: 'Stats: Appraisal' },
+            { id: 'stats_training', name: 'Stats: Training' }
+        ]);
 
         // Options
         const departmentOptions = computed(() => StaticData.departments.map(d => d.name));
@@ -400,6 +493,28 @@ const EmployeesComponent = {
             }
         };
 
+        // Assign Roles & Permissions methods
+        const openAssignDialog = (employee) => {
+            selectedEmployeeForRoles.value = employee;
+            selectedRoles.value = employee.assignedRoles || [];
+            selectedPermissions.value = employee.directPermissions || [];
+            showAssignDialog.value = true;
+        };
+
+        const assignRolesAndPermissions = () => {
+            if (selectedEmployeeForRoles.value) {
+                const index = employees.value.findIndex(e => e.id === selectedEmployeeForRoles.value.id);
+                if (index !== -1) {
+                    employees.value[index].assignedRoles = [...selectedRoles.value];
+                    employees.value[index].directPermissions = [...selectedPermissions.value];
+                }
+                showAssignDialog.value = false;
+                selectedEmployeeForRoles.value = null;
+                selectedRoles.value = [];
+                selectedPermissions.value = [];
+            }
+        };
+
         return {
             employees,
             searchQuery,
@@ -431,7 +546,15 @@ const EmployeesComponent = {
             terminationForm,
             openTerminateDialog,
             canTerminate,
-            confirmTermination
+            confirmTermination,
+            showAssignDialog,
+            selectedEmployeeForRoles,
+            selectedRoles,
+            selectedPermissions,
+            rolesOptions,
+            permissionsOptions,
+            openAssignDialog,
+            assignRolesAndPermissions
         };
     }
 };
