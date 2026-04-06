@@ -282,6 +282,7 @@ const RolePermissionsComponent = {
                 name: 'OTHERS',
                 permissions: [
                     { id: 'splits_in_profile', name: 'Splits in Profile Page', description: 'View split details in employee profiles' },
+                    { id: 'view_more_details_profile', name: 'View More Details in Profile Page', description: 'View extended employee details in profiles' },
                     { id: 'payroll_in_stats', name: 'Payroll in Stats', description: 'View payroll metrics in statistics' },
                     { id: 'general_filter_crud', name: 'General Filter CRUD', description: 'Manage general filters' },
                     { id: 'line_manager_crud', name: 'Line Manager CRUD', description: 'Manage line manager assignments' }
