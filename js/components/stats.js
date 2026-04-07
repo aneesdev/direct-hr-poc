@@ -1305,7 +1305,7 @@ const StatsComponent = {
                             </div>
                         </div>
                     </div>
-                    <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;" v-if="activeModule !== 'payroll' && activeModule !== 'settings'">
+                    <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;" v-if="activeModule !== 'payroll' && activeModule !== 'settings' && activeModule !== 'demography' && activeModule !== 'directory'">
                         <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
                         <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
                     </div>
