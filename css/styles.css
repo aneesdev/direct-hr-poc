@@ -27082,3 +27082,1227 @@ img {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ==========================================================================
+   Pending Actions Modal Styles - Request Detail
+   ========================================================================== */
+
+.request-detail-modal .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+}
+
+.request-detail-modal .detail-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.request-detail-modal .detail-header-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.request-detail-modal .detail-header-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.request-detail-modal .detail-type-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.request-detail-modal .detail-type-icon i {
+    font-size: 1.25rem;
+}
+
+.request-detail-modal .detail-header-info {
+    flex: 1;
+}
+
+.request-detail-modal .detail-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.request-detail-modal .detail-title-row h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.request-detail-modal .detail-meta {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.request-detail-modal .detail-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.request-detail-modal .detail-section-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.request-detail-modal .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.request-detail-modal .section-header i {
+    color: var(--primary-color);
+}
+
+.request-detail-modal .requester-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.request-detail-modal .requester-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.request-detail-modal .requester-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.request-detail-modal .requester-dept {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.request-detail-modal .parameters-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.request-detail-modal .parameter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.request-detail-modal .parameter-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    letter-spacing: 0.5px;
+}
+
+.request-detail-modal .parameter-value {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.request-detail-modal .action-card {
+    border: 2px solid var(--primary-color);
+    border-style: dashed;
+    background: rgba(var(--primary-color-rgb), 0.03);
+}
+
+.request-detail-modal .action-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.request-detail-modal .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.request-detail-modal .form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+.request-detail-modal .action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.request-detail-modal .detail-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.request-detail-modal .sidebar-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+}
+
+.request-detail-modal .sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.request-detail-modal .sidebar-header i {
+    color: var(--primary-color);
+}
+
+.request-detail-modal .approval-timeline {
+    display: flex;
+    flex-direction: column;
+}
+
+.request-detail-modal .timeline-step {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.request-detail-modal .timeline-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.request-detail-modal .timeline-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.request-detail-modal .timeline-step.pending .timeline-dot {
+    background: rgba(var(--primary-color-rgb), 0.15);
+    color: var(--primary-color);
+}
+
+.request-detail-modal .timeline-step.waiting .timeline-dot {
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+}
+
+.request-detail-modal .timeline-step.approved .timeline-dot {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.request-detail-modal .timeline-line {
+    width: 2px;
+    flex: 1;
+    min-height: 24px;
+    background: var(--border-color);
+}
+
+.request-detail-modal .timeline-content {
+    padding-bottom: 1rem;
+}
+
+.request-detail-modal .timeline-role {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.request-detail-modal .timeline-assignee {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.request-detail-modal .timeline-waiting {
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    margin-top: 0.25rem;
+}
+
+.request-detail-modal .activity-log {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.request-detail-modal .log-entry {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.request-detail-modal .log-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.request-detail-modal .log-dot.submitted {
+    background: var(--primary-color);
+}
+
+.request-detail-modal .log-content {
+    flex: 1;
+}
+
+.request-detail-modal .log-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.request-detail-modal .log-time {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.request-detail-modal .log-user {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+/* ==========================================================================
+   Pending Actions Modal Styles - HR Help Desk
+   ========================================================================== */
+
+.hr-request-view-modal .view-content {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 1.5rem;
+}
+
+.hr-request-view-modal .view-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.hr-request-view-modal .detail-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.hr-request-view-modal .detail-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.hr-request-view-modal .detail-card-header i {
+    color: var(--primary-color);
+}
+
+.hr-request-view-modal .employee-info-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hr-request-view-modal .employee-avatar-lg {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.hr-request-view-modal .employee-details-full {
+    flex: 1;
+}
+
+.hr-request-view-modal .employee-name-lg {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text-color);
+}
+
+.hr-request-view-modal .employee-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.hr-request-view-modal .employee-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.hr-request-view-modal .submitted-by-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hr-request-view-modal .hr-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.hr-request-view-modal .hr-details {
+    flex: 1;
+}
+
+.hr-request-view-modal .hr-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.hr-request-view-modal .hr-role {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.hr-request-view-modal .submission-date {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.hr-request-view-modal .changes-card {
+    background: var(--surface-card);
+}
+
+.hr-request-view-modal .changes-group {
+    margin-bottom: 1rem;
+}
+
+.hr-request-view-modal .changes-group:last-child {
+    margin-bottom: 0;
+}
+
+.hr-request-view-modal .changes-group-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.hr-request-view-modal .changes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.hr-request-view-modal .change-item {
+    padding: 0.75rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+}
+
+.hr-request-view-modal .change-field {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.hr-request-view-modal .change-values {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hr-request-view-modal .change-old,
+.hr-request-view-modal .change-new {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+}
+
+.hr-request-view-modal .change-old {
+    background: var(--surface-card);
+}
+
+.hr-request-view-modal .change-new {
+    background: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.hr-request-view-modal .change-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.15rem;
+}
+
+.hr-request-view-modal .change-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.hr-request-view-modal .change-value.highlight {
+    color: var(--primary-color);
+}
+
+.hr-request-view-modal .change-arrow {
+    color: var(--text-color-secondary);
+}
+
+.hr-request-view-modal .view-actions-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.hr-request-view-modal .actions-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.hr-request-view-modal .actions-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.hr-request-view-modal .actions-card-header i {
+    color: var(--primary-color);
+}
+
+.hr-request-view-modal .actions-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.hr-request-view-modal .actions-hint {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    margin: 0;
+}
+
+.hr-request-view-modal .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.hr-request-view-modal .action-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    padding: 0.75rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+}
+
+.hr-request-view-modal .action-note i {
+    color: var(--primary-color);
+    margin-top: 2px;
+}
+
+.hr-request-view-modal .timeline-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.hr-request-view-modal .timeline-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.hr-request-view-modal .timeline-card-header i {
+    color: var(--primary-color);
+}
+
+.hr-request-view-modal .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.hr-request-view-modal .timeline-item {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.hr-request-view-modal .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.hr-request-view-modal .timeline-dot.submitted {
+    background: var(--primary-color);
+}
+
+.hr-request-view-modal .timeline-content {
+    flex: 1;
+}
+
+.hr-request-view-modal .timeline-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.hr-request-view-modal .timeline-meta {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+/* ==========================================================================
+   Pending Actions Modal Styles - Appraisal
+   ========================================================================== */
+
+.appraisal-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.appraisal-modal-content .self-eval-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-lg);
+}
+
+.appraisal-modal-content .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.appraisal-modal-content .detail-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.appraisal-modal-content .header-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.appraisal-modal-content .employee-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .employee-meta-line {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.appraisal-modal-content .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.appraisal-modal-content .score-display {
+    text-align: right;
+}
+
+.appraisal-modal-content .score-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .phase-badge {
+    padding: 0.35rem 0.75rem;
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.appraisal-modal-content .appraisal-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 1.25rem;
+}
+
+.appraisal-modal-content .appraisal-left-col,
+.appraisal-modal-content .appraisal-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.appraisal-modal-content .eval-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.appraisal-modal-content .eval-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .eval-card-header i {
+    color: var(--primary-color);
+}
+
+.appraisal-modal-content .score-badge {
+    margin-left: auto;
+    padding: 0.25rem 0.5rem;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+}
+
+.appraisal-modal-content .eval-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.appraisal-modal-content .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+.appraisal-modal-content .breakdown-row:last-child {
+    border-bottom: none;
+}
+
+.appraisal-modal-content .breakdown-score {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .breakdown-score small {
+    color: var(--text-color-secondary);
+    font-weight: 400;
+}
+
+.appraisal-modal-content .self-justification {
+    padding: 0.75rem;
+    background: rgba(var(--primary-color-rgb), 0.08);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.appraisal-modal-content .justification-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.35rem;
+}
+
+.appraisal-modal-content .self-justification p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-style: italic;
+}
+
+.appraisal-modal-content .upload-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.appraisal-modal-content .upload-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(var(--primary-color-rgb), 0.15);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.appraisal-modal-content .upload-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .upload-area {
+    width: 100%;
+    padding: 1rem;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.appraisal-modal-content .upload-area:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.03);
+}
+
+.appraisal-modal-content .upload-text {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .upload-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    margin-top: 0.25rem;
+}
+
+.appraisal-modal-content .manager-assessment-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.appraisal-modal-content .assessment-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface-ground);
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+}
+
+.appraisal-modal-content .score-inputs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.appraisal-modal-content .score-input-group {
+    text-align: center;
+    padding: 0.75rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+}
+
+.appraisal-modal-content .score-input-group.highlight {
+    background: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.appraisal-modal-content .score-input-group label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.appraisal-modal-content .score-input-group label small {
+    display: block;
+    color: var(--primary-color);
+}
+
+.appraisal-modal-content .score-input-box {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.appraisal-modal-content .score-input-box .score-val {
+    color: var(--primary-color);
+}
+
+.appraisal-modal-content .final-rating-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--primary-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.25rem;
+}
+
+.appraisal-modal-content .rating-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.appraisal-modal-content .rating-info {
+    flex: 1;
+}
+
+.appraisal-modal-content .rating-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.appraisal-modal-content .rating-sublabel {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.appraisal-modal-content .rating-score {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.appraisal-modal-content .feedback-section label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.5px;
+}
+
+.appraisal-modal-content .next-action-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.appraisal-modal-content .next-action-note i {
+    color: #3b82f6;
+    margin-top: 2px;
+}
+
+.appraisal-modal-content .next-action-note strong {
+    display: block;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.appraisal-modal-content .next-action-note p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+/* ==========================================================================
+   Pending Actions Modal Styles - Training
+   ========================================================================== */
+
+.training-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.training-modal-content .training-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-lg);
+}
+
+.training-modal-content .training-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.training-modal-content .training-info {
+    flex: 1;
+}
+
+.training-modal-content .training-employee-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text-color);
+}
+
+.training-modal-content .training-employee-meta {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.training-modal-content .training-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.training-modal-content .training-detail-item {
+    padding: 0.75rem;
+    background: var(--surface-ground);
+    border-radius: var(--radius-md);
+}
+
+.training-modal-content .training-detail-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.5px;
+}
+
+.training-modal-content .training-detail-value {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.training-modal-content .training-description-card {
+    padding: 1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.training-modal-content .description-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-color);
+}
+
+.training-modal-content .description-header i {
+    color: var(--primary-color);
+}
+
+.training-modal-content .training-description-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    line-height: 1.5;
+}
+
+.training-modal-content .training-action-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.training-modal-content .training-action-section label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+.training-modal-content .training-status-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.training-modal-content .training-status-badge.assigned {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.training-modal-content .training-status-badge.in-progress {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+}
+
+.training-modal-content .training-status-badge.completed {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.training-modal-content .training-status-badge.failed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.training-modal-content .training-detail-value.hours-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.training-modal-content .training-status-update {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.training-modal-content .training-status-update label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+.training-modal-content .status-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+
+.training-modal-content .status-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+    transition: all 0.2s ease;
+}
+
+.training-modal-content .status-option:hover {
+    border-color: var(--text-color-secondary);
+}
+
+.training-modal-content .status-option.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+}
+
+.training-modal-content .status-option.progress.active {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.08);
+    color: #f97316;
+}
+
+.training-modal-content .status-option.success.active {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.08);
+    color: #22c55e;
+}
+
+.training-modal-content .status-option.danger.active {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+/* Hide any extra dialog header icons */
+.pending-actions-page .p-dialog-header-icon:not(.p-dialog-header-close) {
+    display: none !important;
+}
+
+.pending-actions-page .p-dialog-header-maximize {
+    display: none !important;
+}
