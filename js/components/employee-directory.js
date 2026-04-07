@@ -82,9 +82,17 @@ const EmployeeDirectoryComponent = {
                                 <i class="pi pi-map-marker"></i>
                                 <span>{{ emp.branch }}</span>
                             </div>
-                            <div class="emp-detail-row">
+                            <div class="emp-detail-row email-row">
                                 <i class="pi pi-envelope"></i>
-                                <span>{{ emp.email }}</span>
+                                <span class="email-text">{{ isEmailRevealed(emp.id) ? emp.email : maskEmail(emp.email) }}</span>
+                                <div class="email-actions">
+                                    <button class="email-action-btn" @click.stop="toggleEmailReveal(emp.id)" v-tooltip.top="isEmailRevealed(emp.id) ? 'Hide Email' : 'Reveal Email'">
+                                        <i :class="isEmailRevealed(emp.id) ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                                    </button>
+                                    <button v-if="isEmailRevealed(emp.id)" class="email-action-btn" @click.stop="copyEmail(emp.email)" v-tooltip.top="'Copy Email'">
+                                        <i class="pi pi-copy"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="emp-detail-row">
                                 <i class="pi pi-phone"></i>
@@ -136,7 +144,18 @@ const EmployeeDirectoryComponent = {
                             </td>
                             <td>
                                 <div class="list-contact">
-                                    <div><i class="pi pi-envelope"></i> {{ emp.email }}</div>
+                                    <div class="list-email-row">
+                                        <i class="pi pi-envelope"></i>
+                                        <span class="email-text">{{ isEmailRevealed(emp.id) ? emp.email : maskEmail(emp.email) }}</span>
+                                        <div class="email-actions">
+                                            <button class="email-action-btn" @click.stop="toggleEmailReveal(emp.id)" v-tooltip.top="isEmailRevealed(emp.id) ? 'Hide Email' : 'Reveal Email'">
+                                                <i :class="isEmailRevealed(emp.id) ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                                            </button>
+                                            <button v-if="isEmailRevealed(emp.id)" class="email-action-btn" @click.stop="copyEmail(emp.email)" v-tooltip.top="'Copy Email'">
+                                                <i class="pi pi-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div><i class="pi pi-phone"></i> {{ emp.extension }}</div>
                                 </div>
                             </td>
@@ -192,6 +211,44 @@ const EmployeeDirectoryComponent = {
         const selectedSection = ref(null);
         const selectedUnit = ref(null);
         const selectedTeam = ref(null);
+        
+        // Email reveal tracking
+        const revealedEmails = ref(new Set());
+        
+        const maskEmail = (email) => {
+            if (!email) return '';
+            const atIndex = email.indexOf('@');
+            if (atIndex === -1) return email;
+            const domain = email.substring(atIndex);
+            return '*****' + domain;
+        };
+        
+        const isEmailRevealed = (empId) => {
+            return revealedEmails.value.has(empId);
+        };
+        
+        const toggleEmailReveal = (empId) => {
+            const newSet = new Set(revealedEmails.value);
+            if (newSet.has(empId)) {
+                newSet.delete(empId);
+            } else {
+                newSet.add(empId);
+            }
+            revealedEmails.value = newSet;
+        };
+        
+        const copyEmail = async (email) => {
+            try {
+                await navigator.clipboard.writeText(email);
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+        };
 
         // Entity options
         const entityOptions = ref([
@@ -478,7 +535,11 @@ const EmployeeDirectoryComponent = {
             clearFilters,
             employees,
             filteredEmployees,
-            regions
+            regions,
+            maskEmail,
+            isEmailRevealed,
+            toggleEmailReveal,
+            copyEmail
         };
     }
 };

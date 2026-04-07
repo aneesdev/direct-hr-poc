@@ -17940,6 +17940,62 @@ img {
     width: 16px;
 }
 
+.emp-detail-row.email-row,
+.list-email-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.emp-detail-row.email-row .email-text,
+.list-email-row .email-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.email-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.email-action-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.email-action-btn:hover {
+    background: var(--surface-ground);
+    color: var(--primary-color);
+}
+
+.email-action-btn i {
+    font-size: 0.85rem;
+    width: auto;
+}
+
+.list-email-row {
+    font-size: 0.85rem;
+}
+
+.list-email-row i.pi-envelope {
+    color: var(--text-color-secondary);
+}
+
 .emp-nationality {
     margin-left: auto;
     font-size: 0.75rem;
