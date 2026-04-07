@@ -32,6 +32,7 @@ const app = createApp({
         'hr-request-view': HrRequestViewComponent,
         'hr-bulk-settings': HrBulkSettingsComponent,
         'role-permissions': RolePermissionsComponent,
+        'employee-master-list': EmployeeMasterListComponent,
         'pending-actions': PendingActionsComponent,
         'company-documents': CompanyDocumentsComponent,
         'employee-documents': EmployeeDocumentsComponent,

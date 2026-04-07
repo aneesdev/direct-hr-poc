@@ -26668,6 +26668,40 @@ img {
     padding: 0.5rem 0;
 }
 
+/* Employee Master List */
+.employee-master-list-page {
+    padding: 1.5rem;
+}
+
+.balance-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.balance-badge.secondary {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+}
+
+.master-list-table .p-datatable-thead > tr > th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--surface-ground);
+}
+
+.master-list-table .p-datatable-tbody > tr > td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-card);
+}
+
 .permissions-table .p-datatable-row-group-header>td {
     background: var(--surface-100);
 }

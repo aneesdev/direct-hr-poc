@@ -67,6 +67,7 @@
     <script src="js/components/training-insights.js"></script>
     <script src="js/components/stats.js"></script>
     <script src="js/components/role-permissions.js"></script>
+    <script src="js/components/employee-master-list.js"></script>
     <script src="js/components/pending-actions.js"></script>
 
     <div id="app">
@@ -243,6 +244,11 @@
                         @click="navigateTo('role-permissions')">
                         <i class="pi pi-lock"></i>
                         <span>Roles & Permissions</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'employee-master-list' }"
+                        @click="navigateTo('employee-master-list')">
+                        <i class="pi pi-list"></i>
+                        <span>Employee Master List</span>
                     </div>
                     <div class="menu-item disabled">
                         <i class="pi pi-chart-bar"></i>
@@ -423,6 +429,9 @@
 
                     <!-- Roles & Permissions Page -->
                     <role-permissions v-else-if="currentPage === 'role-permissions'"></role-permissions>
+
+                    <!-- Employee Master List Page -->
+                    <employee-master-list v-else-if="currentPage === 'employee-master-list'"></employee-master-list>
 
                     <!-- Pending Actions Page -->
                     <pending-actions v-else-if="currentPage === 'pending-actions'"></pending-actions>
