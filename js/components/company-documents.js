@@ -242,7 +242,7 @@ const CompanyDocumentsComponent = {
             { id: 5, name: 'Performance Review Guide', nameAr: 'دليل تقييم الأداء', icon: 'pi-chart-line', iconClass: 'guide', category: 'guide', fileType: 'pdf', status: 'active', updatedAt: '2024-02-01', downloads: 178, description: 'Guide for performance reviews' },
             { id: 6, name: 'Health & Insurance Guide', nameAr: 'دليل التأمين الصحي', icon: 'pi-heart', iconClass: 'health', category: 'guide', fileType: 'pdf', status: 'active', updatedAt: '2024-01-25', downloads: 289, description: 'Health and insurance information' },
             { id: 7, name: 'Internal Communication', nameAr: 'سياسة التواصل الداخلي', icon: 'pi-comments', iconClass: 'comm', category: 'policy', fileType: 'docx', status: 'active', updatedAt: '2024-02-28', downloads: 134, description: 'Internal communication guidelines' },
-            { id: 8, name: 'Remote Work Framework', nameAr: 'إطار العمل عن بعد', icon: 'pi-home', iconClass: 'remote', category: 'policy', fileType: 'pdf', status: 'draft', updatedAt: '2024-03-05', downloads: 67, description: 'Remote work policies and guidelines' }
+            { id: 8, name: 'Remote Work Framework', nameAr: 'إطار العمل عن بعد', icon: 'pi-home', iconClass: 'remote', category: 'policy', fileType: 'pdf', status: 'archived', updatedAt: '2024-03-05', downloads: 67, description: 'Remote work policies and guidelines' }
         ]);
 
         // Form

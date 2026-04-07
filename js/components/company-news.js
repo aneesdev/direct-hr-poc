@@ -411,7 +411,7 @@ const CompanyNewsComponent = {
                 publishedAt: '2026-01-10',
                 likes: 18,
                 comments: 5,
-                status: 'draft'
+                status: 'scheduled'
             }
         ]);
 
