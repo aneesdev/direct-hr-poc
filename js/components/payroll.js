@@ -640,6 +640,13 @@ const PayrollComponent = {
                                 </div>
                             </div>
 
+                            <!-- Review Audit Card -->
+                            <div class="audit-card clickable approve-review-card" @click="showReviewAuditDialog = true">
+                                <i class="pi pi-chart-line"></i>
+                                <div class="audit-name">Review Page</div>
+                                <div class="audit-desc">VARIANCE & DELTA REPORT</div>
+                            </div>
+
                             <!-- Batch Review Panel -->
                             <div class="batch-review-panel">
                                 <div class="panel-header">
