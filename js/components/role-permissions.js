@@ -296,7 +296,8 @@ const RolePermissionsComponent = {
                     { id: 'view_more_details_profile', name: 'View More Details in Profile Page', description: 'View extended employee details in profiles' },
                     { id: 'payroll_in_stats', name: 'Payroll in Stats', description: 'View payroll metrics in statistics' },
                     { id: 'general_filter_crud', name: 'General Filter CRUD', description: 'Manage general filters' },
-                    { id: 'line_manager_crud', name: 'Line Manager CRUD', description: 'Manage line manager assignments' }
+                    { id: 'line_manager_crud', name: 'Line Manager CRUD', description: 'Manage line manager assignments' },
+                    { id: 'employee_master_list', name: 'Employee Master List', description: 'Access employee master list with finance and attendance data' }
                 ]
             },
             {
