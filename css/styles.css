@@ -776,6 +776,43 @@ img {
     text-decoration: underline;
 }
 
+/* Top Level Tabs: My Notifications / Team Notifications */
+.notifications-top-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.notifications-top-tabs .top-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--surface-card);
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.notifications-top-tabs .top-tab:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.notifications-top-tabs .top-tab.active {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.08);
+    color: var(--primary-color);
+}
+
+.notifications-top-tabs .top-tab i {
+    font-size: 1rem;
+}
+
 .notifications-center-card {
     background: var(--surface-card);
     border-radius: var(--radius-lg);
