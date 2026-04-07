@@ -568,11 +568,35 @@ const AddEmployeeComponent = {
                                 <div style="font-weight: 600; margin-bottom: 0.5rem;">GOSI Contribution (Informational)</div>
                                 <div style="display: flex; gap: 2rem;">
                                     <div>
-                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary);">Employee Contribution (9.75%)</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary); display: flex; align-items: center; gap: 0.35rem;">
+                                            Employee Contribution (
+                                            <span v-if="!editingGosiEmployee" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                {{ gosiEmployeePercent }}%
+                                                <button type="button" class="percent-edit-btn" @click="editingGosiEmployee = true" v-tooltip.top="'Edit'">
+                                                    <i class="pi pi-pencil"></i>
+                                                </button>
+                                            </span>
+                                            <span v-else style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                <input type="number" v-model.number="gosiEmployeePercent" min="0" max="100" step="0.01" class="percent-input" @blur="editingGosiEmployee = false" @keyup.enter="editingGosiEmployee = false">%
+                                            </span>
+                                            )
+                                        </div>
                                         <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(gosiEmployeeAmount) }}</div>
                                     </div>
                                     <div>
-                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary);">Company Contribution (11.75%)</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary); display: flex; align-items: center; gap: 0.35rem;">
+                                            Company Contribution (
+                                            <span v-if="!editingGosiCompany" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                {{ gosiCompanyPercent }}%
+                                                <button type="button" class="percent-edit-btn" @click="editingGosiCompany = true" v-tooltip.top="'Edit'">
+                                                    <i class="pi pi-pencil"></i>
+                                                </button>
+                                            </span>
+                                            <span v-else style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                <input type="number" v-model.number="gosiCompanyPercent" min="0" max="100" step="0.01" class="percent-input" @blur="editingGosiCompany = false" @keyup.enter="editingGosiCompany = false">%
+                                            </span>
+                                            )
+                                        </div>
                                         <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(gosiCompanyAmount) }}</div>
                                     </div>
                                 </div>
@@ -607,11 +631,35 @@ const AddEmployeeComponent = {
                                 <div style="font-weight: 600; margin-bottom: 0.5rem;">NOSI Contribution (Informational)</div>
                                 <div style="display: flex; gap: 2rem;">
                                     <div>
-                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary);">Employee Contribution (11%)</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary); display: flex; align-items: center; gap: 0.35rem;">
+                                            Employee Contribution (
+                                            <span v-if="!editingNosiEmployee" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                {{ nosiEmployeePercent }}%
+                                                <button type="button" class="percent-edit-btn" @click="editingNosiEmployee = true" v-tooltip.top="'Edit'">
+                                                    <i class="pi pi-pencil"></i>
+                                                </button>
+                                            </span>
+                                            <span v-else style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                <input type="number" v-model.number="nosiEmployeePercent" min="0" max="100" step="0.01" class="percent-input" @blur="editingNosiEmployee = false" @keyup.enter="editingNosiEmployee = false">%
+                                            </span>
+                                            )
+                                        </div>
                                         <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(nosiEmployeeAmount) }}</div>
                                     </div>
                                     <div>
-                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary);">Company Contribution (18.75%)</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-color-secondary); display: flex; align-items: center; gap: 0.35rem;">
+                                            Company Contribution (
+                                            <span v-if="!editingNosiCompany" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                {{ nosiCompanyPercent }}%
+                                                <button type="button" class="percent-edit-btn" @click="editingNosiCompany = true" v-tooltip.top="'Edit'">
+                                                    <i class="pi pi-pencil"></i>
+                                                </button>
+                                            </span>
+                                            <span v-else style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                <input type="number" v-model.number="nosiCompanyPercent" min="0" max="100" step="0.01" class="percent-input" @blur="editingNosiCompany = false" @keyup.enter="editingNosiCompany = false">%
+                                            </span>
+                                            )
+                                        </div>
                                         <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(nosiCompanyAmount) }}</div>
                                     </div>
                                 </div>
@@ -1003,7 +1051,7 @@ const AddEmployeeComponent = {
     emits: ['back', 'submitted'],
 
     setup(props, { emit }) {
-        const { ref, computed } = Vue;
+        const { ref, computed, watch } = Vue;
 
         // Steps definition
         const steps = ref([
@@ -1233,14 +1281,41 @@ const AddEmployeeComponent = {
                 }));
         });
 
+        // GOSI/NOSI editable percentages
+        const gosiEmployeePercent = ref(9.75);
+        const gosiCompanyPercent = ref(11.75);
+        const nosiEmployeePercent = ref(11);
+        const nosiCompanyPercent = ref(18.75);
+        
+        // Edit mode flags
+        const editingGosiEmployee = ref(false);
+        const editingGosiCompany = ref(false);
+        const editingNosiEmployee = ref(false);
+        const editingNosiCompany = ref(false);
+        
+        // Validate and clamp percentage to 0-100
+        const validatePercent = (percentRef) => {
+            let val = percentRef.value;
+            if (val === null || val === undefined || val === '') val = 0;
+            if (val < 0) val = 0;
+            if (val > 100) val = 100;
+            percentRef.value = val;
+        };
+        
+        // Watch for changes and validate
+        watch(gosiEmployeePercent, () => validatePercent(gosiEmployeePercent));
+        watch(gosiCompanyPercent, () => validatePercent(gosiCompanyPercent));
+        watch(nosiEmployeePercent, () => validatePercent(nosiEmployeePercent));
+        watch(nosiCompanyPercent, () => validatePercent(nosiCompanyPercent));
+
         // GOSI calculations (Saudi Arabia) - based on basic + housing
         const gosiTotal = computed(() => (form.value.basicSalary || 0) + (form.value.houseAllowance || 0));
-        const gosiEmployeeAmount = computed(() => gosiTotal.value * 0.0975);
-        const gosiCompanyAmount = computed(() => gosiTotal.value * 0.1175);
+        const gosiEmployeeAmount = computed(() => gosiTotal.value * (gosiEmployeePercent.value / 100));
+        const gosiCompanyAmount = computed(() => gosiTotal.value * (gosiCompanyPercent.value / 100));
 
         // NOSI calculations (Egypt) - based on basic salary
-        const nosiEmployeeAmount = computed(() => (form.value.basicSalary || 0) * 0.11);
-        const nosiCompanyAmount = computed(() => (form.value.basicSalary || 0) * 0.1875);
+        const nosiEmployeeAmount = computed(() => (form.value.basicSalary || 0) * (nosiEmployeePercent.value / 100));
+        const nosiCompanyAmount = computed(() => (form.value.basicSalary || 0) * (nosiCompanyPercent.value / 100));
 
         const formatCurrency = (value) => {
             return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0);
@@ -1413,6 +1488,14 @@ const AddEmployeeComponent = {
             gosiCompanyAmount,
             nosiEmployeeAmount,
             nosiCompanyAmount,
+            gosiEmployeePercent,
+            gosiCompanyPercent,
+            nosiEmployeePercent,
+            nosiCompanyPercent,
+            editingGosiEmployee,
+            editingGosiCompany,
+            editingNosiEmployee,
+            editingNosiCompany,
             formatCurrency,
             getWorkWeekById,
             getShiftById,

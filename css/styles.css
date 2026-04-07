@@ -28399,3 +28399,57 @@ img {
 .pending-actions-page .p-dialog-header-maximize {
     display: none !important;
 }
+
+/* ==========================================================================
+   GOSI/NOSI Percentage Edit Styles
+   ========================================================================== */
+
+.percent-edit-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.percent-edit-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.percent-edit-btn i {
+    font-size: 0.65rem;
+}
+
+.percent-input {
+    width: 50px;
+    padding: 0.2rem 0.35rem;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    text-align: center;
+    background: var(--surface-card);
+    color: var(--text-color);
+    outline: none;
+}
+
+.percent-input:focus {
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.percent-input::-webkit-outer-spin-button,
+.percent-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.percent-input[type=number] {
+    -moz-appearance: textfield;
+}
