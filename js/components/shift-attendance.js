@@ -627,8 +627,14 @@ const ShiftAttendanceComponent = {
                                     <p-select v-model="attendanceSection" :options="attendanceFilteredSections" optionLabel="name" optionValue="id" placeholder="Section" showClear :disabled="!attendanceDepartment" @change="onAttendanceSectionChange"></p-select>
                                     <p-select v-model="attendanceUnit" :options="attendanceFilteredUnits" optionLabel="name" optionValue="id" placeholder="Unit" showClear :disabled="!attendanceSection" @change="onAttendanceUnitChange"></p-select>
                                     <p-select v-model="attendanceTeam" :options="attendanceFilteredTeams" optionLabel="name" optionValue="id" placeholder="Team" showClear :disabled="!attendanceUnit"></p-select>
+                                    <p-select v-model="attendanceCostCenter" :options="attendanceCostCenterOptions" optionLabel="name" optionValue="id" placeholder="Cost Center" showClear @change="onAttendanceCostCenterChange"></p-select>
+                                    <p-select v-model="attendanceSubCostCenter" :options="attendanceFilteredSubCostCenters" optionLabel="name" optionValue="id" placeholder="Sub Cost Center" showClear :disabled="!attendanceCostCenter"></p-select>
                                     <div class="requests-datepicker-wrap">
                                         <p-datepicker v-model="attendanceDateRangeFilter" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Date Range" @update:modelValue="onAttendanceDateRangeFilterChange"></p-datepicker>
+                                    </div>
+                                    <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
+                                        <button class="layer-tab" :class="{ active: attendanceLayerFilter === 'first' }" @click="attendanceLayerFilter = 'first'">First Layer</button>
+                                        <button class="layer-tab" :class="{ active: attendanceLayerFilter === 'all' }" @click="attendanceLayerFilter = 'all'">All Layer</button>
                                     </div>
                                 </div>
                                 <div class="filter-actions-row">
@@ -1651,10 +1657,31 @@ const ShiftAttendanceComponent = {
         const attendanceSection = ref(null);
         const attendanceUnit = ref(null);
         const attendanceTeam = ref(null);
-        const appliedAttendanceFilters = ref({ departmentId: null, sectionId: null, unitId: null, teamId: null });
+        const attendanceCostCenter = ref(null);
+        const attendanceSubCostCenter = ref(null);
+        const attendanceLayerFilter = ref('first');
+        const appliedAttendanceFilters = ref({ departmentId: null, sectionId: null, unitId: null, teamId: null, costCenterId: null, subCostCenterId: null });
         const attendanceSearchName = ref('');
         const appliedAttendanceSearchName = ref('');
         const attendanceDateRangeFilter = ref(null);
+        
+        // Cost Center options
+        const attendanceCostCenterOptions = ref([
+            { id: 1, name: 'Operations' },
+            { id: 2, name: 'Sales & Marketing' },
+            { id: 3, name: 'IT & Digital' },
+            { id: 4, name: 'Corporate Services' }
+        ]);
+        const attendanceSubCostCenterOptions = ref([
+            { id: 1, name: 'Frontend Development', parentCostCenterId: 1 },
+            { id: 2, name: 'Backend Development', parentCostCenterId: 1 },
+            { id: 3, name: 'Digital Marketing', parentCostCenterId: 2 },
+            { id: 4, name: 'Sales Operations', parentCostCenterId: 2 },
+            { id: 5, name: 'Infrastructure', parentCostCenterId: 3 },
+            { id: 6, name: 'Software Development', parentCostCenterId: 3 },
+            { id: 7, name: 'HR Operations', parentCostCenterId: 4 },
+            { id: 8, name: 'Finance', parentCostCenterId: 4 }
+        ]);
 
         // Department / Section / Unit options (from StaticData, dependent)
         const reviewerDepartmentOptions = ref([...StaticData.departments]);
@@ -1687,6 +1714,10 @@ const ShiftAttendanceComponent = {
             if (!attendanceUnit.value) return [];
             return attendanceTeamOptions.value.filter(t => t.unitId === attendanceUnit.value);
         });
+        const attendanceFilteredSubCostCenters = computed(() => {
+            if (!attendanceCostCenter.value) return [];
+            return attendanceSubCostCenterOptions.value.filter(scc => scc.parentCostCenterId === attendanceCostCenter.value);
+        });
         const onAttendanceDepartmentChange = () => {
             attendanceSection.value = null;
             attendanceUnit.value = null;
@@ -1699,12 +1730,17 @@ const ShiftAttendanceComponent = {
         const onAttendanceUnitChange = () => {
             attendanceTeam.value = null;
         };
+        const onAttendanceCostCenterChange = () => {
+            attendanceSubCostCenter.value = null;
+        };
         const applyAttendanceFilters = () => {
             appliedAttendanceFilters.value = {
                 departmentId: attendanceDepartment.value,
                 sectionId: attendanceSection.value,
                 unitId: attendanceUnit.value,
-                teamId: attendanceTeam.value
+                teamId: attendanceTeam.value,
+                costCenterId: attendanceCostCenter.value,
+                subCostCenterId: attendanceSubCostCenter.value
             };
             appliedAttendanceSearchName.value = (attendanceSearchName.value || '').trim();
         };
@@ -1715,14 +1751,16 @@ const ShiftAttendanceComponent = {
             attendanceSection.value = null;
             attendanceUnit.value = null;
             attendanceTeam.value = null;
+            attendanceCostCenter.value = null;
+            attendanceSubCostCenter.value = null;
             attendanceSearchName.value = '';
             attendanceDateRangeFilter.value = null;
-            appliedAttendanceFilters.value = { departmentId: null, sectionId: null, unitId: null, teamId: null };
+            appliedAttendanceFilters.value = { departmentId: null, sectionId: null, unitId: null, teamId: null, costCenterId: null, subCostCenterId: null };
             appliedAttendanceSearchName.value = '';
         };
 
         const hasAttendanceActiveFilters = computed(() => {
-            return attendanceEntity.value || attendanceDepartment.value || attendanceSection.value || attendanceUnit.value || attendanceTeam.value || attendanceSearchName.value || attendanceDateRangeFilter.value;
+            return attendanceEntity.value || attendanceDepartment.value || attendanceSection.value || attendanceUnit.value || attendanceTeam.value || attendanceCostCenter.value || attendanceSubCostCenter.value || attendanceSearchName.value || attendanceDateRangeFilter.value;
         });
 
         // When date range filter is used, reset the week selector
@@ -3640,9 +3678,15 @@ const ShiftAttendanceComponent = {
             attendanceFilteredSections,
             attendanceFilteredUnits,
             attendanceFilteredTeams,
+            attendanceCostCenter,
+            attendanceSubCostCenter,
+            attendanceCostCenterOptions,
+            attendanceFilteredSubCostCenters,
+            attendanceLayerFilter,
             onAttendanceDepartmentChange,
             onAttendanceSectionChange,
             onAttendanceUnitChange,
+            onAttendanceCostCenterChange,
             applyAttendanceFilters,
             resetAttendanceFilters,
             hasAttendanceActiveFilters,

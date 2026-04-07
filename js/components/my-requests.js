@@ -83,8 +83,16 @@ const MyRequestsComponent = {
                                   placeholder="Entity" showClear style="width: 120px;"></p-select>
                         <p-select v-model="filters.office" :options="officeOptions" optionLabel="name" optionValue="id"
                                   placeholder="Office" showClear style="width: 120px;"></p-select>
+                        <p-select v-model="filters.costCenter" :options="costCenterOptions" optionLabel="name" optionValue="id"
+                                  placeholder="Cost Center" showClear style="width: 130px;" @change="onCostCenterChange"></p-select>
+                        <p-select v-model="filters.subCostCenter" :options="filteredSubCostCenters" optionLabel="name" optionValue="id"
+                                  placeholder="Sub Cost Center" showClear style="width: 140px;" :disabled="!filters.costCenter"></p-select>
                         <div class="requests-datepicker-wrap">
                             <p-datepicker v-model="filters.dateRange" selectionMode="range" dateFormat="dd/mm/yy" placeholder="Submitted Date"></p-datepicker>
+                        </div>
+                        <div class="scheduler-layer-tabs" style="margin-left: 0.5rem;">
+                            <button class="layer-tab" :class="{ active: layerFilter === 'first' }" @click="layerFilter = 'first'">First Layer</button>
+                            <button class="layer-tab" :class="{ active: layerFilter === 'all' }" @click="layerFilter = 'all'">All Layer</button>
                         </div>
                     </div>
                     <div class="filter-actions-row">
@@ -400,6 +408,23 @@ const MyRequestsComponent = {
             { id: 2, name: 'Branch - Riyadh' },
             { id: 3, name: 'Branch - Dubai' }
         ]);
+        const costCenterOptions = ref([
+            { id: 1, name: 'Operations' },
+            { id: 2, name: 'Sales & Marketing' },
+            { id: 3, name: 'IT & Digital' },
+            { id: 4, name: 'Corporate Services' }
+        ]);
+        const subCostCenterOptions = ref([
+            { id: 1, name: 'Frontend Development', parentCostCenterId: 1 },
+            { id: 2, name: 'Backend Development', parentCostCenterId: 1 },
+            { id: 3, name: 'Digital Marketing', parentCostCenterId: 2 },
+            { id: 4, name: 'Sales Operations', parentCostCenterId: 2 },
+            { id: 5, name: 'Infrastructure', parentCostCenterId: 3 },
+            { id: 6, name: 'Software Development', parentCostCenterId: 3 },
+            { id: 7, name: 'HR Operations', parentCostCenterId: 4 },
+            { id: 8, name: 'Finance', parentCostCenterId: 4 }
+        ]);
+        const layerFilter = ref('first');
 
         // View Type Options
         const viewTypeOptions = ref([
@@ -419,6 +444,8 @@ const MyRequestsComponent = {
             team: null,
             entity: null,
             office: null,
+            costCenter: null,
+            subCostCenter: null,
             dateRange: null
         });
 
@@ -431,6 +458,8 @@ const MyRequestsComponent = {
             team: null,
             entity: null,
             office: null,
+            costCenter: null,
+            subCostCenter: null,
             dateRange: null
         });
 
@@ -450,12 +479,19 @@ const MyRequestsComponent = {
             return teamOptions.value.filter(t => t.unitId === filters.unit);
         });
 
+        const filteredSubCostCenters = computed(() => {
+            if (!filters.costCenter) return [];
+            return subCostCenterOptions.value.filter(scc => scc.parentCostCenterId === filters.costCenter);
+        });
+
         const hasActiveFilters = computed(() => {
             const hasForm = filters.countryOfWork || filters.department || filters.section ||
                 filters.unit || filters.team || filters.entity || filters.office ||
+                filters.costCenter || filters.subCostCenter ||
                 (filters.dateRange && filters.dateRange.length > 0);
             const hasApplied = appliedFilters.countryOfWork || appliedFilters.department || appliedFilters.section ||
                 appliedFilters.unit || appliedFilters.team || appliedFilters.entity || appliedFilters.office ||
+                appliedFilters.costCenter || appliedFilters.subCostCenter ||
                 (appliedFilters.dateRange && appliedFilters.dateRange.length > 0);
             return hasForm || hasApplied;
         });
@@ -476,6 +512,10 @@ const MyRequestsComponent = {
             filters.team = null;
         };
 
+        const onCostCenterChange = () => {
+            filters.subCostCenter = null;
+        };
+
         const applyFilters = () => {
             appliedFilters.countryOfWork = filters.countryOfWork;
             appliedFilters.department = filters.department;
@@ -484,6 +524,8 @@ const MyRequestsComponent = {
             appliedFilters.team = filters.team;
             appliedFilters.entity = filters.entity;
             appliedFilters.office = filters.office;
+            appliedFilters.costCenter = filters.costCenter;
+            appliedFilters.subCostCenter = filters.subCostCenter;
             appliedFilters.dateRange = filters.dateRange ? [...filters.dateRange] : null;
         };
 
@@ -496,6 +538,8 @@ const MyRequestsComponent = {
             filters.team = null;
             filters.entity = null;
             filters.office = null;
+            filters.costCenter = null;
+            filters.subCostCenter = null;
             filters.dateRange = null;
             // Reset applied filters
             appliedFilters.countryOfWork = null;
@@ -505,6 +549,8 @@ const MyRequestsComponent = {
             appliedFilters.team = null;
             appliedFilters.entity = null;
             appliedFilters.office = null;
+            appliedFilters.costCenter = null;
+            appliedFilters.subCostCenter = null;
             appliedFilters.dateRange = null;
         };
 
@@ -764,8 +810,12 @@ const MyRequestsComponent = {
             filteredSections,
             filteredUnits,
             filteredTeams,
+            filteredSubCostCenters,
             entityOptions,
             officeOptions,
+            costCenterOptions,
+            subCostCenterOptions,
+            layerFilter,
             viewTypeOptions,
             hasActiveFilters,
             // Computed - Status counts
@@ -800,6 +850,7 @@ const MyRequestsComponent = {
             onDepartmentChange,
             onSectionChange,
             onUnitChange,
+            onCostCenterChange,
             applyFilters,
             resetFilters,
             // Actions
