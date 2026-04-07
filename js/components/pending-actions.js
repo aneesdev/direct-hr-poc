@@ -55,6 +55,18 @@ const PendingActionsComponent = {
                 </div>
             </div>
 
+            <!-- Filters Section -->
+            <div class="card compact-filters-grid" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                <div class="filter-row">
+                    <p-select v-model="filters.countryOfWork" :options="countryOptions" optionLabel="name" optionValue="id"
+                              placeholder="Country of Work" showClear style="width: 160px;"></p-select>
+                </div>
+                <div class="filter-actions-row">
+                    <p-button label="Apply" icon="pi pi-check" @click="applyFilters" size="small"></p-button>
+                    <p-button label="Reset" icon="pi pi-refresh" outlined @click="resetFilters" size="small" v-if="hasActiveFilters"></p-button>
+                </div>
+            </div>
+
             <!-- Actions List -->
             <div class="card">
                 <div class="card-header">
@@ -501,7 +513,7 @@ const PendingActionsComponent = {
     `,
 
     setup() {
-        const { ref, computed } = Vue;
+        const { ref, computed, reactive } = Vue;
 
         const activeCategory = ref('all');
         const showRequestModal = ref(false);
@@ -512,6 +524,28 @@ const PendingActionsComponent = {
         const selectedAction = ref(null);
         const actionComment = ref('');
         const managerFeedback = ref('');
+        
+        // Filter state
+        const countryOptions = ref([...StaticData.countriesOfWork]);
+        const filters = reactive({
+            countryOfWork: null
+        });
+        const appliedFilters = reactive({
+            countryOfWork: null
+        });
+        
+        const hasActiveFilters = computed(() => {
+            return filters.countryOfWork || appliedFilters.countryOfWork;
+        });
+        
+        const applyFilters = () => {
+            appliedFilters.countryOfWork = filters.countryOfWork;
+        };
+        
+        const resetFilters = () => {
+            filters.countryOfWork = null;
+            appliedFilters.countryOfWork = null;
+        };
 
         // Pending Leave/Order Requests
         const pendingRequests = ref([
@@ -520,6 +554,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-012', name: 'Ahmed Hassan', department: 'Engineering', avatar: 'https://i.pravatar.cc/40?img=12' },
                 description: 'Requesting 5 days annual leave from March 15-20, 2026 for family vacation.',
                 submittedDate: '20 Jan 2026',
+                countryOfWork: 2,
                 details: { 'Leave Period': '01 Feb 2026 — 05 Feb 2026', 'Duration': '5 working days' }
             },
             {
@@ -527,6 +562,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-008', name: 'Sara Al-Mutairi', department: 'Marketing', avatar: 'https://i.pravatar.cc/40?img=5' },
                 description: 'Sick leave request for 2 days due to medical appointment and recovery.',
                 submittedDate: '22 Jan 2026',
+                countryOfWork: 1,
                 details: { 'Leave Period': '23 Jan 2026 — 24 Jan 2026', 'Duration': '2 working days', 'Medical Certificate': 'Attached' }
             },
             {
@@ -534,6 +570,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-015', name: 'Khalid Al-Fahad', department: 'Finance', avatar: 'https://i.pravatar.cc/40?img=15' },
                 description: 'Request to work from home on Feb 25 for home maintenance appointment.',
                 submittedDate: '19 Feb 2026',
+                countryOfWork: 2,
                 details: { 'Date': 'Feb 25, 2026', 'Reason': 'Home maintenance' }
             }
         ]);
@@ -545,6 +582,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-022', name: 'Sarah Johnson', department: 'Engineering', avatar: 'https://i.pravatar.cc/40?img=22' },
                 description: 'Promotion request from Software Engineer to Lead Engineer with salary adjustment.',
                 submittedDate: '06 Feb 2026',
+                countryOfWork: 2,
                 details: { 'Main Grade': 'Professional → Supervisor', 'Sub Grade': 'Senior Officers → Lead', 'Job Title': 'Software Engineer → Lead Engineer', 'Basic Salary': '8,633 → 12,000', 'Accommodation Allowance': '2,125 → 3,000', 'Transportation Allowance': '680 → 1,000' }
             },
             {
@@ -552,6 +590,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-019', name: 'Fahad Al-Otaibi', department: 'Sales', avatar: 'https://i.pravatar.cc/40?img=19' },
                 description: 'Request to transfer to Jeddah branch effective April 2026.',
                 submittedDate: '15 Feb 2026',
+                countryOfWork: 3,
                 details: { 'Transfer Type': 'Branch Transfer', 'Current Branch': 'Riyadh HQ', 'Target Branch': 'Jeddah Branch', 'Effective Date': 'April 1, 2026' }
             }
         ]);
@@ -563,6 +602,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-003', name: 'Fatima Ibrahim', department: 'Engineering', avatar: 'https://i.pravatar.cc/40?img=7' },
                 description: 'Upgraded HQ server infrastructure. 60% complete.',
                 submittedDate: '10 Feb 2026',
+                countryOfWork: 1,
                 details: { 'Appraisal Cycle': 'April 2025 - April 2026', 'Self Score': '84%', 'Status': 'COMMITTEE PHASE' }
             },
             {
@@ -570,6 +610,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-003', name: 'Mohammed Al-Rashid', department: 'Finance', avatar: 'https://i.pravatar.cc/40?img=11' },
                 description: 'Completed all quarterly targets ahead of schedule. Led the payroll automation project.',
                 submittedDate: '12 Feb 2026',
+                countryOfWork: 2,
                 details: { 'Appraisal Cycle': 'Q1 2026', 'Self Score': '74%', 'Status': 'EMPLOYEE PHASE' }
             },
             {
@@ -577,6 +618,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-005', name: 'Yusuf Ahmed', department: 'Operations', avatar: 'https://i.pravatar.cc/40?img=25' },
                 description: 'View appraisal package configuration and committee assignment details.',
                 submittedDate: '18 Feb 2026',
+                countryOfWork: 2,
                 details: { 'Evaluation Cycle': 'April 2025 - April 2026', 'Grade Focus': 'Professional Level', 'KPIs': 'Ops_KPIs_FY25.xlsx', 'Status': 'ASSIGNED' }
             }
         ]);
@@ -588,6 +630,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-1000', name: 'Employee 1', department: 'Engineering > Frontend > React Unit', avatar: 'https://i.pravatar.cc/40?img=14' },
                 description: 'Employee is currently assigned to Cybersecurity Essentials training. Review and update status as needed.',
                 submittedDate: 'Jan 2024',
+                countryOfWork: 2,
                 details: { 'Training Path': 'Cybersecurity Essentials', 'Total Hours': '10 HRS', 'Batch Details': 'Cycle 1 (January 2024 — June 2024)', 'Current Status': 'Assigned', 'Progress Score': '0%' }
             },
             {
@@ -595,6 +638,7 @@ const PendingActionsComponent = {
                 employee: { id: 'EMP-1001', name: 'Employee 2', department: 'Sales > Inside Sales > Inside Accounts', avatar: 'https://i.pravatar.cc/40?img=18' },
                 description: 'Employee is progressing through Leadership & Management training. Current progress at 10%.',
                 submittedDate: 'Jan 2024',
+                countryOfWork: 1,
                 details: { 'Training Path': 'Leadership & Management', 'Total Hours': '40 HRS', 'Batch Details': 'Cycle 2 (January 2024 — June 2024)', 'Current Status': 'In Progress', 'Progress Score': '10%' }
             }
         ]);
@@ -607,14 +651,25 @@ const PendingActionsComponent = {
         });
 
         const filteredActions = computed(() => {
+            let result = [];
             if (activeCategory.value === 'all') {
-                return [...pendingRequests.value, ...pendingHelpDesk.value, ...pendingAppraisals.value, ...pendingTraining.value];
+                result = [...pendingRequests.value, ...pendingHelpDesk.value, ...pendingAppraisals.value, ...pendingTraining.value];
+            } else if (activeCategory.value === 'requests') {
+                result = pendingRequests.value;
+            } else if (activeCategory.value === 'helpdesk') {
+                result = pendingHelpDesk.value;
+            } else if (activeCategory.value === 'appraisals') {
+                result = pendingAppraisals.value;
+            } else if (activeCategory.value === 'training') {
+                result = pendingTraining.value;
             }
-            if (activeCategory.value === 'requests') return pendingRequests.value;
-            if (activeCategory.value === 'helpdesk') return pendingHelpDesk.value;
-            if (activeCategory.value === 'appraisals') return pendingAppraisals.value;
-            if (activeCategory.value === 'training') return pendingTraining.value;
-            return [];
+            
+            // Apply country filter
+            if (appliedFilters.countryOfWork) {
+                result = result.filter(item => item.countryOfWork === appliedFilters.countryOfWork);
+            }
+            
+            return result;
         });
 
         const getCategoryTitle = computed(() => {
@@ -739,7 +794,13 @@ const PendingActionsComponent = {
             rejectAction,
             quickApprove,
             quickReject,
-            bulkApprove
+            bulkApprove,
+            // Filter-related
+            filters,
+            countryOptions,
+            hasActiveFilters,
+            applyFilters,
+            resetFilters
         };
     }
 };
