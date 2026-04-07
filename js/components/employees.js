@@ -207,11 +207,6 @@ const EmployeesComponent = {
                                        placeholder="Select roles" style="width: 100%;" display="chip"></p-multiselect>
                     </div>
 
-                    <div class="form-field">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Direct Permissions</label>
-                        <p-multiselect v-model="selectedPermissions" :options="permissionsOptions" optionLabel="name" optionValue="id"
-                                       placeholder="Select permissions" style="width: 100%;" display="chip" :maxSelectedLabels="3"></p-multiselect>
-                    </div>
                 </div>
                 <template #footer>
                     <p-button label="Cancel" severity="danger" outlined @click="showAssignDialog = false"></p-button>
