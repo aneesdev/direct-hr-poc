@@ -533,7 +533,10 @@ const AddEmployeeComponent = {
                          class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Gross Salary <span class="required">*</span></label>
-                            <p-inputnumber v-model="form.grossSalary" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.grossSalary" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Salary Transfer Method <span class="required">*</span></label>
@@ -545,19 +548,31 @@ const AddEmployeeComponent = {
                     <div v-if="form.countryOfWork === 'Saudi Arabia' && form.isRegisteredInGosi" class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Basic Salary <span class="required">*</span></label>
-                            <p-inputnumber v-model="form.basicSalary" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.basicSalary" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">House Allowance</label>
-                            <p-inputnumber v-model="form.houseAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.houseAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Transportation Allowance</label>
-                            <p-inputnumber v-model="form.transportationAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.transportationAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Other Allowance</label>
-                            <p-inputnumber v-model="form.otherAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.otherAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Salary Transfer Method <span class="required">*</span></label>
@@ -581,7 +596,7 @@ const AddEmployeeComponent = {
                                             </span>
                                             )
                                         </div>
-                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(gosiEmployeeAmount) }}</div>
+                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(gosiEmployeeAmount) }} {{ salaryCurrencyLabel }}</div>
                                     </div>
                                     <div>
                                         <div style="font-size: 0.85rem; color: var(--text-color-secondary); display: flex; align-items: center; gap: 0.35rem;">
@@ -597,7 +612,7 @@ const AddEmployeeComponent = {
                                             </span>
                                             )
                                         </div>
-                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(gosiCompanyAmount) }}</div>
+                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(gosiCompanyAmount) }} {{ salaryCurrencyLabel }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -608,19 +623,31 @@ const AddEmployeeComponent = {
                     <div v-if="form.countryOfWork === 'Egypt' && form.isRegisteredInNosi" class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Basic Salary <span class="required">*</span></label>
-                            <p-inputnumber v-model="form.basicSalary" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.basicSalary" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">House Allowance</label>
-                            <p-inputnumber v-model="form.houseAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.houseAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Transportation Allowance</label>
-                            <p-inputnumber v-model="form.transportationAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.transportationAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Other Allowance</label>
-                            <p-inputnumber v-model="form.otherAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" style="width: 100%;"></p-inputnumber>
+                            <p-inputgroup class="salary-amount-inputgroup">
+                                <p-inputnumber v-model="form.otherAllowance" mode="decimal" :minFractionDigits="2" placeholder="0.00" class="salary-amount-inputnumber"></p-inputnumber>
+                                <p-inputgroupaddon>{{ salaryCurrencyLabel }}</p-inputgroupaddon>
+                            </p-inputgroup>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Salary Transfer Method <span class="required">*</span></label>
@@ -644,7 +671,7 @@ const AddEmployeeComponent = {
                                             </span>
                                             )
                                         </div>
-                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(nosiEmployeeAmount) }}</div>
+                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(nosiEmployeeAmount) }} {{ salaryCurrencyLabel }}</div>
                                     </div>
                                     <div>
                                         <div style="font-size: 0.85rem; color: var(--text-color-secondary); display: flex; align-items: center; gap: 0.35rem;">
@@ -660,7 +687,7 @@ const AddEmployeeComponent = {
                                             </span>
                                             )
                                         </div>
-                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(nosiCompanyAmount) }}</div>
+                                        <div style="font-weight: 600; font-size: 1.1rem;">{{ formatCurrency(nosiCompanyAmount) }} {{ salaryCurrencyLabel }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -1202,6 +1229,36 @@ const AddEmployeeComponent = {
             return Math.round((completedItems / totalItems) * 100);
         });
 
+        const SAR_PER_USD = 3.75;
+        const salaryCurrencyLabel = computed(() =>
+            form.value.countryOfWork === 'Saudi Arabia' ? 'SAR' : 'USD'
+        );
+
+        const roundMoney2 = (n) => Math.round(Number(n) * 100) / 100;
+
+        const convertSalaryFieldsForCountryChange = (oldCountry, newCountry) => {
+            const keys = ['grossSalary', 'basicSalary', 'houseAllowance', 'transportationAllowance', 'otherAllowance'];
+            const wasSaudi = oldCountry === 'Saudi Arabia';
+            const isSaudi = newCountry === 'Saudi Arabia';
+            if (wasSaudi === isSaudi) return;
+            for (const k of keys) {
+                const v = form.value[k];
+                if (v === null || v === undefined || v === '') continue;
+                const n = Number(v);
+                if (Number.isNaN(n)) continue;
+                if (wasSaudi && !isSaudi) form.value[k] = roundMoney2(n / SAR_PER_USD);
+                else if (!wasSaudi && isSaudi) form.value[k] = roundMoney2(n * SAR_PER_USD);
+            }
+        };
+
+        watch(
+            () => form.value.countryOfWork,
+            (newVal, oldVal) => {
+                if (oldVal == null || oldVal === undefined) return;
+                convertSalaryFieldsForCountryChange(oldVal, newVal);
+            }
+        );
+
         // Helper functions for dropdown templates
         const getWorkWeekById = (id) => {
             return workWeeks.value.find(w => w.id === id);
@@ -1472,6 +1529,7 @@ const AddEmployeeComponent = {
             salaryTransferMethods,
             scheduleTypes,
             checklistProgress,
+            salaryCurrencyLabel,
             filteredSections,
             filteredUnits,
             filteredTeams,

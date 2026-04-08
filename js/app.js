@@ -229,6 +229,8 @@ const primeVueComponents = {
     'p-checkbox': PrimeVue.Checkbox,
     'p-radiobutton': PrimeVue.RadioButton,
     'p-inputnumber': PrimeVue.InputNumber,
+    'p-inputgroup': PrimeVue.InputGroup,
+    'p-inputgroupaddon': PrimeVue.InputGroupAddon,
     'p-textarea': PrimeVue.Textarea,
     'p-fileupload': PrimeVue.FileUpload,
     'p-multiselect': PrimeVue.MultiSelect,
