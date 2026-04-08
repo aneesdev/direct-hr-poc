@@ -704,14 +704,8 @@ const AddEmployeeComponent = {
                         Attendance & Schedule
                     </div>
                     <div class="step-subtitle">Work schedule configuration based on contract type</div>
-                    
-                    <div v-if="!form.contractType" class="empty-state" style="padding: 3rem;">
-                        <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #f59e0b;"></i>
-                        <h3>Select Contract Type First</h3>
-                        <p>Please select a contract type in Step 4 to configure attendance settings</p>
-                    </div>
 
-                    <div v-else>
+                    <div>
                         <div class="form-section-title">Schedule Configuration</div>
                         <div class="form-grid">
                             <div class="form-group">
